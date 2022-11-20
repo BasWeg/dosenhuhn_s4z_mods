@@ -1,14 +1,14 @@
 {
     "manifest_version": 1,
-    "name": "DosenHuhn S4Z MOD",
-    "description": "Sauce4Zwift MODs from DosenHuhn",
+    "name": "DosenHuhn Mod",
+    "description": "update team WBal values from zwiftracing.app",
     "version": "0.0.1",
     "web_root": "pages",
     "windows": [{
         "file": "pages/wbal_update.html",
         "id": "dosenhuhn-wbal-update",
         "name": "DH MOD - wbal update",
-        "description": "Mod for Sauce to update team Wbal data with zwitracing.app values",
+        "description": "Update team Wbal data with zwitracing.app values",
         "always_visible": true,
         "overlay": true,
         "frame": false,
