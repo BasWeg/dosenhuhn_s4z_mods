@@ -313,15 +313,16 @@ function renderGroups(groups) {
         let label;
         let team;
         const leftLines = [];
+        const leftAvatars = [];
         const rightLines = [];
         if (group.athletes.length === 1 && group.athletes[0].athlete) {
             const n = group.athletes[0].athlete.name;
             label = n ? n.map(x => x[0].toUpperCase()).join('').substr(0, 2) : '1';
             pos.el.classList.remove('attn', 'attack');
-            if (group.athletes[0].athlete.team == watchingteam)
-                {
+            if (group.athletes[0].athlete.team == watchingteam) {
                 team = watchingteam;
-                }
+                //if(group.athletes[0].athlete.avatar) leftAvatars.push(`<img src="${group.athletes[0].athlete.avatar}"/>`);
+            }
         } else {
             label = H.number(group.athletes.length);
             let max = -Infinity;
@@ -333,6 +334,7 @@ function renderGroups(groups) {
             if (x.athlete.team == watchingteam)
                 {
                 team = watchingteam;
+               // if(x.athlete.avatar) leftAvatars.push(`<img src="${x.athlete.avatar}"/>`);
                 }
             }
             const attacker = settings.detectAttacks &&
@@ -351,6 +353,8 @@ function renderGroups(groups) {
         if (team) {
             const hue = common.badgeHue(team);
             leftLines.push(`<div class="badge" style="--hue: ${hue};">${team}</div>`);
+            //const cleftA = leftAvatars.join('');
+            //leftLines.push(`<div class="line minor avatar" style="right" >${cleftA}</div>`);
         }
         rightLines.push(`<div class="line">${pwrFmt(group.power)}</div>`);
         const minorField = settings.groupsSecondaryField || 'speed';

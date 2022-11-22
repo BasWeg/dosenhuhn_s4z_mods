@@ -11,12 +11,20 @@
         </script>		
         <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
         <link rel="stylesheet" href="../../../../pages/css/common.css"/>
+        <link rel="stylesheet" href="../../../../pages/css/overview-settings.css"/>
         
         <style>
             html {
               font-size: 4.8mm;
-              text-align: center;
+              /*text-align: center;*/
             }
+            .title {
+                font-size: 1.3em;
+                opacity: 0.9;
+                padding: 0.2em 0 0.5em;
+                font-variant: all-small-caps;
+                font-weight: bold;
+                }            
         </style>
     </head>    
     <body>
@@ -32,17 +40,24 @@
             </header>
         </div>
         <div id="content">
-        <div class="title">Update teams wbal from zwiftracing.app</div>
         <div id="meta" class="app-drag"></div>
+        <form >
+        <div class="title">Update teams wbal from zwiftracing.app</div>            
         <label title="The team number from zwiftracing or ZP">
             <key>Team Number:</key>
             <input type="number" id="myNumber" value="16349">
+            <div class="std button xs" title="Refresh" data-action="fetch-zr"><ms>refresh</ms></div>
         </label>
+        <label title="The team name">
+            <key>Team Name:</key>
+            <span class="display-field" id="zwiftracing_team"></span>
+        </label>        
         <div class="action-buttons">
-            <div class="std button" data-action="update">Update</div>
+            <div class="std button" style = "visibility:hidden" id="update_btn" data-action="update">Update</div>
         </div>
         <p id="demo">...status...</p>
         <p id="demo2"></p>
+        </form>
         </div>
     </body>
 </html>

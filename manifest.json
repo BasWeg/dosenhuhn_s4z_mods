@@ -1,7 +1,9 @@
 {
     "manifest_version": 1,
-    "name": "DosenHuhn Mod",
+    "name": "DosenHuhn Mod for S4Z",
     "description": "update team WBal values from zwiftracing.app",
+    "author": "Bastian Wegener",
+    "website_url": "https://www.wattfabrik.org",
     "version": "0.0.1",
     "web_root": "pages",
     "windows": [{
@@ -13,7 +15,7 @@
         "overlay": true,
         "frame": false,
         "default_bounds": {
-            "width": 300,
+            "width": 420,
             "height": 300,
             "x": 100,
             "y": 100
