@@ -120,10 +120,10 @@ export async function doWbalTeamScrape(){
         for (let athlete of whatevs){
             if (athlete){
                
-               let params = [athlete.athleteId,{wPrime:athlete.Wbal, ftp:athlete.CP}];
+               let params = [athlete.athleteId,{wPrime:athlete.Wbal, cp:athlete.CP}];
                console.log(JSON.stringify(params));
                document.getElementById("demo").innerHTML = "Updating: " + JSON.stringify(params);
-               common.rpc.updateAthlete(athlete.athleteId, {wPrime:athlete.Wbal, ftp:athlete.CP,  CP:athlete.CP});
+               common.rpc.updateAthlete(athlete.athleteId, {wPrime:athlete.Wbal, cp:athlete.CP});
             } else {
                 document.getElementById("demo").innerHTML = "API FAILED!"
                 console.log("Failed wbal lookup");
