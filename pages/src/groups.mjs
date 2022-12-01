@@ -210,7 +210,11 @@ function renderZoomed(groups) {
                 }
             }
         }
-        const rightLines = [`<div class="line">${pwrFmt(athlete.state.power)}</div>`];
+        const athlete_power = athlete.state.power + athlete.state.draft;
+        const rightLines = [`<div class="line ">${pwrFmt(athlete_power)} ${athlete.state.draft}</div>`];
+        const mywbal = athlete.stats.power.wBal / athlete.athlete.wPrime;// * 100;
+        //rightLines.push(`<div class="line minor">${pwrFmt(athlete.state.power)}</div>`);
+        rightLines.push(`<div class="line">${common.fmtBattery(mywbal)}${H.number(mywbal*100)}%</div>`);
         const minorField = settings.zoomedSecondaryField || 'heartrate';
         if (minorField === 'heartrate') {
             if (athlete.state.heartrate) {
@@ -218,7 +222,7 @@ function renderZoomed(groups) {
             }
         } else if (minorField === 'draft') {
             if (athlete.state.draft != null) {
-                rightLines.push(`<div class="line minor">${H.number(athlete.state.draft)}<abbr class="unit">% (draft)</abbr></div>`);
+           //     rightLines.push(`<div class="line minor">${H.number(athlete.state.draft)}<abbr class="unit">% (draft)</abbr></div>`);
             }
         } else if (minorField === 'speed') {
             if (athlete.state.speed != null) {
