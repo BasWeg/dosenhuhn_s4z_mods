@@ -5,22 +5,30 @@ const common = await import(`${mypath}/src/common.mjs`);
 const page = location.pathname.split('/').at(-1).split('.')[0];
 console.log(page);
 var queue =[];
+var teamid = "";
+var  mod_dh_settings = await common.rpc.getSetting('mod_dh_settings') || {};
+
+if (page == "wbal_tupdate")
+{
+    teamid = mod_dh_settings.wbal_team_id ? mod_dh_settings.wbal_team_id : '';
+    document.getElementById("myNumber").value =  teamid;   
+}
 
 async function myFunction() {
     //const team = document.getElementById("myNumber").value;
-    await doWbalTeamScrape();
+    await doWbalCPUpdate();
     return;
 }
 
 async function myRefresh(){
-    const team = document.getElementById("myNumber").value;
+    teamid = document.getElementById("myNumber").value;
     if (page == "wbal_tupdate")
-   {
-    queue = await doFetchTeamData(team);
-   } else {
-    queue = await doFetchEventData(team);
-   } 
-    
+    {
+        queue = await doFetchTeamData(teamid);
+    } else {
+        queue = await doFetchEventData(teamid);
+    } 
+
     return;
 } 
 
@@ -101,7 +109,7 @@ async function doFetchEventData(event){
 } 
 
 
-export async function doWbalTeamScrape(){
+export async function doWbalCPUpdate(){
     //let queue = [];
 //    let url = `https://www.zwiftracing.app/api/riders?club=${team}&page=0&pageSize=1000`;
     // let url = `https://www.dosenhuhn.de/get_team.php?club=${team}`;
@@ -132,6 +140,13 @@ export async function doWbalTeamScrape(){
         }
         document.getElementById("demo").innerHTML = "Updating done";
         document.getElementById("update_btn").style = "visibility:hidden";
+
+        if (page == "wbal_tupdate")
+        {
+            // store team id
+            mod_dh_settings = {...mod_dh_settings, wbal_team_id: teamid}
+            common.rpc.setSetting('mod_dh_settings',mod_dh_settings);
+        }        
     })
 }
 
