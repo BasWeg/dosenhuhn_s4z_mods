@@ -210,8 +210,8 @@ function renderZoomed(groups) {
                 }
             }
         }
-        const athlete_power = athlete.state.power + athlete.state.draft;
-        const rightLines = [`<div class="line ">${pwrFmt(athlete_power)} ${athlete.state.draft}</div>`];
+        //const athlete_power = athlete.state.power + athlete.state.draft;
+        const rightLines = [`<div class="line ">${pwrFmt(athlete.state.power)} ${athlete.state.draft}</div>`];
         const mywbal = athlete.stats.power.wBal / athlete.athlete.wPrime;// * 100;
         //rightLines.push(`<div class="line minor">${pwrFmt(athlete.state.power)}</div>`);
         rightLines.push(`<div class="line">${common.fmtBattery(mywbal)}${H.number(mywbal*100)}%</div>`);
