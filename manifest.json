@@ -1,0 +1,54 @@
+{
+    "manifest_version": 1,
+    "name": "DosenHuhn MODs for S4Z",
+    "description": "A MOD collection for S4Z",
+    "author": "Bastian Wegener",
+    "website_url": "https://www.wattfabrik.org",
+    "version": "0.0.2",
+    "web_root": "pages",
+    "windows": [{
+        "file": "pages/wbal_tupdate.html",
+        "id": "dosenhuhn-wbal-tupdate",
+        "name": "DH MOD - wbal team update",
+        "description": "Update team Wbal data with zwitracing.app values",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 420,
+            "height": 300,
+            "x": 100,
+            "y": 100
+        }
+    },
+    {
+        "file": "pages/wbal_eupdate.html",
+        "id": "dosenhuhn-wbal-eupdate",
+        "name": "DH MOD - wbal event update",
+        "description": "Update Wbal data from event participants with zwitracing.app values",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 420,
+            "height": 300,
+            "x": 100,
+            "y": 100
+        }
+    },    	
+    {
+        "file": "pages/groups.html",
+        "id": "dosenhuhn-groups",
+        "name": "DH MOD - groups",
+        "description": "change of group window to show (watching) team-badges",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 300,
+            "height": 800,
+            "x": -300,
+            "y": 100
+        }
+    }]
+}
