@@ -1,2 +1,8 @@
-# dosenhuhn_s4z_mods
-A MOD collection for sauce4zwift
+A MOD collection for Sauce for Zwift™
+===========
+
+Requirements:
+--------
+Sauce for Zwift™ for Mac / Windows / Linux:
+### https://sauce.llc/products/sauce4zwift/download
+
