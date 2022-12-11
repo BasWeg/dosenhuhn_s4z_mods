@@ -1,17 +1,16 @@
-var mypath = '../../../../pages';
+import * as sauce from '/pages/src/../../shared/sauce/index.mjs';
+import * as common from '/pages/src/common.mjs';
 
 // const sauce = await import(`${mypath}/src/../../shared/sauce/index.mjs`);
 // const common = await import(`${mypath}/src/common.mjs`);
-const sauce = await import(`/pages/src/../../shared/sauce/index.mjs`);
-const common = await import(`/pages/src/common.mjs`);
+// const sauce = await import(`/pages/src/../../shared/sauce/index.mjs`);
+// const common = await import(`/pages/src/common.mjs`);
 const L = sauce.locale;
 const H = L.human;
 const positions = new Map();
-const settingsKey = 'groups-settings-v6';
 let zoomedPosition = common.storage.get('zoomedPosition');
-let imperial = common.storage.get('/imperialUnits');
+let imperial = common.settingsStore.get('/imperialUnits');
 L.setImperial(imperial);
-let settings;
 let curGroups;
 let contentEl;
 let metaEl;
@@ -20,9 +19,36 @@ let behindEl;
 let containerEl;
 const doc = document.documentElement;
 
+common.settingsStore.setDefault({
+    detectAttacks: true,
+    maxAhead: 4,
+    maxBehind: 2,
+    maxZoomed: 8,
+    groupsPrimaryField: 'power',
+    zoomedPrimaryField: 'power',
+    groupsSecondaryField: 'speed',
+    zoomedSecondaryField: 'wbal',
+    zoomedGapField: 'distance',
+    solidBackground: false,
+    backgroundColor: '#00ff00',
+    refreshInterval: 2,
+});
+
+// XXX Need a migration system.
+common.settingsStore.get('groupsPrimaryField', 'power');
+common.settingsStore.get('zoomedPrimaryField', 'power');
+
+const settings = common.settingsStore.get();
+setBackground();
+
 
 function pwrFmt(p) {
     return H.power(p, {suffix: true, html: true});
+}
+
+
+function wkgFmt(wkg) {
+    return H.wkg(wkg, {suffix: true, html: true});
 }
 
 
@@ -111,6 +137,12 @@ function render() {
 }
 
 
+function isAttack(power, groupPower) {
+    return settings.detectAttacks &&
+        (power > 650 || (power > 400 && power > groupPower * 2));
+}
+
+
 function renderZoomed(groups) {
     if (!groups) {
         return;
@@ -129,21 +161,18 @@ function renderZoomed(groups) {
     const end = Math.min(group.athletes.length, ahead + settings.maxZoomed);
     const behind = group.athletes.length - end;
     const athletes = group.athletes.slice(ahead, end);
-    const gapField = settings.zoomedGapField || 'distance';
-    const gapProp = gapField === 'distance' ? 'gapDistance' : 'gap';
-    const totGap = athletes[athletes.length - 1][gapProp] - athletes[0][gapProp];
-    // Keep total flex-grow < 1 for tight groups.  I.e. prevent 100% height usage when small
-    const flexFactor = gapField === 'distance' ? 0.015 : 0.1;
     contentEl.style.setProperty('--total-athletes', athletes.length);  // visual only
-    contentEl.style.setProperty('--total-gap', totGap * flexFactor);
     const athletesLabel = groupSize === 1 ? 'Athlete' : 'Athletes';
     const groupLabel = pos ? `${H.place(Math.abs(pos))} ${pos > 0 ? 'behind' : 'ahead'}` : 'Your Group';
+    const primaryFmt = {
+        power: ({power}) => pwrFmt(power),
+        wkg: ({power, weight}) => weight ? wkgFmt(power / weight) : pwrFmt(power),
+    }[settings.zoomedPrimaryField || 'power'];
     metaEl.innerHTML = [
         `${groupLabel}, ${groupSize} ${athletesLabel}`,
-        `${pwrFmt(group.power)}, ${spdFmt(group.speed)}`,
+        `${primaryFmt(group)}, ${spdFmt(group.speed)}`,
     ].map(x => `<div class="line">${x}</div>`).join('');
     const active = new Set();
-    const bikeLength = 2;  // meters
     aheadEl.classList.toggle('visible', !!ahead);
     if (ahead) {
         aheadEl.textContent = `+${ahead} ahead`;
@@ -158,7 +187,7 @@ function renderZoomed(groups) {
         active.add(i);
         const pos = getOrCreatePosition(i);
         pos.bubble.title = `Click for athlete details`;
-        pos.bubble.href = `athlete.html?athleteId=${athlete.athleteId}&widthHint=900&heightHint=375`;
+        pos.bubble.href = `/pages/profile.html?id=${athlete.athleteId}&width=800&height=340`;
         pos.el.classList.toggle('watching', !!athlete.watching);
         pos.el.style.setProperty('--athletes', 1);
         let label;
@@ -167,12 +196,8 @@ function renderZoomed(groups) {
         let team;
         if (athlete.athlete) {
             const a = athlete.athlete;
-            team = a.team;  // hehehe
-            if (a.sanitizedName && a.sanitizedName.length) {
-                fLast = a.sanitizedName.length > 1 ?
-                    [a.sanitizedName[0][0], a.sanitizedName[1]].filter(x => x).join('. ') :
-                    fLast = a.sanitizedName[0];
-            }
+            team = a.team;  // lol
+            fLast = a.fLast;
             if (a.avatar) {
                 avatar = a.avatar;
             } else {
@@ -185,40 +210,36 @@ function renderZoomed(groups) {
             pos.bubble.innerHTML = `<img src="${avatar}"/>`;
         }
         const leftLines = [];
-        const attacker = settings.detectAttacks &&
-            athlete.state.power > 400 &&
-            (athlete.state.power / group.power) > 2;
-        if (attacker) {
+        if (isAttack(athlete.state.power, group.power)) {
             pos.el.classList.add('attn', 'attack');
-            leftLines.push(`<div class="line major attn">Attacking!</div>`);
+            leftLines.push(`<div class="line major attn">Attack!</div>`);
         } else {
             pos.el.classList.remove('attn', 'attack');
             if (fLast) {
                 leftLines.push(`<div class="line minor">${fLast}</div>`);
                 if (team) {
-                    const hue = common.badgeHue(team);
-                    leftLines.push(`<div class="badge" style="--hue: ${hue};">${team}</div>`);
+                    leftLines.push(common.teamBadge(team));
                 }
             }
         }
         //const athlete_power = athlete.state.power + athlete.state.draft;
-        const rightLines = [`<div class="line ">${pwrFmt(athlete.state.power)} ${athlete.state.draft}</div>`];
-        const mywbal = athlete.stats.power.wBal / athlete.athlete.wPrime;// * 100;
-        //rightLines.push(`<div class="line minor">${pwrFmt(athlete.state.power)}</div>`);
-        rightLines.push(`<div class="line">${common.fmtBattery(mywbal)}${H.number(mywbal*100)}%</div>`);
+        const priLine = primaryFmt({
+            power: athlete.state.power,
+            weight: athlete.athlete && athlete.athlete.weight
+        });
+        const rightLines = [`<div class="line">${priLine} ${athlete.state.draft}</div>`];
         const minorField = settings.zoomedSecondaryField || 'heartrate';
         if (minorField === 'heartrate') {
             if (athlete.state.heartrate) {
-                rightLines.push(`<div class="line minor">${H.number(athlete.state.heartrate)}<abbr class="unit">bpm</abbr></div>`);
+                rightLines.push(`<div class="line minor">${H.number(athlete.state.heartrate, {suffix: 'bpm', html: true})}</div>`);
             }
         } else if (minorField === 'draft') {
             if (athlete.state.draft != null) {
-           //     rightLines.push(`<div class="line minor">${H.number(athlete.state.draft)}<abbr class="unit">% (draft)</abbr></div>`);
+                rightLines.push(`<div class="line minor">${H.number(athlete.state.draft, {suffix: '% (draft)', html: true})}</div>`);
             }
         } else if (minorField === 'speed') {
             if (athlete.state.speed != null) {
-                const unit = imperial ? 'mph' : 'kph';
-                rightLines.push(`<div class="line minor">${H.pace(athlete.state.speed, {precision: 0})}<abbr class="unit">${unit}</abbr></div>`);
+                rightLines.push(`<div class="line minor">${H.pace(athlete.state.speed, {precision: 0, suffix: true, html: true})}</div>`);
             }
         } else if (minorField === 'power-60s') {
             const p = athlete.stats.power.smooth[60];
@@ -226,28 +247,34 @@ function renderZoomed(groups) {
                 rightLines.push(`<div class="line minor">${pwrFmt(p)} ` +
                     `<abbr class="unit">(1m)</abbr></div>`);
             }
+        } else if (minorField === 'wbal') {
+            const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
+            rightLines.push(`<div class="line">${common.fmtBattery(mywbal)}${H.number(mywbal*100)}%</div>`);
         }
+
         pos.leftLines.innerHTML = leftLines.join('');
         pos.leftDesc.classList.toggle('empty', !leftLines.length);
         pos.rightLines.innerHTML = rightLines.join('');
         pos.rightDesc.classList.toggle('empty', !rightLines.length);
-        let gap = next ? Math.abs(next[gapProp] - athlete[gapProp]) : 0;
-        if (gapField === 'distance') {
-            gap = Math.max(0, gap - bikeLength);
-        }
-        pos.gap.el.style.setProperty('--inner-gap', gap * flexFactor);
-        pos.gap.el.style.setProperty('--outer-gap', gap * flexFactor);
+        const gap = next ? Math.abs(next.gap - athlete.gap) : 0;
+        pos.gap.el.style.setProperty('--inner-gap', gap);
+        pos.gap.el.style.setProperty('--outer-gap', gap);
         pos.gap.el.style.setProperty('--gap-sign', -1);
         let dur;
         pos.gap.el.classList.toggle('real', true);
-        if (gapField === 'time') {
-            dur = gap && gap >= 0.5 && H.number(gap, {precision: 1}) + 's';
-        } else {
-            dur = gap && gap > bikeLength * 1.3 &&
-                (H.number(Math.max(0, gap) * (imperial ? 3.28084 : 1)) + (imperial ? 'ft' : 'm'));
+        if (gap) {
+            if (settings.zoomedGapField === 'time') {
+                dur = gap > 0.5 && (H.number(gap) + 's');
+            } else {
+                const gapDistance = Math.abs(next.gapDistance - athlete.gapDistance);
+                const units = imperial ? 'ft' : 'm';
+                dur = gapDistance && gapDistance > 2 &&
+                    (H.number(gapDistance * (imperial ? 3.28084 : 1)) + units);
+            }
         }
         pos.gap.leftLine.textContent = dur ? dur : '';
-        pos.gap.el.classList.toggle('alone', !dur);
+        pos.gap.el.classList.toggle('alone', !gap);
+        pos.gap.el.classList.toggle('has-label', !!dur);
         pos.actions.watch.classList.toggle('hidden', athlete.watching);
         if (!athlete.watching) {
             pos.watchTarget = athlete.athleteId;
@@ -277,11 +304,12 @@ function renderGroups(groups) {
     if (centerIdx === -1) {
         return;
     }
+    const primaryFmt = {
+        power: ({power}) => pwrFmt(power),
+        wkg: ({power, weight}) => weight ? wkgFmt(power / weight) : pwrFmt(power),
+    }[settings.groupsPrimaryField || 'power'];
     const totAthletes = groups.reduce((agg, x) => agg + x.athletes.length, 0);
-    const totGap = groups[groups.length - 1].gap - groups[0].gap;
-    const flexFactor = Math.min(1, 0.5 / 15);
     contentEl.style.setProperty('--total-athletes', totAthletes);
-    contentEl.style.setProperty('--total-gap', totGap * flexFactor);
     const athletesLabel = totAthletes === 1 ? 'Athlete' : 'Athletes';
     metaEl.innerHTML = `<div class="line">${totAthletes} ${athletesLabel}</div>`;
     const active = new Set();
@@ -308,11 +336,9 @@ function renderGroups(groups) {
         let label;
         let team;
         const leftLines = [];
-        const leftAvatars = [];
         const rightLines = [];
         if (group.athletes.length === 1 && group.athletes[0].athlete) {
-            const n = group.athletes[0].athlete.name;
-            label = n ? n.map(x => x[0].toUpperCase()).join('').substr(0, 2) : '1';
+            label = group.athletes[0].athlete.initials || '1';
             pos.el.classList.remove('attn', 'attack');
             if (group.athletes[0].athlete.team == watchingteam) {
                 team = watchingteam;
@@ -321,25 +347,21 @@ function renderGroups(groups) {
         } else {
             label = H.number(group.athletes.length);
             let max = -Infinity;
+            let weight;
             for (const x of group.athletes) {
                 const p = x.stats.power.smooth[5];
                 if (p > max) {
                     max = p;
                 }
-            if (x.athlete.team == watchingteam)
-                {
-                team = watchingteam;
-               // if(x.athlete.avatar) leftAvatars.push(`<img src="${x.athlete.avatar}"/>`);
+                // check if in group is a teammate
+                if (x.athlete.team == watchingteam) {
+                    team = watchingteam;
                 }
             }
-            const attacker = settings.detectAttacks &&
-                group.athletes.length > 1 &&
-                max > 400 &&
-                (max / group.power) > 2;
-            if (attacker) {
+            if (isAttack(max, group.power)) {
                 pos.el.classList.add('attn', 'attack');
-                leftLines.push(`<div class="line attn">Attacker!</div>`);
-                leftLines.push(`<div class="line minor attn">${pwrFmt(max)}</div>`);
+                leftLines.push(`<div class="line attn">Attack!</div>`);
+                leftLines.push(`<div class="line minor attn">${primaryFmt({power: max, weight})}</div>`);
             } else {
                 pos.el.classList.remove('attn', 'attack');
             }
@@ -348,23 +370,20 @@ function renderGroups(groups) {
         if (team) {
             const hue = common.badgeHue(team);
             leftLines.push(`<div class="badge" style="--hue: ${hue};">${team}</div>`);
-            //const cleftA = leftAvatars.join('');
-            //leftLines.push(`<div class="line minor avatar" style="right" >${cleftA}</div>`);
         }
-        rightLines.push(`<div class="line">${pwrFmt(group.power)}</div>`);
+        rightLines.push(`<div class="line">${primaryFmt(group)}</div>`);
         const minorField = settings.groupsSecondaryField || 'speed';
         if (minorField === 'heartrate') {
             if (group.heartrate) {
-                rightLines.push(`<div class="line minor">${H.number(group.heartrate)}<abbr class="unit">bpm</abbr></div>`);
+                rightLines.push(`<div class="line minor">${H.number(group.heartrate, {suffix: 'bpm', html: true})}</div>`);
             }
         } else if (minorField === 'draft') {
             if (group.draft != null) {
-                rightLines.push(`<div class="line minor">${H.number(group.draft)}<abbr class="unit">% (draft)</abbr></div>`);
+                rightLines.push(`<div class="line minor">${H.number(group.draft, {suffix: '% (draft)', html: true})}</div>`);
             }
         } else if (minorField === 'speed') {
             if (group.speed != null) {
-                const unit = imperial ? 'mph' : 'kph';
-                rightLines.push(`<div class="line minor">${H.pace(group.speed, {precision: 0})}<abbr class="unit">${unit}</abbr></div>`);
+                rightLines.push(`<div class="line minor">${H.pace(group.speed, {precision: 0, suffix: true, html: true})}</div>`);
             }
         } else if (minorField === 'power-highest') {
             const highest = sauce.data.max(group.athletes.map(x => x.state.power));
@@ -385,11 +404,12 @@ function renderGroups(groups) {
         pos.rightDesc.classList.toggle('empty', !rightLines.length);
         const innerGap = next ? group.innerGap : 0;
         const gap = relPos < 0 ? group.gap : next ? next.gap : 0;
-        pos.gap.el.style.setProperty('--inner-gap', innerGap * flexFactor);
-        pos.gap.el.style.setProperty('--outer-gap', Math.abs(gap) * flexFactor);
+        pos.gap.el.style.setProperty('--inner-gap', innerGap);
+        pos.gap.el.style.setProperty('--outer-gap', Math.abs(gap));
         pos.gap.el.style.setProperty('--gap-sign', gap > 0 ? 1 : -1);
         pos.gap.el.classList.toggle('real', !!next && !next.isGapEst);
         pos.gap.el.classList.toggle('alone', !innerGap);
+        pos.gap.el.classList.toggle('has-label', !!innerGap);
         const dur = innerGap && H.duration(Math.abs(gap), {short: true, seperator: ' '});
         pos.gap.leftLine.textContent = dur ? (gap > 0 ? '+' : '-') + dur : '';
         pos.actions.watch.classList.toggle('hidden', group.watching);
@@ -403,8 +423,9 @@ function renderGroups(groups) {
 }
 
 
-function setBackground({solidBackground, backgroundColor}) {
-    doc.classList.toggle('solid-background', solidBackground);
+function setBackground() {
+    const {solidBackground, backgroundColor} = settings;
+    doc.classList.toggle('solid-background', !!solidBackground);
     if (solidBackground) {
         doc.style.setProperty('--background-color', backgroundColor);
     } else {
@@ -412,46 +433,26 @@ function setBackground({solidBackground, backgroundColor}) {
     }
 }
 
-//document.getElementById("demo2").onclick = function() {main()};
 
 export async function main() {
-    //document.getElementById("demo2").innerHTML = "main start";
     common.initInteractionListeners();
     contentEl = document.querySelector('#content');
     metaEl = document.querySelector('#meta');
     containerEl = document.querySelector('#container');
     aheadEl = document.querySelector('#ahead');
     behindEl = document.querySelector('#behind');
-    settings = common.storage.get(settingsKey, {
-        detectAttacks: true,
-        maxAhead: 4,
-        maxBehind: 2,
-        maxZoomed: 8,
-        groupsSecondaryField: 'speed',
-        zoomedSecondaryField: 'draft',
-        zoomedGapField: 'distance',
-        solidBackground: false,
-        backgroundColor: '#00ff00',
-        refreshInterval: 2,
-    });
-    setBackground(settings);
     contentEl.querySelector('.zoom-out').addEventListener('click', ev => {
         zoomedPosition = null;
         common.storage.set('zoomedPosition', zoomedPosition);
         render();
     });
-    common.storage.addEventListener('update', ev => {
-        if (ev.data.key !== settingsKey) {
-            return;
+    common.settingsStore.addEventListener('changed', ev => {
+        const changed = ev.data.changed;
+        if (changed.has('/imperialUnits')) {
+            L.setImperial(imperial = changed.get('/imperialUnits'));
         }
-        settings = ev.data.value;
-        setBackground(settings);
+        setBackground();
         render();
-    });
-    common.storage.addEventListener('globalupdate', ev => {
-        if (ev.data.key === '/imperialUnits') {
-            L.setImperial(imperial = ev.data.value);
-        }
     });
     const gcs = await common.rpc.getGameConnectionStatus();
     if (gcs) {
@@ -472,11 +473,10 @@ export async function main() {
             render();
         }
     });
-   // document.getElementById("demo2").innerHTML = "main done";
 }
 
 
 export async function settingsMain() {
     common.initInteractionListeners();
-    await common.initSettingsForm('form', {settingsKey})();
+    await common.initSettingsForm('form')();
 }
