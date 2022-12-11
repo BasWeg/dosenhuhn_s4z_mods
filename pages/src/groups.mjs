@@ -1,18 +1,9 @@
 var mypath = '../../../../pages';
-/*
-if (!window.isElectron)
-{
-    var mypath = '../../../../pages';
-}
-else
-{
-    var mypath = '/media/projekte/node/sauce4zwift/pages';
-//    document.getElementById("demo2").innerHTML = electron.remote.app.getAppPath();
-}
-*/
-const sauce = await import(`${mypath}/src/../../shared/sauce/index.mjs`);
-const common = await import(`${mypath}/src/common.mjs`);
 
+// const sauce = await import(`${mypath}/src/../../shared/sauce/index.mjs`);
+// const common = await import(`${mypath}/src/common.mjs`);
+const sauce = await import(`/pages/src/../../shared/sauce/index.mjs`);
+const common = await import(`/pages/src/common.mjs`);
 const L = sauce.locale;
 const H = L.human;
 const positions = new Map();

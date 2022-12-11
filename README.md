@@ -15,13 +15,11 @@ Included Mods:
 --------
 <img src="assets/images/DH_Mods_Overview.png"/>
 
-### wbal event update
-<img src="assets/images/event_update_wbal.PNG"/>
+### wprime and cp update
+<img src="assets/images/wbal_cp_update.PNG"/>
 
-This window will fetch the wprime and cp data for the given `<eventid>` of all registered riders from `https://www.zwiftracing.app/events/<eventid>`
-
-### wbal team update
-<img src="assets/images/team_update_wbal.PNG"/>
-
-This window will fetch the wprime and cp data for the given `<teamid>` of all team-riders from `https://www.zwiftracing.app/clubs/<teamid>`
+This window will fetch the wprime and cp data for either 
+- `<teamid>` of all registered riders from `https://www.zwiftracing.app/clubs/<teamid>`
+- `<eventid>` of all registered riders from `https://www.zwiftracing.app/events/<eventid>`
+- local json file with following structure:
 
