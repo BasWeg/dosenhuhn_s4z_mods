@@ -22,4 +22,16 @@ This window will fetch the wprime and cp data for either
 - `<teamid>` of all registered riders from `https://www.zwiftracing.app/clubs/<teamid>`
 - `<eventid>` of all registered riders from `https://www.zwiftracing.app/events/<eventid>`
 - local json file with following structure:
-
+```
+[
+  {
+    "name": "<Name>", 
+    "athleteId": <ZwiftId>, 
+    "wPrime":<wprime_in_joule>, 
+    "cp":<cp_in_watt>
+  },
+  {
+    ...
+  }
+]
+```
