@@ -15,7 +15,7 @@ Included Mods:
 --------
 <img src="assets/images/DH_Mods_Overview.png"/>
 
-### wprime and cp update
+#### wprime and cp update
 <img src="assets/images/wbal_cp_update.PNG"/>
 
 This window will fetch the wprime and cp data for either 
@@ -35,3 +35,9 @@ This window will fetch the wprime and cp data for either
   }
 ]
 ```
+
+#### groups
+The groups mod shows the team badge from the watched rider and teammates left of the bubbles. In zoomed view it will always show as first line <power> or <power/kg> and draft. For the second line it is possible to choose wBal.
+
+<img src="assets/images/groups_settings.PNG"/>
+<img src="assets/images/groups_zoomed.PNG"/>
