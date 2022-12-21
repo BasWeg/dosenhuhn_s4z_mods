@@ -6,7 +6,8 @@
     "website_url": "https://www.wattfabrik.org",
     "version": "0.0.4",
     "web_root": "pages",
-    "windows": [{
+    "windows": [
+    {
         "file": "pages/wbal_update.html",
         "id": "dosenhuhn-wbal-update",
         "name": "DH MOD - wPrime and cp update",
@@ -32,6 +33,21 @@
         "default_bounds": {
             "width": 300,
             "height": 800,
+            "x": -300,
+            "y": 100
+        }
+    },    
+    {
+        "file": "pages/zam.html",
+        "id": "dosenhuhn-zam",
+        "name": "DH MOD - zam",
+        "description": "zwift activity like",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 400,
+            "height": 400,
             "x": -300,
             "y": 100
         }
