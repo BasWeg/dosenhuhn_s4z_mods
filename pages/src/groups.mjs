@@ -191,7 +191,7 @@ function renderZoomed(groups) {
         pos.el.classList.toggle('watching', !!athlete.watching);
         pos.el.style.setProperty('--athletes', 1);
         let label;
-        let avatar = 'images/blankavatar.png';
+        let avatar = '/pages/images/blankavatar.png';
         let fLast;
         let team;
         if (athlete.athlete) {

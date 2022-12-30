@@ -425,6 +425,7 @@ export async function main() {
     chartRefs.add(new WeakRef(chart));
 
     let colors;
+    let powerZones;
     let distance = null;
     let altitude = null;
     let incline = 0;
@@ -436,13 +437,20 @@ export async function main() {
             athleteId = watching.athleteId;
             distance = null;
             altitude = null;
-            colors = common.getPowerZoneColors(watching.powerZones);
+            colors = null;
+            powerZones = null;
+            //console.log(watching);
+            common.rpc.getPowerZones(1).then(zones =>{ powerZones = zones; colors = common.getPowerZoneColors(powerZones)});
+            //console.log(powerZones);
+            //colors = common.getPowerZoneColors(powerZones);
         }
         if (!colors) {
             return;
         }
+      //  console.log(colors);
+      //  console.log(powerZones);
         sport = watching.state.sport || 'cycling';
-        console.log(watching);
+        //console.log(watching);
         const altitude_new = (watching.state.altitude - 9000) / 2;
         if (!distance || ! altitude)
         {
