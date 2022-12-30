@@ -1,0 +1,191 @@
+html.solid-background {
+  background: var(--background-color);
+}
+html.solid-background body {
+  background: transparent !important;
+}
+html.solid-background table thead {
+  background: var(--background-color);
+}
+
+html:not(.overlay-mode) .overlay-only {
+  display: none !important;
+}
+
+html {
+  font-size: 4mm;
+}
+
+html:not(.game-connection) table td .link[data-id=watch] {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+table {
+  border-collapse: collapse;
+}
+table abbr.unit {
+  font-size: 0.82em;
+  opacity: 0.8;
+  margin-left: 0.1em;
+}
+table thead {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  background-image: linear-gradient(to bottom, hsla(var(--theme-bg-hue), var(--theme-bg-sat), calc(var(--theme-bg-light) + (-10% * var(--theme-bg-shade-dir))), 100%), hsla(var(--theme-bg-hue), var(--theme-bg-sat), calc(var(--theme-bg-light) + (0% * var(--theme-bg-shade-dir))), 100%));
+}
+table thead td {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  font-weight: normal;
+  font-variant: all-small-caps;
+  white-space: nowrap;
+  font-weight: 700;
+}
+table thead td:hover {
+  background-color: rgba(153, 51, 85, 0.3333333333);
+}
+table thead td[data-id=avatar] {
+  text-align: center;
+}
+table thead td[data-id=avatar] img.fa {
+  filter: invert(0.9);
+  width: 1.2em;
+  margin-bottom: -0.3em;
+  display: inline-block;
+}
+table thead td ms.sort-asc,
+table thead td ms.sort-desc {
+  display: none;
+  font-size: 2em;
+  line-height: 0.5;
+}
+table thead td.sorted.sort-asc ms.sort-asc, table thead td.sorted.sort-desc ms.sort-desc {
+  display: inline;
+}
+table thead td.sorted {
+  background-color: rgba(0, 51, 51, 0.2);
+}
+table tr {
+  --dom-index: 0;
+  --data-index: 0;
+  --height: 2.6em;
+  height: var(--height);
+  transition: background 100ms;
+}
+table tr.hiding {
+  background-color: rgba(186, 188, 1, 0.8705882353);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+table tr.watching {
+  background-image: linear-gradient(135deg, hsla(var(--theme-primary-hue), var(--theme-primary-sat), var(--theme-primary-light), 85%), hsla(var(--theme-primary-hue), var(--theme-primary-sat), calc(var(--theme-primary-light) + (-10% * var(--theme-primary-shade-dir))), 80%));
+  color: hsla(var(--theme-primary-hue), var(--theme-primary-sat), calc(var(--theme-primary-light) + (100% * var(--theme-primary-shade-dir))), 100%);
+}
+table tr.hidden {
+  display: none;
+}
+table tr:hover td {
+  background-color: rgba(51, 51, 51, 0.2);
+}
+table td {
+  transition: background 100ms;
+  text-align: left;
+  padding: 0.18em 0.3em;
+  font-variant: tabular-nums;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-user-select: text;
+  user-select: text;
+}
+table td[data-id=name], table td[data-id=f-last], table td[data-id=team], table td[data-id=group], table td[data-id=event], table td[data-id=route] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: clamp(8ch, 16ch, 18vw);
+}
+table td[data-id=team] {
+  max-width: clamp(6ch, 14ch, 14vw);
+}
+table td[data-id=avatar] {
+  text-align: center;
+}
+table td[data-id=avatar] a.avatar {
+  display: inline-block;
+  border: 1px solid #333;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid transparent;
+  transition: border 100ms;
+  vertical-align: middle;
+}
+table td[data-id=avatar] a.avatar:hover {
+  border-color: rgba(0, 136, 238, 0.8);
+}
+table td[data-id=avatar] a.avatar img {
+  height: 1.7em;
+  width: 1.7em;
+  object-fit: cover;
+}
+table td[data-id=nation] img {
+  height: 1em;
+}
+table td[data-id=weight-class] {
+  white-space: nowrap;
+  font-variant-numeric: normal;
+}
+table td[data-id=gap] {
+  white-space: nowrap;
+}
+table td .badge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.15em;
+}
+table td .badge.category {
+  font-variant: none;
+  font-size: 0.86em;
+  padding: 0.2em 0.26em 0.1em;
+  margin-right: 0.5em;
+}
+table td.sorted {
+  background-color: rgba(0, 51, 51, 0.1333333333);
+}
+table td .link {
+  transition: opacity 200ms;
+  display: inline-block;
+  margin-left: 0.1em;
+  margin-top: -0.2em;
+  margin-bottom: -0.1em;
+}
+table td .link:hover ms {
+  opacity: 1 !important;
+}
+table td .link ms {
+  font-size: 1.2em;
+  opacity: 0;
+}
+table tr:hover .link ms {
+  opacity: 0.7;
+}
+
+#content {
+  scroll-behavior: smooth;
+  padding: 0;
+  overflow: auto;
+  overflow: overlay;
+  position: relative;
+  font-size: calc(var(--font-scale) * 1em);
+}
+
+.autoscroll table tr.watching {
+  scroll-snap-align: center;
+}
+.autoscroll #content {
+  scroll-snap-type: y proximity;
+}
+
+/*# sourceMappingURL=nearby.css.map */
