@@ -1,14 +1,11 @@
-import * as sauce from '/pages/src/../../shared/sauce/index.mjs';
 import * as common from '/pages/src/common.mjs';
 
 
 const doc = document.documentElement;
-const L = sauce.locale;
-const H = L.human;
-const num = H.number;
-const fieldsKey = 'dosenhuhn_pzc_settings_v1';
-let eventSite = common.storage.get('/externalEventSite', 'zwift');
-let fieldStates;
+
+// const fieldsKey = 'dosenhuhn_pzc_settings_v1';
+// let eventSite = common.storage.get('/externalEventSite', 'zwift');
+// let fieldStates;
 
 let gameConnection;
 
@@ -32,11 +29,11 @@ export async function main() {
     //common.initNationFlags();  // bg okay
     document.body.style.setProperty('background-color', "black");
     doc.style.setProperty('--background-color', "black");
-    doc.classList.toggle('solid-background', true);
-    let refresh;
-    const setRefresh = () => {
-        refresh = (common.settingsStore.get('refreshInterval') || 0) * 1000 - 100; // within 100ms is fine.
-    };
+    // doc.classList.toggle('solid-background', true);
+    // let refresh;
+    // const setRefresh = () => {
+    //     refresh = (common.settingsStore.get('refreshInterval') || 0) * 1000 - 100; // within 100ms is fine.
+    // };
     const gcs = await common.rpc.getGameConnectionStatus();
 
     gameConnection = !!(gcs && gcs.connected);
@@ -53,7 +50,7 @@ export async function main() {
             await common.rpc.reopenWindow(window.electron.context.id);
         }
         if (changed.has('refreshInterval')) {
-            setRefresh();
+         //   setRefresh();
         }  
 
         render();
@@ -62,7 +59,7 @@ export async function main() {
 
     common.storage.addEventListener('globalupdate', ev => {
         if (ev.data.key === '/exteranlEventSite') {
-            eventSite = ev.data.value;
+           // eventSite = ev.data.value;
         }
     });
 
@@ -78,8 +75,8 @@ export async function main() {
         }
     });
     
-    setRefresh();
-    let lastRefresh = 0;
+    // setRefresh();
+    // let lastRefresh = 0;
     let athleteId;
     
     let colors;
@@ -121,32 +118,27 @@ function render() {
 }
 
 
-let frames = 0;
-
-
-
-
-export async function settingsMain() {
-    common.initInteractionListeners();
-    fieldStates = common.storage.get(fieldsKey);
-    const form = document.querySelector('form#fields');
-    form.addEventListener('input', ev => {
-        const id = ev.target.name;
-        fieldStates[id] = ev.target.checked;
-        common.storage.set(fieldsKey, fieldStates);
-    });
-    for (const {fields, label} of fieldGroups) {
-        form.insertAdjacentHTML('beforeend', [
-            '<div class="field-group">',
-                `<div class="title">${label}:</div>`,
-                ...fields.map(x => `
-                    <label title="${common.sanitizeAttr(x.tooltip || '')}">
-                        <key>${x.label}</key>
-                        <input type="checkbox" name="${x.id}" ${fieldStates[x.id] ? 'checked' : ''}/>
-                    </label>
-                `),
-            '</div>'
-        ].join(''));
-    }
-    await common.initSettingsForm('form#options')();
-}
+// export async function settingsMain() {
+//     common.initInteractionListeners();
+//     fieldStates = common.storage.get(fieldsKey);
+//     const form = document.querySelector('form#fields');
+//     form.addEventListener('input', ev => {
+//         const id = ev.target.name;
+//         fieldStates[id] = ev.target.checked;
+//         common.storage.set(fieldsKey, fieldStates);
+//     });
+//     for (const {fields, label} of fieldGroups) {
+//         form.insertAdjacentHTML('beforeend', [
+//             '<div class="field-group">',
+//                 `<div class="title">${label}:</div>`,
+//                 ...fields.map(x => `
+//                     <label title="${common.sanitizeAttr(x.tooltip || '')}">
+//                         <key>${x.label}</key>
+//                         <input type="checkbox" name="${x.id}" ${fieldStates[x.id] ? 'checked' : ''}/>
+//                     </label>
+//                 `),
+//             '</div>'
+//         ].join(''));
+//     }
+//     await common.initSettingsForm('form#options')();
+// }
