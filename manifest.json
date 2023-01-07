@@ -4,9 +4,10 @@
     "description": "A MOD collection for S4Z",
     "author": "Bastian Wegener",
     "website_url": "https://www.wattfabrik.org",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "web_root": "pages",
-    "windows": [{
+    "windows": [
+    {
         "file": "pages/wbal_update.html",
         "id": "dosenhuhn-wbal-update",
         "name": "DH MOD - wPrime and cp update",
@@ -32,6 +33,111 @@
         "default_bounds": {
             "width": 300,
             "height": 800,
+            "x": -300,
+            "y": 100
+        }
+    },
+    {
+        "file": "pages/nearby.html",
+        "id": "dosenhuhn-nearby",
+        "name": "DH MOD - nearby",
+        "description": "change of nearby window to show (watching) teams",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 800,
+            "height": 800,
+            "x": -300,
+            "y": 100
+        }
+    },  
+    {
+        "file": "pages/zam.html",
+        "id": "dosenhuhn-zam",
+        "name": "DH MOD - zam",
+        "description": "zwift activity like",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 400,
+            "height": 400,
+            "x": -300,
+            "y": 100
+        }
+    },    
+    {
+        "file": "pages/averages.html",
+        "id": "dosenhuhn-averages",
+        "name": "DH MOD - averages",
+        "description": "display averages collectors",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 400,
+            "height": 400,
+            "x": -300,
+            "y": 100
+        }
+    },    
+    {
+        "file": "pages/states.html",
+        "id": "dosenhuhn-states",
+        "name": "DH MOD - states",
+        "description": "display actual states",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 400,
+            "height": 400,
+            "x": -300,
+            "y": 100
+        }
+    },
+    {
+        "file": "pages/gradient.html",
+        "id": "dosenhuhn-gradient",
+        "name": "DH MOD - gradient",
+        "description": "display actual gradient",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 400,
+            "height": 400,
+            "x": -300,
+            "y": 100
+        }
+    },  
+    {
+        "file": "pages/powerdist.html",
+        "id": "dosenhuhn-powerdist",
+        "name": "DH MOD - powerdist",
+        "description": "display powerdistribution chart",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 400,
+            "height": 400,
+            "x": -300,
+            "y": 100
+        }
+    },    
+    {
+        "file": "pages/powercolor.html",
+        "id": "dosenhuhn-powercolor",
+        "name": "DH MOD - powercolor",
+        "description": "display color based on power",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 400,
+            "height": 400,
             "x": -300,
             "y": 100
         }

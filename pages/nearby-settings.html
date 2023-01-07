@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html class="settings-page" tabindex="0" data-settings-key="nearby-settings-v3">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';"/>
+
+        <title>Nearby Athletes - Settings - Sauce for Zwift™</title>
+
+        <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
+        <link rel="stylesheet" href="/pages/css/common.css"/>
+        <style>
+            form#fields {
+                display: flex;
+                flex-wrap: wrap;
+                flex-direction: row;
+                align-items: stretch;
+            }
+
+            form#fields .title {
+                flex: 1 0 100%;
+            }
+
+            form#fields .field-group {
+                background: #3333;
+                padding: 1em 1.5em;
+                margin: 1em;
+                border-radius: 0.28em;
+                flex: 1 1 0;
+            }
+
+            form#fields .field-group label {
+                justify-content: space-between;
+            }
+        </style>
+
+        <script type="module">
+            import {settingsMain} from './src/nearby.mjs';
+            settingsMain();
+        </script>
+    </head>
+    <body>
+        <div id="titlebar">
+            <header>
+                <div class="logo"><img src="/pages/images/icon128.png"/></div>
+                <div class="title">Nearby Athletes - Settings</div>
+                <div class="filler"></div>
+                <div class="buttons">
+                    <div title="Close this window" class="button close electron-only"><ms>close</ms></div>
+                </div>
+            </header>
+        </div>
+        <div id="settings">
+            <form id="options" class="section">
+                <div class="title">Window Settings</div>
+                <label>
+                    <key>Refresh interval:</key>
+                    <input type="number" min="0" step="1" name="refreshInterval"/> <small>(seconds)</small>
+                </label>
+                <label title="Keep the athlete being watched scrolled into view except when you manually scroll out of range">
+                    <key>Auto scroll athlete:</key>
+                    <input type="checkbox" name="autoscroll"/>
+                </label>
+                <label class="electron-only" title="Overlay mode will keep the nearby window on top of other windows and make it frameless">
+                    <key>Overlay mode:</key>
+                    <input type="checkbox" name="overlayMode"/>
+                </label>
+                <label>
+                    <key>Font scaling:</key>
+                    <input type="range" name="fontScale" min="0.5" max="2" step="0.1"/>
+                    <input type="number" name="fontScale" min="0.5" max="2" step="0.1" style="--size: 5"/>
+                </label>
+                <label title="Filter the list to only show athletes you've marked">
+                    <key>Only marked athletes:</key>
+                    <input type="checkbox" name="onlyMarked"/>
+                </label>
+                <label title="Filter the list to only show athletes in the same category as you">
+                    <key>Only same category:</key>
+                    <input type="checkbox" name="onlySameCategory"/>
+                </label>
+                <label title="Filter the list to only show athletes from the same team as you">
+                    <key>Only same team:</key>
+                    <input type="checkbox" name="onlySameTeam"/>
+                </label>                
+                <label title="Which external site to load event details in">
+                    <key>Event details site:</key>
+                    <select name="/externalEventSite">
+                        <option value="zwift">Zwift</option>
+                        <option value="zwiftpower">Zwift Power</option>
+                    </select>
+                </label>
+                <label>
+                    <key>Imperial units</key>
+                    <input type="checkbox" name="/imperialUnits"/>
+                </label>
+                <label>
+                    <key>Theme override:</key>
+                    <select is="sauce-theme" override></select>
+                </label>
+                <label title="Mostly useful for streamers using OBS window and browser sources">
+                    <key>Solid background:</key>
+                    <input type="checkbox" name="solidBackground"/>
+                </label>
+                <label>
+                    <key>Background color:</key>
+                    <input type="color" name="backgroundColor" data-depends-on="solidBackground"/>
+                    <input type="text" name="backgroundColor" data-depends-on="solidBackground" size="7"/>
+                </label>
+            </form>
+            <form id="fields" class="section">
+                <div class="title">Field Settings</div>
+            </form>
+        </div>
+    </body>
+</html>

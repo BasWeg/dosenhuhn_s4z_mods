@@ -1,8 +1,4 @@
-var mypath = '../../../../pages';
-
-// const sauce = await import(`${mypath}/src/../../shared/sauce/index.mjs`);
-// const common = await import(`${mypath}/src/common.mjs`);
-const sauce = await import(`/pages/src/../../shared/sauce/index.mjs`);
+//const sauce = await import(`/pages/src/../../shared/sauce/index.mjs`);
 const common = await import(`/pages/src/common.mjs`);
 const page = location.pathname.split('/').at(-1).split('.')[0];
 console.log(page);
@@ -19,19 +15,6 @@ async function myFunction() {
     return;
 }
 
-async function myRefresh(type){
-    //teamid = document.getElementById("teamNumber").value;
-    if (type == "wbal_tupdate") {
-        queue = await doFetchTeamData(document.getElementById("teamNumber").value);
-    } else {
-        queue = await doFetchEventData(document.getElementById("eventNumber").value);
-    } 
-
-    return;
-} 
-
-
-
   function generateTable(data) {
     const table = document.querySelector('#content table');
     const tbody = table.querySelector('tbody');
@@ -40,7 +23,7 @@ async function myRefresh(type){
     let idx = 0;
     for (const element of data) {
         _html += `<tr><td style="text-align: center; width: 50px;">${++idx}</td>`
-        const values = Object.values(element).forEach(val => {
+        Object.values(element).forEach(val => {
         _html += `<td style="text-align: center; width: 100px;">${val}</td>`;
       });
       _html += '</tr>'
@@ -142,9 +125,9 @@ async function doFetchEventData(event){
      
     url = `https://dosenhuhn.de/get_event.php?event=${event}`;
     document.getElementById("demo").innerHTML = "Fetching data from zwiftracing...";
-    let tname = "";
     let myjson = await fetch(url).then(response=>response.json());
     console.log(JSON.stringify(myjson));
+    // eslint-disable-next-line no-prototype-builtins
     if (!myjson.hasOwnProperty('message')){ 
         for (let pen of myjson){
             // valid data - get teamname from 1st rider
