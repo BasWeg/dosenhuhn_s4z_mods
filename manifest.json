@@ -96,7 +96,22 @@
             "x": -300,
             "y": 100
         }
-    },    
+    },
+    {
+        "file": "pages/gradient.html",
+        "id": "dosenhuhn-gradient",
+        "name": "DH MOD - gradient",
+        "description": "display actual gradient",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 400,
+            "height": 400,
+            "x": -300,
+            "y": 100
+        }
+    },  
     {
         "file": "pages/powerdist.html",
         "id": "dosenhuhn-powerdist",

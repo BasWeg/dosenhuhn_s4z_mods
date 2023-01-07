@@ -13,7 +13,8 @@ L.setImperial(imperial);
 // let fieldStates;
 
 let gameConnection;
-
+const page = location.pathname.split('/').at(-1).split('.')[0];
+//console.log(page);
 
 
   
@@ -32,6 +33,7 @@ const spd = (v, entry) => H.pace(v, {precision: 0, suffix: false, html: true, sp
 const pwr = v => v ? num(v)+ '<br>' + unit('W') : '-';
 const hr = v => v ? num(v)+ '<br>' + unit('bpm') : '-';
 const grad = v => num(v)+ '<br>' + unit('%');
+const grad_v2 = v => num(v) + unit('%');
 //const kj = (v, options) => v != null ? num(v, options) + unit('kJ') : '-';
 // const wbal =  (x, entry) => (x != null && entry.athlete && entry.athlete.wPrime) ?
 //                 common.fmtBattery(x / entry.athlete.wPrime) + kj(x / 1000, {precision: 1}) : '-';
@@ -146,7 +148,7 @@ export async function main() {
       //  console.log(powerZones);
         //sport = watching.state.sport || 'cycling';
         //console.log(watching);
-        const altitude_new = (watching.state.altitude - 9000) / 2;
+        const altitude_new = (watching.state.courseId == 6) ? (watching.state.altitude - 9000) / 2 : (watching.state.altitude - 9000) / 1;
         if (!distance || !altitude)
         {
             distance = watching.state.distance;
@@ -158,12 +160,16 @@ export async function main() {
             distance = watching.state.distance;
             altitude = altitude_new;
         }
-
-        document.getElementById('act_speed').innerHTML = spd(watching.state.speed,watching);
-        document.getElementById('act_pwr').innerHTML = (gradient > 3.4) ? fmtWkg(watching.state.power,watching) : pwr(watching.state.power);
-        document.getElementById('act_wbal').innerHTML = wbalpct(watching.stats.power.wBal,watching); 
-        document.getElementById('act_hr').innerHTML = hr(watching.state.heartrate);   
-        document.getElementById('act_grd').innerHTML = grad(gradient);   
+        if(page == 'states'){ 
+            document.getElementById('act_speed').innerHTML = spd(watching.state.speed,watching);
+            document.getElementById('act_pwr').innerHTML = (gradient > 3.4) ? fmtWkg(watching.state.power,watching) : pwr(watching.state.power);
+            document.getElementById('act_wbal').innerHTML = wbalpct(watching.stats.power.wBal,watching); 
+            document.getElementById('act_hr').innerHTML = hr(watching.state.heartrate);
+            document.getElementById('act_grd').innerHTML = grad(gradient);             
+        } else {
+            document.getElementById('act_grd').innerHTML = grad_v2(gradient);
+        } 
+          
 
 
         //update_chart(watching.stats.power.timeInZones || []);

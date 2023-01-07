@@ -294,7 +294,7 @@ function renderGroups(groups) {
     
     const groupCenterIdx = groups.findIndex(x => x.watching);
     const athleteIndex = groups[groupCenterIdx].athletes.findIndex(x => x.watching);
-    const watchingteam = groups[groupCenterIdx].athletes[athleteIndex].athlete.team;
+    const watchingteam = groups[groupCenterIdx].athletes[athleteIndex].athlete.team ?? NaN;
 
     const ahead = Math.max(0, centerIdx - (settings.maxAhead || 3));
     const end = Math.min(groups.length, centerIdx + (settings.maxBehind || 3) + 1);
@@ -354,7 +354,9 @@ function renderGroups(groups) {
                     max = p;
                 }
                 // check if in group is a teammate
-                if (x.athlete.team == watchingteam) {
+                console.log(x);
+                x.athlete ??= {};
+                if ((x.athlete.team ?? null) === watchingteam) {
                     team = watchingteam;
                 }
             }

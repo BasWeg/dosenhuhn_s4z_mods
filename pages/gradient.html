@@ -6,7 +6,7 @@
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';"/>
 
-        <title>Mod: states</title>
+        <title>Mod: gradient</title>
 
         <script type="module">
             import {main} from './src/states.mjs';
@@ -18,18 +18,29 @@
             }     
             body {
                 overflow: hidden !important; /* Hide scrollbars */  
-            }             
+            }
+            .unit {
+                font-size: calc(1rem + 10vw);
+                vertical-align: text-bottom;
+            }
+            #act_grd{
+                display: flex;
+                justify-content: center; /* align horizontal */
+                align-items: center; /* align vertical */
+                font-size: calc(2rem + 40vw);
+                height: 100%;
+            }           
         </style>
         <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
         <link rel="stylesheet" href="/pages/css/common.css"/>
-        <link rel="stylesheet" href="/pages/css/nearby.css"/>
+
         
     </head>
     <body>
         <div id="titlebar">
             <header>
                 <div class="logo"><img src="/pages/images/icon128.png"/></div>
-                <div class="title">MOD: actual states</div>
+                <div class="title">MOD: gradient</div>
                 <div class="filler"></div>
                 <div class="buttons">
                     <div title="Minimize" class="button minimize electron-only"><ms>minimize</ms></div>
@@ -37,29 +48,8 @@
                 </div>
             </header>
         </div>
-        <div id="content">
-            <table id="table" style="width: 100%;">
-                <thead style="width: 100%; font-variant: all-small-caps;">
-                    <tr>
-                        <th style="width: 20%;">GRD</th>
-                        <th style="width: 20%;">PWR</th>
-                        <th style="width: 20%;">HR</th>
-                        <th style="width: 20%;">SPD</th>
-                        <th style="width: 20%;">W'bal</th>
-                    </tr>
-                </thead>
-
-                <tbody style="width: 100%;">
-                    <tr>
-                        <td style="width: 20%; font-size: calc(100% + 2vw);" id="act_grd"></td>
-                        <td style="width: 20%; font-size: calc(100% + 2vw);" id="act_pwr"></td>
-                        <td style="width: 20%; font-size: calc(100% + 2vw);" id="act_hr"></td>                        
-                        <td style="width: 20%; font-size: calc(100% + 2vw);" id="act_speed"></td>
-                        <td style="width: 20%; font-size: calc(100% + 2vw);" id="act_wbal"></td>                        
-                     </tr>
-                                                                 
-                </tbody>
-            </table>
+        <div id="act_grd">
+            
         </div>
         <div id="hintbar">
             <div class="hint"></div>
