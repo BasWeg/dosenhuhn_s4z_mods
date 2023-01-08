@@ -21,6 +21,7 @@ const doc = document.documentElement;
 
 common.settingsStore.setDefault({
     detectAttacks: true,
+    hideHeader: false,
     maxAhead: 4,
     maxBehind: 2,
     maxZoomed: 8,
@@ -354,7 +355,7 @@ function renderGroups(groups) {
                     max = p;
                 }
                 // check if in group is a teammate
-                console.log(x);
+               // console.log(x);
                 x.athlete ??= {};
                 if ((x.athlete.team ?? null) === watchingteam) {
                     team = watchingteam;
@@ -426,13 +427,15 @@ function renderGroups(groups) {
 
 
 function setBackground() {
-    const {solidBackground, backgroundColor} = settings;
+    const {solidBackground, backgroundColor, hideHeader} = settings;
     doc.classList.toggle('solid-background', !!solidBackground);
     if (solidBackground) {
         doc.style.setProperty('--background-color', backgroundColor);
     } else {
         doc.style.removeProperty('--background-color');
     }
+    const metaEl = document.querySelector('#meta');
+    metaEl.style = (hideHeader) ? 'visibility:hidden' : 'visibility:visible';
 }
 
 
@@ -453,6 +456,7 @@ export async function main() {
         if (changed.has('/imperialUnits')) {
             L.setImperial(imperial = changed.get('/imperialUnits'));
         }
+        
         setBackground();
         render();
     });
