@@ -144,20 +144,19 @@ export async function main() {
             altitude = null;
         }
 
-      //  console.log(colors);
-      //  console.log(powerZones);
-        //sport = watching.state.sport || 'cycling';
-        //console.log(watching);
         const altitude_new = (watching.state.courseId == 6) ? (watching.state.altitude - 9000) / 2 : (watching.state.altitude - 9000) / 1;
+        const distance_new = watching.state.distance;
+
         if (!distance || !altitude)
         {
-            distance = watching.state.distance;
+            gradient = 0;
+            distance = distance_new;
             altitude = altitude_new;
         }
-        else if ((watching.state.distance - distance) > 5)
+        else if (Math.abs(distance_new - distance) > 5)
         {
-            gradient = ((altitude_new - altitude) / (watching.state.distance - distance));
-            distance = watching.state.distance;
+            gradient = ((altitude_new - altitude) / Math.abs(distance_new - distance));
+            distance = distance_new
             altitude = altitude_new;
         }
         if(page == 'states'){ 
