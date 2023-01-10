@@ -3,7 +3,7 @@ import * as common from '/pages/src/common.mjs';
 //import * as echarts from '/pages/deps/src/echarts.mjs';
 const [echarts, theme] = await Promise.all([
     import('/pages/deps/src/echarts.mjs'),
-    import('/pages/src//echarts-sauce-theme.mjs'),
+    import('/pages/src/echarts-sauce-theme.mjs'),
 ]);
 
 const doc = document.documentElement;
