@@ -435,7 +435,9 @@ function setBackground() {
         doc.style.removeProperty('--background-color');
     }
     const metaEl = document.querySelector('#meta');
-    metaEl.style = (hideHeader) ? 'visibility:hidden' : 'visibility:visible';
+    if (metaEl) {
+        metaEl.style = (hideHeader) ? 'visibility:hidden' : 'visibility:visible';
+    }
 }
 
 
