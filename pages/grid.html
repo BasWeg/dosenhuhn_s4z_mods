@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html tabindex="0" data-settings-key="dosenhuhn_grid_settings_v1">
+<html class="" tabindex="0" data-settings-key="dosenhuhn_grid_settings_v1">
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
@@ -56,10 +56,19 @@
   .iframe {
     overflow: hidden;
     vertical-align: top;
+    border: none; 
+    width: 100%; 
+    height: 100%;
   } 
   .rounded {
     border-radius: 10px;
   }
+  html.solid-background {
+  background: var(--background-color);
+}
+html.solid-background body {
+  background: transparent !important;
+}
                                     
         </style>
         <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
@@ -75,6 +84,8 @@
                 <div class="title">MOD: grid</div>
                 <div class="filler"></div>
                 <div class="buttons">
+                    <a class="button open-settings" href="./grid-settings.html?width=380&height=720&child-window"
+                    title="Open settings window" target="grid-settings"><ms>settings</ms></a>
                     <div title="Minimize" class="button minimize electron-only"><ms>minimize</ms></div>
                     <div title="Close this window" class="button close electron-only"><ms>close</ms></div>
                 </div>
