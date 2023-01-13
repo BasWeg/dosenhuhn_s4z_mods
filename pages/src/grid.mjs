@@ -171,20 +171,20 @@ export async function main() {
 
     setBackground();
 
-    common.settingsStore.addEventListener('changed', ev => {
-        const changed = ev.data.changed;
-        if (changed.size === 1) {
-            if (changed.has('backgroundColor')) {
-                setBackground();
-            } else if (changed.has('/imperialUnits')) {
-                imperial = changed.get('/imperialUnits');
-            } else if (!changed.has('/theme')) {
-                location.reload();
-            }
-        } else {
-            location.reload();
-        }
-    });
+    // common.settingsStore.addEventListener('changed', ev => {
+    //     const changed = ev.data.changed;
+    //     if (changed.size === 1) {
+    //         if (changed.has('backgroundColor')) {
+    //             setBackground();
+    //         } else if (changed.has('/imperialUnits')) {
+    //             imperial = changed.get('/imperialUnits');
+    //         } else if (!changed.has('/theme')) {
+    //             location.reload();
+    //         }
+    //     } else {
+    //         location.reload();
+    //     }
+    // });
     
     // setRefresh();
     // let lastRefresh = 0;
@@ -280,7 +280,7 @@ function setBackground() {
                     const z = powerZones[i];
                     if (value > z.from && value <= z.to) {
 //                        document.body.style.setProperty('background-color', colors[z.zone]);
-                        doc.style.setProperty('background-color', colors[z.zone]);
+                        doc.style.setProperty('--background-color', colors[z.zone]);
                         break;
                     }
                 }        
@@ -288,7 +288,7 @@ function setBackground() {
         }
         else
         {
-            doc.style.setProperty('background-color', backgroundColor);
+            doc.style.setProperty('--background-color', backgroundColor);
         }
     } else {
         doc.style.removeProperty('--background-color');
