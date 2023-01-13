@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html class="" tabindex="0" data-settings-key="dosenhuhn-watching-grid-settings-v1">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';"/>
+
+        <title>Currently Watching - Sauce for Zwift™</title>
+        <script src="./src/gridstack-all.js"></script>
+        <script type="module">
+            import {main} from './src/watching-grid.mjs';
+            main();
+        </script>
+
+        <link rel="manifest" href="watching-manifest.json"/>
+        <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
+        <link rel="stylesheet" href="/pages/css/common.css"/>
+        <link rel="stylesheet" href="./css/watching-grid.css"/>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/7.1.2/gridstack.min.css" rel="stylesheet"/>
+    </head>
+    <body>
+        <div id="titlebar" class="">
+            <header>
+                <div class="logo"><img src="/pages/images/icon128.png"/></div>
+                <div class="title">MOD: Currently Watching Grid</div>
+                <div class="filler"></div>
+                <div class="buttons">
+                    <a class="button open-settings" href="./watching-settings.html?width=380&height=720&child-window"
+                       title="Open settings window" target="watching-settings"><ms>settings</ms></a>
+                    <div title="Minimize" class="button minimize electron-only"><ms>minimize</ms></div>
+                    <div title="Close this window" class="button close electron-only"><ms>close</ms></div>
+                </div>
+            </header>
+            <div class="button-bar">
+                <div class="button prev-screen" title="Previous screen (Ctrl+Shift+Left)"><img src="/pages/images/fa/caret-left-regular.svg"/></div>
+                <div class="button reset" title="Reset (Ctrl+Shift+R)"><img src="/pages/images/fa/undo-regular.svg"/></div>
+                <div class="button lap" title="Lap (Ctrl+Shift+L)"><img src="/pages/images/fa/stopwatch-regular.svg"/></div>
+                <div class="button next-screen" title="Next screen (Ctrl+Shift+Right)"><img src="/pages/images/fa/caret-right-regular.svg"/></div>
+            </div>
+        </div>
+        <div class="button-bar fixed">
+            <div class="button prev-screen" title="Previous screen (Ctrl+Shift+Left)"><img src="/pages/images/fa/caret-left-regular.svg"/></div>
+            <div class="button reset" title="Reset (Ctrl+Shift+R)"><img src="/pages/images/fa/undo-regular.svg"/></div>
+            <div class="button lap" title="Lap (Ctrl+Shift+L)"><img src="/pages/images/fa/stopwatch-regular.svg"/></div>
+            <div class="button next-screen" title="Next screen (Ctrl+Shift+Right)"><img src="/pages/images/fa/caret-right-regular.svg"/></div>
+        </div>
+        <div id="content" class="grid-stack"></div>
+        <div id="hintbar">
+            <div class="hint"></div>
+        </div>
+    </body>
+</html>
