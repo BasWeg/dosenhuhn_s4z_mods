@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html class="settings-page" tabindex="0" data-settings-key="dosenhuhn-watching-grid-settings-v1">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';"/>
+
+        <title>Currently Watching - Settings - Sauce for Zwift™</title>
+
+        <link id="favicon" rel="shortcut icon" href="images/favicon.png"/>
+        <link rel="stylesheet" href="/pages/css/common.css"/>
+        <link rel="stylesheet" href="/pages/css/watching.css"/>
+
+        <script type="module">
+            import {settingsMain} from './src/watching-grid.mjs';
+            settingsMain();
+        </script>
+    </head>
+    <body>
+        <div id="titlebar">
+            <header>
+                <div class="logo"><img src="/pages/images/icon128.png"/></div>
+                <div class="title">Currently Watching - Settings</div>
+                <div class="filler"></div>
+                <div class="buttons">
+                    <div title="Close this window" class="button close electron-only"><ms>close</ms></div>
+                </div>
+            </header>
+        </div>
+        <div id="settings">
+            <form id="general" class="section">
+                <div class="title">General</div>
+                <label title="Prevent fields from rotating when clicked">
+                    <key>Lock fields:</key>
+                    <input type="checkbox" name="lockedFields"/>
+                </label>
+                <label title="Always show the button bar">
+                    <key>Always show buttons:</key>
+                    <input type="checkbox" name="alwaysShowButtons"/>
+                </label>
+                <label>
+                    <key>Theme override:</key>
+                    <select is="sauce-theme" override></select>
+                </label>
+                <label title="Mostly useful for streamers using OBS window and browser sources">
+                    <key>Solid background:</key>
+                    <input type="checkbox" name="solidBackground"/>
+                </label>
+                <label>
+                    <key>Background color:</key>
+                    <input type="color" name="backgroundColor" data-depends-on="solidBackground"/>
+                    <input type="text" name="backgroundColor" data-depends-on="solidBackground" size="7"/>
+                </label>
+            </form>
+
+            <div id="screens" class="section">
+                <div class="title">Layout</div>
+
+                <main>
+                    <div class="title">Screen <span class="sIndex">1</span> of <span class="sLen">1</span></div>
+                    <header>
+                        <div class="button-group">
+                            <div class="button disabled" title="Previous screen" data-action="prev">
+                                <img class="fa" src="/pages/images/fa/caret-left-regular.svg"/>
+                            </div>
+                            <div class="button disabled" title="Delete this screen" data-action="delete">
+                                <img class="fa" src="/pages/images/fa/times-circle-duotone.svg"/>
+                            </div>
+                            <div class="button" title="Add new screen" data-action="add">
+                                <img class="fa" src="/pages/images/fa/plus-square-duotone.svg"/>
+                            </div>
+                            <div class="button disabled" title="Next screen" data-action="next">
+                                <img class="fa" src="/pages/images/fa/caret-right-regular.svg"/>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div class="active-screen"></div>
+
+                    <label class="add-section">
+                        <key>Add Section:</key>
+                        <select name="type"></select>
+                        <input type="button" value="Add"/>
+                    </label>
+                </main>
+            </div>
+        </div>
+    </body>
+</html>

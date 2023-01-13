@@ -131,20 +131,20 @@ export async function main() {
     });
     setBackground();
 
-    common.settingsStore.addEventListener('changed', ev => {
-        const changed = ev.data.changed;
-        if (changed.size === 1) {
-            if (changed.has('backgroundColor')) {
-                setBackground();
-            } else if (changed.has('/imperialUnits')) {
-                imperial = changed.get('/imperialUnits');
-            } else if (!changed.has('/theme')) {
-                location.reload();
-            }
-        } else {
-            location.reload();
-        }
-    });
+    // common.settingsStore.addEventListener('changed', ev => {
+    //     const changed = ev.data.changed;
+    //     if (changed.size === 1) {
+    //         if (changed.has('backgroundColor')) {
+    //             setBackground();
+    //         } else if (changed.has('/imperialUnits')) {
+    //             imperial = changed.get('/imperialUnits');
+    //         } else if (!changed.has('/theme')) {
+    //             location.reload();
+    //         }
+    //     } else {
+    //         location.reload();
+    //     }
+    // });
     
     //setRefresh();
     let athleteId;
