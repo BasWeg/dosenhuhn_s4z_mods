@@ -6,7 +6,7 @@ const doc = document.documentElement;
 const L = sauce.locale;
 const H = L.human;
 const num = H.number;
-const fieldsKey = 'dosenhuhn_states_settings_v1';
+//const fieldsKey = 'dosenhuhn_states_settings_v1';
 let imperial = common.storage.get('/imperialUnits');
 L.setImperial(imperial);
 
@@ -26,6 +26,11 @@ common.settingsStore.setDefault({
     fontScale: 1,
     solidBackground: false,
     backgroundColor: '#00ff00',
+    showSuperHint: false,
+    blinkSuper: false,
+    blinkValue : false,
+    showSlope: false,
+    smoothCount: 3,
 });
 
 const worldCourseDescs = [
@@ -83,8 +88,11 @@ function fmtWkg(v, entry) {
 }
 
 
+
 export async function main() {
     common.initInteractionListeners();
+    let settings = common.settingsStore.get();
+    let smoothCount = common.settingsStore.get('smoothCount') || 3;
     //common.initNationFlags();  // bg okay
   
     // let refresh;
@@ -99,6 +107,7 @@ export async function main() {
         gameConnection = gcs.connected;
         doc.classList.toggle('game-connection', gameConnection);
     }, {source: 'gameConnection'});
+
     common.settingsStore.addEventListener('changed', async ev => {
         const changed = ev.data.changed;
         if (changed.has('solidBackground') || changed.has('backgroundColor')) {
@@ -109,19 +118,21 @@ export async function main() {
                 {overlay: changed.get('overlayMode')});
             await common.rpc.reopenWindow(window.electron.context.id);
         }
-        if (changed.has('refreshInterval')) {
-            // setRefresh();
-        }  
+        console.log(changed);
+        if (changed.has('showSlope')) {
+            showSlope();
+        }
+        if (changed.has('showSuperHint') || changed.has('blinkSuper') || changed.has('blinkValue')) {
+            settings = common.settingsStore.get();
+        }
+        if (changed.has('smoothCount')) {
+            smoothCount = changed.get('smoothCount');
+        }        
 
         render();
         
     });
-    common.storage.addEventListener('update', async ev => {
-        if (ev.data.key === fieldsKey) {
-            //fieldStates = ev.data.value;
-            render();
-        }
-    });
+
     common.storage.addEventListener('globalupdate', ev => {
         if (ev.data.key === '/imperialUnits') {
             L.setImperial(imperial = ev.data.value);
@@ -130,22 +141,8 @@ export async function main() {
         }
     });
     setBackground();
+    showSlope();
 
-    common.settingsStore.addEventListener('changed', ev => {
-        const changed = ev.data.changed;
-        if (changed.size === 1) {
-            if (changed.has('backgroundColor')) {
-                setBackground();
-            } else if (changed.has('/imperialUnits')) {
-                imperial = changed.get('/imperialUnits');
-            } else if (!changed.has('/theme')) {
-                location.reload();
-            }
-        } else {
-            location.reload();
-        }
-    });
-    
     // setRefresh();
     // let lastRefresh = 0;
     let athleteId;
@@ -154,25 +151,31 @@ export async function main() {
     let altitude = null;
     let gradient = 0;
     let gradient_arr = [0];
-
+    let speed_arr = [0];
+    
     common.subscribe('athlete/watching', watching => {
         if (watching.athleteId !== athleteId) {
             athleteId = watching.athleteId;
             gradient_arr = [0];
+            speed_arr = [0];
             distance = null;
             altitude = null;
         }
         
         const scaling = worldCourseDescs.find(a=>a.courseId==watching.state.courseId).scaling || 1;
-        const altitude_new =  (watching.state.altitude - 9000) * scaling;
+        const altitude_new =  (watching.state.altitude) * scaling;  //  - 9000
         
-        // console.log("scaling: " + scaling);
-        // const altitude_new = (watching.state.courseId == 6) ? altitude_to_scale * 0.5  :
-        //                      (watching.state.courseId == 8) ? altitude_to_scale * 0.75 : altitude_to_scale *1;
-        //const distance_new = watching.state.distance;
         const distance_new = watching.state.eventDistance;
+        
+
         //console.log("course: " + watching.state.courseId);
         if (!distance || !altitude)
+        {
+            gradient = 0;
+            distance = distance_new;
+            altitude = altitude_new;
+        }
+        else if (Math.abs(distance_new - distance) > 500)
         {
             gradient = 0;
             distance = distance_new;
@@ -182,16 +185,19 @@ export async function main() {
         {
             gradient = ((altitude_new - altitude) / Math.abs(distance_new - distance));
             gradient_arr.push(gradient);
+            speed_arr.push(watching.state.speed);
             distance = distance_new
             altitude = altitude_new;
         }
-        if (gradient_arr.length > 3)
+        console.log(smoothCount);
+        while (gradient_arr.length > smoothCount)
         {
             gradient_arr.shift();
+            speed_arr.shift();
         }
         //console.log(gradient_arr);
         const gradient_average = gradient_arr.reduce((a, b) => a + b, 0) / gradient_arr.length;
-        //console.log(gradient_average);
+        const speed_average = speed_arr.reduce((a, b) => a + b, 0) / speed_arr.length;
 
         if(page == 'states'){ 
             document.getElementById('act_speed').innerHTML = spd(watching.state.speed,watching);
@@ -202,12 +208,9 @@ export async function main() {
                       
         } else {
             document.getElementById('act_grd').innerHTML = grad_v2(gradient_average);
-           // console.log(grad_v2(gradient)+ ' ' + gradient);   
+            setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue);
         } 
-          
-
-
-        //update_chart(watching.stats.power.timeInZones || []);
+        setGradientColor(gradient_average);
     });    
 }
 
@@ -215,6 +218,49 @@ export async function main() {
 
 function render() {
 
+}
+
+function setSuperTuck(gradient, speed, boShow, boblinkSuper, boblinkValue) {
+    const super_dom = document.getElementById('super_svg') || false;
+    if (boShow)
+    {    
+        if ((gradient < -3) && (speed > 58))
+        {
+            if(super_dom) document.getElementById('super_svg').classList.toggle('boblinkSuper', !!boblinkSuper);
+            document.getElementById('act_grd').classList.toggle('boblinkValue', !!boblinkValue);
+        }
+        else
+        {
+            if(super_dom) document.getElementById('super_svg').classList.toggle('boblinkSuper', false);
+            document.getElementById('act_grd').classList.toggle('boblinkValue', false);
+        }
+    }
+    else
+    {
+        if(super_dom) document.getElementById('super_svg').classList.toggle('boblinkSuper', false);
+        document.getElementById('act_grd').classList.toggle('boblinkValue', false);        
+    }
+}
+
+function setGradientColor(gradient) {
+    if (gradient >= 10)
+    {
+        document.getElementById('act_grd').style.setProperty('color', 'red');
+    }  
+    else if (gradient > 6)
+    {
+        document.getElementById('act_grd').style.setProperty('color', 'orange');
+    }
+    else if (gradient >= 3)
+    {
+        document.getElementById('act_grd').style.setProperty('color', 'yellow');
+    }
+    else
+    {
+        document.getElementById('act_grd').style.removeProperty('color');
+    }
+
+    
 }
 
 function setBackground() {
@@ -227,28 +273,21 @@ function setBackground() {
     }
 }
 
+function showSlope() {
+    console.log (common.settingsStore.get());
+    const {showSlope} = common.settingsStore.get();
+    if (!document.getElementById('slope')) return;
+    if (showSlope) {
+        document.getElementById('slope').style.removeProperty('visibility');
+    } else {
+        document.getElementById('slope').style.setProperty('visibility', 'hidden');
+    }
+}
 
-// export async function settingsMain() {
-//     common.initInteractionListeners();
-//     fieldStates = common.storage.get(fieldsKey);
-//     const form = document.querySelector('form#fields');
-//     form.addEventListener('input', ev => {
-//         const id = ev.target.name;
-//         fieldStates[id] = ev.target.checked;
-//         common.storage.set(fieldsKey, fieldStates);
-//     });
-//     for (const {fields, label} of fieldGroups) {
-//         form.insertAdjacentHTML('beforeend', [
-//             '<div class="field-group">',
-//                 `<div class="title">${label}:</div>`,
-//                 ...fields.map(x => `
-//                     <label title="${common.sanitizeAttr(x.tooltip || '')}">
-//                         <key>${x.label}</key>
-//                         <input type="checkbox" name="${x.id}" ${fieldStates[x.id] ? 'checked' : ''}/>
-//                     </label>
-//                 `),
-//             '</div>'
-//         ].join(''));
-//     }
-//     await common.initSettingsForm('form#options')();
-// }
+
+export async function settingsMain() {
+    common.initInteractionListeners();
+    await common.initSettingsForm('form#general')();
+    //await initWindowsPanel();
+}
+

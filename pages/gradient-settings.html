@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html class="settings-page" tabindex="0" data-settings-key="dosenhuhn_grid_settings_v1">
+<html class="settings-page" tabindex="0" data-settings-key="dosenhuhn_gradient_settings_v1">
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';"/>
 
-        <title>DH Mod Grid - Settings</title>
+        <title>DH Mod Gradient - Settings</title>
 
         <link id="favicon" rel="shortcut icon" href="images/favicon.png"/>
         <link rel="stylesheet" href="/pages/css/common.css"/>
         <link rel="stylesheet" href="/pages/css/watching.css"/>
 
         <script type="module">
-            import {settingsMain} from './src/grid.mjs';
+            import {settingsMain} from './src/states.mjs';
             settingsMain();
         </script>
     </head>
@@ -21,7 +21,7 @@
         <div id="titlebar">
             <header>
                 <div class="logo"><img src="/pages/images/icon128.png"/></div>
-                <div class="title">Mod: Grid - Settings</div>
+                <div class="title">Mod: Gradient - Settings</div>
                 <div class="filler"></div>
                 <div class="buttons">
                     <div title="Close this window" class="button close electron-only"><ms>close</ms></div>
@@ -44,40 +44,30 @@
                     <input type="color" name="backgroundColor" data-depends-on="solidBackground"/>
                     <input type="text" name="backgroundColor" data-depends-on="solidBackground" size="7"/>
                 </label>
+            <hr/>
                 <label>
-                    <key>Background color based on PowerZone:</key>
-                    <input type="checkbox" name="backgroundPowerZone" data-depends-on="solidBackground"/>
+                    <key>Show slope icon:</key>
+                    <input type="checkbox" name="showSlope"/>
                 </label>
-            </form>
-
-            <form id="windows" class="section tab">
-                <div class="title">Active Windows:</div>
-
-                <table class="active-windows">
-                    <thead><tr><th>Name</th><th>x</th><th>y</th><th>w</th><th>h</th><th></th></tr></thead>
-                    <tbody></tbody>
-                </table>
-
-                <div class="add-new">
-                    <div class="title">Add new window:</div>
-                    <select name="type"></select>
-                    <input type="button" value="Create"/>
-                </div>
-
+                <label>
+                    <key>Enable supertuck hint:</key>
+                    <input type="checkbox" name="showSuperHint"/>
+                </label>
+                <label>
+                    <key>by flashing icon:</key>
+                    <input type="checkbox" name="blinkSuper" data-depends-on="showSuperHint"/>
+                </label>
+                <label>
+                    <key>by flashing value:</key>
+                    <input type="checkbox" name="blinkValue" data-depends-on="showSuperHint"/>
+                </label>  
                 <hr/>
-
-                <div class="title">Profiles:</div>
-                <table class="profiles">
-                    <thead><tr><th>Name</th><th>Windows</th><th></th><th></th><th></th><th></th></tr></thead>
-                    <tbody></tbody>
-                </table>
-                <div class="action-buttons">
-                    <div class="std small button" data-action="profile-create">Create new profile</div>
-                    <div class="std small button" data-action="profile-import">Import from file</div>
-                </div>
-
-                <hr/>
+                <label>
+                    <key>gradient average over x values:</key>
+                    <input type="number" min="1" max="10" step="1" name="smoothCount"/>
+                </label>                                                              
             </form>
+           
         </div>
     </body>
 </html>

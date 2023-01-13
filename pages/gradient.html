@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html tabindex="0" data-settings-key="dosenhuhn_states_settings_v1">
+<html tabindex="0" data-settings-key="dosenhuhn_gradient_settings_v1">
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
@@ -17,19 +17,93 @@
                 text-align: center !important;
             }     
             body {
-                overflow: hidden !important; /* Hide scrollbars */  
+                overflow: hidden !important; /* Hide scrollbars */
             }
             .unit {
                 font-size: calc(1rem + 10vw);
-                vertical-align: text-bottom;
             }
+            .boblinkValue {
+                animation: blinkval 0.2s infinite alternate;
+            }
+
             #act_grd{
                 display: flex;
-                justify-content: center; /* align horizontal */
-                align-items: center; /* align vertical */
+                justify-content: center;
+                align-items: baseline;
                 font-size: calc(2rem + 40vw);
-                height: 100%;
-            }           
+                font-weight: 800;
+                /* height: 50%; */
+                /* vertical-align: bottom; */                
+            }
+            #super{
+                /* position: absolute; */
+                align-items: center;
+                width: 90%;
+                /* height: 100%; */
+                display: flex;
+                align-items: center;
+                /* justify-content: center; */
+                /* flex-direction: column; */
+            }
+            #super_svg{
+                position: absolute;
+                /* align-items: center; */
+                /* width: 90%; */
+                /* height: 100%; */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                /* align-content: space-around; */
+                padding-left: 5%;
+                padding-right: 5%;
+                padding-bottom: 5%;
+                z-index: 999;
+                visibility: hidden;
+            } 
+            .boblinkSuper {
+                animation: change 0.2s infinite alternate;
+                visibility: visible !important;
+            }            
+            #slope {
+                position: absolute;
+                /* align-items: center; */
+                /* width: 90%; */
+                /* height: 100%; */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                /* align-content: space-around; */
+                padding-left: 5%;
+                padding-right: 5%;
+                padding-bottom: 5%;
+            }      
+            #slope {
+                fill: grey;
+                opacity: 0.2;
+            }        
+
+              
+            @keyframes change {
+                from {
+                    opacity: 0.1;
+                }
+                to {
+                    fill: #f06d06;
+                    opacity: 1;
+                }
+                }
+            @keyframes blinkval {
+                from {
+                    opacity: 0.1;
+                }
+                to {
+                    opacity: 1;
+                }
+                }                
+              
+   
         </style>
         <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
         <link rel="stylesheet" href="/pages/css/common.css"/>
@@ -43,13 +117,43 @@
                 <div class="title">MOD: gradient</div>
                 <div class="filler"></div>
                 <div class="buttons">
+                    <a class="button open-settings" href="./gradient-settings.html?width=380&height=720&child-window"
+                    title="Open settings window" target="grid-settings"><ms>settings</ms></a>                    
                     <div title="Minimize" class="button minimize electron-only"><ms>minimize</ms></div>
                     <div title="Close this window" class="button close electron-only"><ms>close</ms></div>
                 </div>
             </header>
         </div>
-        <div id="act_grd">
-            
+        <div id="content">
+            <div id="act_grd" class="">0<abbr class="unit">%</abbr>
+            </div>
+            <div id="super">
+                <svg id="super_svg" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                viewBox="0 0 63.748 63.748" xml:space="preserve">
+                    <g>
+                        <g id="super_img">
+                            <circle  cx="49.362" cy="24.063" r="4.38"/>
+                            <path  d="M61.136,27.761c-4.73,1.212-9.496,2.252-14.295,3.13c-0.019-0.297-0.066-0.604-0.152-0.92
+                                c-0.963-3.468-6.215-4.583-7.489-5.088c0.819-0.891,1.638-1.781,2.457-2.671c1.832-1.99-1.132-4.968-2.97-2.97
+                                c-1.501,1.633-3.004,3.267-4.506,4.899c-0.856,0.931-0.842,2.68,0.426,3.297c0.704,0.343,1.424,0.657,2.149,0.96
+                                c-4.802,1.433-7.063,1.619-7.169,1.627c-9.448,0.816-17.768,1.551-27.216,2.368c-3.347,0.289-3.065,5.498,0.309,5.207
+                                c5.61-0.483,11.221-0.972,16.831-1.454c-5.143,1.29-10.287,2.581-15.429,3.869C0.8,40.837,2.192,45.9,5.477,45.077
+                                c6.599-1.653,32.015-7.385,36.833-9.18c6.711-1.043,13.36-2.399,19.942-4.088C64.875,31.136,63.762,27.088,61.136,27.761z"/>
+                            <g>
+                                <path  d="M32.806,27.891c-0.334-0.421-0.565-0.927-0.671-1.485c-0.044-0.234-0.048-0.472-0.048-0.708
+                                    l-0.051-0.072l-31.101-4.9l3.774,9.927l24.747-2.139C29.523,28.508,30.604,28.412,32.806,27.891z"/>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+                <svg id="slope" viewbox="0 0 400 100">
+                    <g >
+                       <path d="M0,100 L400,100 V0 z"/>   
+                    </g>
+                  </svg>                
+            </div>
+
+        </div>
         </div>
         <div id="hintbar">
             <div class="hint"></div>
