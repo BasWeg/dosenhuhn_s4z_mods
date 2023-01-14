@@ -84,7 +84,9 @@
         .toggleEdit {
             color: red;
         }
-
+        ms[heavy]:hover {
+            animation: 1s alert-color-flash infinite;
+        }
                                     
         </style>
 
@@ -100,10 +102,10 @@
                 <div class="buttons">
                     <div id="add-new" class="add-new" style="padding-right:20px">
                         <select name="type"></select>
-                        <a title="add widget" data-action="addWidget"><ms>add</ms></a>
+                        <a class="button" title="add widget" data-action="addWidget"><ms>add</ms></a>
                     </div>
             
-                    <a title="Edit View"
+                    <a class="button" title="Edit View"
                     data-action="toggleEdit" id="toggleEditBtn" class=""
                     href><ms>edit</ms></a>                    
                     <a class="button open-settings" href="./grid-settings.html?width=380&height=720&child-window"

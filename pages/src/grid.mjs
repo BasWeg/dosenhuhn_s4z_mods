@@ -194,7 +194,7 @@ grid.on('dragstop', function (event, el) {
                     id: desc.type+'-'+Date.now(),
                     bounds: {
                         w: 1,
-                        h: 2,
+                        h: 4,
                     },
                 }
                 const newgrid = grid.addWidget({
@@ -241,7 +241,7 @@ async function render(grid,widgetArray,toggleEdit) {
                             w: mywidget.bounds.w,
                             h: mywidget.bounds.h, 
                             id: mywidget.id, 
-                            content:  `<div class="edit_mode"><span>${mywidget.prettyName}</span><div class"buttons"><a title="remove element" data-action="remove" data-id="${mywidget.id}"><ms>delete</ms></a></div></div>`
+                            content:  `<div class="edit_mode"><span>${mywidget.prettyName}</span><div class"buttons"><a title="remove element" data-action="remove" data-id="${mywidget.id}"><ms heavy>delete</ms></a></div></div>`
                         }); //'<div class="move-icon"><ms>settings</ms></div>'+
         }
         const manifests = await common.rpc.getWindowManifests();
