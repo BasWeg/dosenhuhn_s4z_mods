@@ -4,7 +4,7 @@
     "description": "A MOD collection for S4Z",
     "author": "Bastian Wegener",
     "website_url": "https://www.wattfabrik.org",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "web_root": "pages",
     "windows": [
     {
@@ -144,9 +144,24 @@
     },    
     {
         "file": "pages/watching-grid.html",
-        "id": "dosenhuhn-watching",
-        "name": "DH MOD - watching",
-        "description": "watching",
+        "id": "dosenhuhn-watching-grid",
+        "name": "DH MOD - watching grid",
+        "description": "watching grid view",
+        "always_visible": true,
+        "overlay": true,
+        "frame": false,
+        "default_bounds": {
+            "width": 400,
+            "height": 400,
+            "x": -300,
+            "y": 100
+        }
+    },    
+    {
+        "file": "pages/grid.html",
+        "id": "dosenhuhn-grid",
+        "name": "DH MOD - grid",
+        "description": "grid view for http access only",
         "always_visible": true,
         "overlay": true,
         "frame": false,
