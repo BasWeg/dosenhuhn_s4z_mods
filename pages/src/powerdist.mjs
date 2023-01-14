@@ -209,3 +209,10 @@ function setBackground() {
         doc.style.removeProperty('--background-color');
     }
 }
+
+export async function settingsMain() {
+    common.initInteractionListeners();
+    await common.initSettingsForm('form#general')();
+    //await initWindowsPanel();
+}
+
