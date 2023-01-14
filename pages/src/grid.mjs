@@ -171,7 +171,13 @@ export async function main() {
     });
 
     setBackground();
-
+    if (window.isElectron) {
+        const el = document.getElementById('content');
+        console.log(el);
+        el.innerHTML = "This is a browser only window!";
+        return;
+    }
+    
     // common.settingsStore.addEventListener('changed', ev => {
     //     const changed = ev.data.changed;
     //     if (changed.size === 1) {
