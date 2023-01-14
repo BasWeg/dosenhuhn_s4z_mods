@@ -9,11 +9,12 @@
         <title>Mod: grid</title>
         <script src="./src/gridstack-all.js"></script>
         <script type="module">
-
-            //el.attr('id', 'act_grd');
            import {main} from './src/grid.mjs';
            main();            
         </script>
+        <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
+        <link rel="stylesheet" href="/pages/css/common.css"/>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/7.1.2/gridstack.min.css" rel="stylesheet"/>        
         <style>
             table td {
                 text-align: center !important;
@@ -21,6 +22,12 @@
             body {
                 overflow: hidden !important; /* Hide scrollbars */  
             } 
+            html.solid-background {
+                background: var(--background-color);
+            }
+            html.solid-background body {
+                background: transparent !important;
+            }
             .unit {
                 font-size: calc(1em);
                 vertical-align: text-bottom;
@@ -63,17 +70,10 @@
   .rounded {
     border-radius: 10px;
   }
-  html.solid-background {
-  background: var(--background-color);
-}
-html.solid-background body {
-  background: transparent !important;
-}
+
                                     
         </style>
-        <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
-        <link rel="stylesheet" href="/pages/css/common.css"/>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/7.1.2/gridstack.min.css" rel="stylesheet"/>
+
 
         
     </head>

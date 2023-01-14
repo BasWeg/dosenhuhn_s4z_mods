@@ -16,85 +16,86 @@ let gameConnection;
 const page = location.pathname.split('/').at(-1).split('.')[0];
 //console.log(page);
 
+// const default_widget_array = [
+//     {
+//         id: 'overview_0',
+//         type: 'overview',
+//         content: '<iframe class="iframe rounded" src="../../../pages/overview.html?windowId=overview"  title="overview" style=" border: none; width: 100%;height: 100%"></iframe>',
+//         bonds: {
+//             x: 0,
+//             y: 0,
+//             w: 12,
+//             h: 2
+//         },        
+//     },
+//     {
+//         id: 'states_0',
+//         x: 0,
+//         y: 2,
+//         w: 3,
+//         h: 7,
+//         content: '<iframe class="iframe rounded" src="./states.html?windowId=states" style="border:none;width: 100%; height: 100%;" title="states"></iframe>'
+//     },
+//     {
+//         id: 'watching_2023',
+//         x: 3,
+//         y: 2,
+//         w: 3,
+//         h: 7,
+//         content: '<iframe class="iframe rounded" src="../../../pages/watching.html?windowId=watch_chart" style="border:none;width: 100%; height: 100%;" title="watch"></iframe>'
+//     },
+//     {
+//         id: 'powerdist_2023',
+//         x: 6,
+//         y: 2,
+//         w: 3,
+//         h: 7,
+//         content: '<iframe  class="iframe rounded" src="./powerdist.html?windowId=watch_powerin" style="border:none;width: 100%; height: 100%;" ></iframe>'
+//     },
+//     {
+//         id: 'averages_2023',
+//         x: 9,
+//         y: 2,
+//         w: 3,
+//         h: 7,
+//         content: '<iframe class="iframe rounded" src="./averages.html?windowsId=averages" style="border:none;width: 100%; height: 100%;" ></iframe>'
+//     },
+//     {
+//         "type": "dosenhuhn_s4z_mods-dosenhuhn-nearby",
+//         "file": "/mods/dosenhuhn_s4z_mods/pages/nearby.html",
+//         "groupTitle": "[MOD]: DosenHuhn MODs for S4Z",
+//         "prettyName": "DH MOD - nearby",
+//         "prettyDesc": "change of nearby window to show (watching) teams",
+//         "overlay": true,
+//         "id": "user-dosenhuhn_s4z_mods-dosenhuhn-nearby-1673094536036-889544",
+//         "bounds": {
+//             x: 0,
+//             y: 9,
+//             w: 8,
+//             h: 10,
+//         },
+//         content: '<iframe class="iframe rounded" src="./nearby.html?windowId=nearby_left" title="nearby" style=" border: none; width: 100%; height: 100%"></iframe>'
+//     },
+//     {
+//         id: 'groups_0',
+//         x: 8,
+//         y: 9,
+//         w: 2,
+//         h: 10,
+//         content: '<iframe class="iframe rounded" src="./groups.html?windowId=groups_left" title="description" style="border:none;width: 100%; height: 100%" ></iframe>'
+//     },                        
+//     {
+//         id: 'groups_1',
+//         x: 10,
+//         y: 9,
+//         w: 2,
+//         h: 10,
+//         content: '<iframe class="iframe rounded" src="./groups.html?windowId=groups_right" title="zoomed" style="border:none;width: 100%; height: 100%;" ></iframe>'
+//     }, 
+// ];
+
+
 const default_widget_array = [
-    {
-        id: 'overview_0',
-        type: 'overview',
-        content: '<iframe class="iframe rounded" src="../../../pages/overview.html?windowId=overview"  title="overview" style=" border: none; width: 100%;height: 100%"></iframe>',
-        bonds: {
-            x: 0,
-            y: 0,
-            w: 12,
-            h: 2
-        },        
-    },
-    {
-        id: 'states_0',
-        x: 0,
-        y: 2,
-        w: 3,
-        h: 7,
-        content: '<iframe class="iframe rounded" src="./states.html?windowId=states" style="border:none;width: 100%; height: 100%;" title="states"></iframe>'
-    },
-    {
-        id: 'watching_2023',
-        x: 3,
-        y: 2,
-        w: 3,
-        h: 7,
-        content: '<iframe class="iframe rounded" src="../../../pages/watching.html?windowId=watch_chart" style="border:none;width: 100%; height: 100%;" title="watch"></iframe>'
-    },
-    {
-        id: 'powerdist_2023',
-        x: 6,
-        y: 2,
-        w: 3,
-        h: 7,
-        content: '<iframe  class="iframe rounded" src="./powerdist.html?windowId=watch_powerin" style="border:none;width: 100%; height: 100%;" ></iframe>'
-    },
-    {
-        id: 'averages_2023',
-        x: 9,
-        y: 2,
-        w: 3,
-        h: 7,
-        content: '<iframe class="iframe rounded" src="./averages.html?windowsId=averages" style="border:none;width: 100%; height: 100%;" ></iframe>'
-    },
-    {
-        "type": "dosenhuhn_s4z_mods-dosenhuhn-nearby",
-        "file": "/mods/dosenhuhn_s4z_mods/pages/nearby.html",
-        "groupTitle": "[MOD]: DosenHuhn MODs for S4Z",
-        "prettyName": "DH MOD - nearby",
-        "prettyDesc": "change of nearby window to show (watching) teams",
-        "overlay": true,
-        "id": "user-dosenhuhn_s4z_mods-dosenhuhn-nearby-1673094536036-889544",
-        "bounds": {
-            x: 0,
-            y: 9,
-            w: 8,
-            h: 10,
-        },
-        content: '<iframe class="iframe rounded" src="./nearby.html?windowId=nearby_left" title="nearby" style=" border: none; width: 100%; height: 100%"></iframe>'
-    },
-    {
-        id: 'groups_0',
-        x: 8,
-        y: 9,
-        w: 2,
-        h: 10,
-        content: '<iframe class="iframe rounded" src="./groups.html?windowId=groups_left" title="description" style="border:none;width: 100%; height: 100%" ></iframe>'
-    },                        
-    {
-        id: 'groups_1',
-        x: 10,
-        y: 9,
-        w: 2,
-        h: 10,
-        content: '<iframe class="iframe rounded" src="./groups.html?windowId=groups_right" title="zoomed" style="border:none;width: 100%; height: 100%;" ></iframe>'
-    }, 
-];
-  
-const new_widget_array = [
     {
         type: "dosenhuhn_s4z_mods-dosenhuhn-nearby",
         file: "/mods/dosenhuhn_s4z_mods/pages/nearby.html",
@@ -108,10 +109,10 @@ const new_widget_array = [
             y: 9,
             w: 8,
             h: 10,
-        },
-       // content: '<iframe class="iframe rounded" src="./nearby.html?windowId=nearby_left" title="nearby" style=" border: none; width: 100%; height: 100%"></iframe>'
+        },       
     },
-]
+];
+  
 
 common.settingsStore.setDefault({
     autoscroll: true,
@@ -171,20 +172,20 @@ export async function main() {
 
     setBackground();
 
-    common.settingsStore.addEventListener('changed', ev => {
-        const changed = ev.data.changed;
-        if (changed.size === 1) {
-            if (changed.has('backgroundColor')) {
-                setBackground();
-            } else if (changed.has('/imperialUnits')) {
-                imperial = changed.get('/imperialUnits');
-            } else if (!changed.has('/theme')) {
-                location.reload();
-            }
-        } else {
-            location.reload();
-        }
-    });
+    // common.settingsStore.addEventListener('changed', ev => {
+    //     const changed = ev.data.changed;
+    //     if (changed.size === 1) {
+    //         if (changed.has('backgroundColor')) {
+    //             setBackground();
+    //         } else if (changed.has('/imperialUnits')) {
+    //             imperial = changed.get('/imperialUnits');
+    //         } else if (!changed.has('/theme')) {
+    //             location.reload();
+    //         }
+    //     } else {
+    //         location.reload();
+    //     }
+    // });
     
     // setRefresh();
     // let lastRefresh = 0;
@@ -194,7 +195,7 @@ export async function main() {
     let altitude = null;
     let gradient = 0;
 
-    let widgetArray = common.settingsStore.get('widgets')//; || default_widget_array;
+    let widgetArray = common.settingsStore.get('widgets') || default_widget_array;
     const options = {
         cellHeight: 20,
         margin: 4,
@@ -280,7 +281,7 @@ function setBackground() {
                     const z = powerZones[i];
                     if (value > z.from && value <= z.to) {
 //                        document.body.style.setProperty('background-color', colors[z.zone]);
-                        doc.style.setProperty('background-color', colors[z.zone]);
+                        doc.style.setProperty('--background-color', colors[z.zone]);
                         break;
                     }
                 }        
@@ -288,7 +289,7 @@ function setBackground() {
         }
         else
         {
-            doc.style.setProperty('background-color', backgroundColor);
+            doc.style.setProperty('--background-color', backgroundColor);
         }
     } else {
         doc.style.removeProperty('--background-color');
@@ -297,6 +298,7 @@ function setBackground() {
 
 export async function settingsMain() {
     common.initInteractionListeners();
+    //common.settingsStore.set('widgets',default_widget_array);
     await common.initSettingsForm('form#general')();
     await initWindowsPanel();
 }
@@ -317,11 +319,23 @@ async function renderWindows() {
             prettyName: `Unknown window: ${x.type}`,
             prettyDesc: common.sanitizeAttr(JSON.stringify(x, null, 4)),
         };
+        if (!x.bounds){
+            return `<tr data-id="${x.id}" class="window 'open'"
+            title="unknown format, please remove">
+            <td class="name">unknown format, please remove</td>
+            <td >-</td>
+            <td >-</td>
+            <td >-</td>
+            <td >-</td>
+            <td class="btn" title="Delete this window and its settings"
+                ><a class="link danger win-delete"><ms>delete_forever</ms></a></td>
+        </tr>            
+            `;
+        } 
         return `
-            <tr data-id="${x.id}" class="window ${x.closed ? 'closed' : 'open'}"
-                title="${common.sanitizeAttr(desc.prettyDesc)}\n\nDouble click/tap to ${x.closed ? 'reopen' : 'focus'}">
-                <td class="name">${common.stripHTML(x.customName || desc.prettyName)}<a class="link win-edit-name"
-                    title="Edit name"><ms>edit</ms></a></td>
+            <tr data-id="${x.id}" class="window 'open'"
+                title="${common.sanitizeAttr(desc.prettyDesc)}">
+                <td class="name">${common.stripHTML(x.customName || desc.prettyName)}</td>
                 <td >${x.bounds.x}</td>
                 <td >${x.bounds.y}</td>
                 <td >${x.bounds.w}</td>
