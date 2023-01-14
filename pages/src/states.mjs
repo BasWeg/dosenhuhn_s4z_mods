@@ -274,14 +274,8 @@ function setBackground() {
 }
 
 function showSlope() {
-    console.log (common.settingsStore.get());
     const {showSlope} = common.settingsStore.get();
-    if (!document.getElementById('slope')) return;
-    if (showSlope) {
-        document.getElementById('slope').style.removeProperty('visibility');
-    } else {
-        document.getElementById('slope').style.setProperty('visibility', 'hidden');
-    }
+    document.getElementById('act_grd').classList.toggle('showSlope', !!showSlope);
 }
 
 
