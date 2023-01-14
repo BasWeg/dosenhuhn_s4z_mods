@@ -205,7 +205,7 @@ export async function main() {
             document.getElementById('act_wbal').innerHTML = wbalpct(watching.stats.power.wBal,watching); 
             document.getElementById('act_hr').innerHTML = hr(watching.state.heartrate);
             document.getElementById('act_grd').innerHTML = grad(gradient_average);
-                      
+            setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue);                      
         } else {
             document.getElementById('act_grd').innerHTML = grad_v2(gradient_average);
             setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue);

@@ -12,17 +12,29 @@
             import {main} from './src/states.mjs';
             main();
         </script>
+        <link rel="stylesheet" href="/pages/css/common.css"/>
+        <link rel="stylesheet" href="/pages/css/nearby.css"/>
         <style>
             table td {
                 text-align: center !important;
             }     
             body {
                 overflow: hidden !important; /* Hide scrollbars */  
-            }             
+            }
+            .boblinkValue {
+                animation: blinkval 0.2s infinite alternate;
+            }
+            @keyframes blinkval {
+                from {
+                    opacity: 0.1;
+                }
+                to {
+                    opacity: 1;
+                }
+            }         
         </style>
         <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
-        <link rel="stylesheet" href="/pages/css/common.css"/>
-        <link rel="stylesheet" href="/pages/css/nearby.css"/>
+
         
     </head>
     <body>
@@ -32,6 +44,8 @@
                 <div class="title">MOD: actual states</div>
                 <div class="filler"></div>
                 <div class="buttons">
+                    <a class="button open-settings" href="./states-settings.html?width=380&height=720&child-window"
+                    title="Open settings window" target="states-settings"><ms>settings</ms></a>                      
                     <div title="Minimize" class="button minimize electron-only"><ms>minimize</ms></div>
                     <div title="Close this window" class="button close electron-only"><ms>close</ms></div>
                 </div>
@@ -51,7 +65,7 @@
 
                 <tbody style="width: 100%;">
                     <tr>
-                        <td style="width: 20%; font-weight: 600; font-size: calc(100% + 2vw);" id="act_grd"></td>
+                        <td style="width: 20%; font-weight: 600; font-size: calc(100% + 2vw);" id="act_grd" class=""></td>
                         <td style="width: 20%; font-weight: 600; font-size: calc(100% + 2vw);" id="act_pwr"></td>
                         <td style="width: 20%; font-weight: 600; font-size: calc(100% + 2vw);" id="act_hr"></td>                        
                         <td style="width: 20%; font-weight: 600; font-size: calc(100% + 2vw);" id="act_speed"></td>
