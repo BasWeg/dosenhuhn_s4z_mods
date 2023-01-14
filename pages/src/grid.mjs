@@ -146,23 +146,23 @@ export async function main() {
     //common.initNationFlags();  // bg okay
 
 
-    common.settingsStore.addEventListener('changed', async ev => {
-        const changed = ev.data.changed;
-        if (changed.has('solidBackground') || changed.has('backgroundColor')) {
-            setBackground();
-        }
-        if (window.isElectron && changed.has('overlayMode')) {
-            await common.rpc.updateWindow(window.electron.context.id,
-                {overlay: changed.get('overlayMode')});
-            await common.rpc.reopenWindow(window.electron.context.id);
-        }
-        if (changed.has('refreshInterval')) {
-            // setRefresh();
-        }  
+    // common.settingsStore.addEventListener('changed', async ev => {
+    //     const changed = ev.data.changed;
+    //     if (changed.has('solidBackground') || changed.has('backgroundColor')) {
+    //         setBackground();
+    //     }
+    //     if (window.isElectron && changed.has('overlayMode')) {
+    //         await common.rpc.updateWindow(window.electron.context.id,
+    //             {overlay: changed.get('overlayMode')});
+    //         await common.rpc.reopenWindow(window.electron.context.id);
+    //     }
+    //     if (changed.has('refreshInterval')) {
+    //         // setRefresh();
+    //     }  
 
-        render();
+    //     render();
         
-    });
+    // });
     common.storage.addEventListener('update', async ev => {
         if (ev.data.key === fieldsKey) {
             //fieldStates = ev.data.value;
@@ -177,21 +177,19 @@ export async function main() {
         el.innerHTML = "This is a browser only window!";
         return;
     }
-    
-    // common.settingsStore.addEventListener('changed', ev => {
-    //     const changed = ev.data.changed;
-    //     if (changed.size === 1) {
-    //         if (changed.has('backgroundColor')) {
-    //             setBackground();
-    //         } else if (changed.has('/imperialUnits')) {
-    //             imperial = changed.get('/imperialUnits');
-    //         } else if (!changed.has('/theme')) {
-    //             location.reload();
-    //         }
-    //     } else {
-    //         location.reload();
-    //     }
-    // });
+
+    common.settingsStore.addEventListener('changed', ev => {
+        const changed = ev.data.changed;
+        if (changed.size === 1) {
+            if (changed.has('solidBackground') || changed.has('backgroundColor')) {
+                setBackground();
+            } else if (!changed.has('/theme')) {
+                location.reload();
+            }
+        } else {
+            location.reload();
+        }
+    });
     
     // setRefresh();
     // let lastRefresh = 0;
