@@ -3,8 +3,8 @@
     "name": "DosenHuhn MODs for S4Z",
     "description": "A MOD collection for S4Z",
     "author": "Bastian Wegener",
-    "website_url": "https://www.wattfabrik.org",
-    "version": "0.0.8",
+    "website_url": "https://github.com/BasWeg/dosenhuhn_s4z_mods",
+    "version": "0.0.9",
     "web_root": "pages",
     "windows": [
     {
