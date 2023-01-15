@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html tabindex="0" data-settings-key="dosenhuhn_states_settings_v1">
+<html lang="en" tabindex="0" data-settings-key="dosenhuhn_states_settings_v1">
     <head>
         <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';"/>
 
@@ -15,9 +15,28 @@
         <link rel="stylesheet" href="/pages/css/common.css"/>
         <link rel="stylesheet" href="/pages/css/nearby.css"/>
         <style>
+            table {
+                width: 100%;
+            }
             table td {
                 text-align: center !important;
-            }     
+                width: 20%;
+            }            
+            table td {
+                text-align: center !important;
+            }
+            td[heavy] {
+                font-weight: 600;
+                font-size: calc(100% + 2vw);
+            }
+            table th {
+                text-align: center !important;
+                width: 20%;
+            }              
+            table thead {
+                width: 100%; 
+                font-variant: all-small-caps;
+            }             
             body {
                 overflow: hidden !important; /* Hide scrollbars */  
             }
@@ -40,7 +59,7 @@
     <body>
         <div id="titlebar">
             <header>
-                <div class="logo"><img src="/pages/images/icon128.png"/></div>
+                <div class="logo"><img title="icon" src="/pages/images/icon128.png"/></div>
                 <div class="title">MOD: actual states</div>
                 <div class="filler"></div>
                 <div class="buttons">
@@ -52,24 +71,24 @@
             </header>
         </div>
         <div id="content">
-            <table id="table" style="width: 100%;">
-                <thead style="width: 100%; font-variant: all-small-caps;">
+            <table id="table">
+                <thead >
                     <tr>
-                        <th style="width: 20%;">GRD</th>
-                        <th style="width: 20%;">PWR</th>
-                        <th style="width: 20%;">HR</th>
-                        <th style="width: 20%;">SPD</th>
-                        <th style="width: 20%;">W'bal</th>
+                        <th >GRD</th>
+                        <th >PWR</th>
+                        <th >HR</th>
+                        <th >SPD</th>
+                        <th >W'bal</th>
                     </tr>
                 </thead>
 
-                <tbody style="width: 100%;">
+                <tbody>
                     <tr>
-                        <td style="width: 20%; font-weight: 600; font-size: calc(100% + 2vw);" id="act_grd" class=""></td>
-                        <td style="width: 20%; font-weight: 600; font-size: calc(100% + 2vw);" id="act_pwr"></td>
-                        <td style="width: 20%; font-weight: 600; font-size: calc(100% + 2vw);" id="act_hr"></td>                        
-                        <td style="width: 20%; font-weight: 600; font-size: calc(100% + 2vw);" id="act_speed"></td>
-                        <td style="width: 20%; font-weight: 600; font-size: calc(100% + 2vw);" id="act_wbal"></td>                        
+                        <td heavy id="act_grd" class=""></td>
+                        <td heavy id="act_pwr"></td>
+                        <td heavy id="act_hr"></td>                        
+                        <td heavy id="act_speed"></td>
+                        <td heavy id="act_wbal"></td>                        
                      </tr>
                                                                  
                 </tbody>

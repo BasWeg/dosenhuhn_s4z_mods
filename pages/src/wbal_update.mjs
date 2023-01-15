@@ -21,10 +21,12 @@ async function myFunction() {
     tbody.innerHTML = '';
     let _html='';
     let idx = 0;
+    //style="text-align: center; width: 50px;"
+    //style="text-align: center; width: 100px;"
     for (const element of data) {
-        _html += `<tr><td style="text-align: center; width: 50px;">${++idx}</td>`
+        _html += `<tr><td >${++idx}</td>`
         Object.values(element).forEach(val => {
-        _html += `<td style="text-align: center; width: 100px;">${val}</td>`;
+        _html += `<td >${val}</td>`;
       });
       _html += '</tr>'
     }
