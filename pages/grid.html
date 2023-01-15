@@ -14,14 +14,14 @@
         </script>
         <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
         <link rel="stylesheet" href="/pages/css/common.css"/>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/7.1.2/gridstack.min.css" rel="stylesheet"/>        
+
+        <link rel="stylesheet" href="./css/gridstack.min.css"/>  
+        <link rel="stylesheet" href="./css/gridstack-extra.css"/>       
         <style>
             table td {
                 text-align: center !important;
             }     
-            body {
-                overflow: hidden !important; /* Hide scrollbars */  
-            } 
+
             html.solid-background {
                 background: var(--background-color);
             }
@@ -60,30 +60,56 @@
                     z-index: 999;
             }            
 
-  .iframe {
-    overflow: hidden;
-    vertical-align: top;
-    border: none; 
-    width: 100%; 
-    height: 100%;
-  } 
-  .rounded {
-    border-radius: 10px;
-  }
-
+        .iframe {
+            overflow: hidden;
+            vertical-align: top;
+            border: none; 
+            width: 100%; 
+            height: 100%;
+        } 
+        .rounded {
+            border-radius: 10px;
+        }
+        .edit_mode {
+            background: rgb(0,0,0);
+            background: linear-gradient(45deg, rgba(0,0,0,1) 0%, rgba(9,9,9,1) 40%, rgba(255,4,4,1) 100%);
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            border-radius: 10px;
+            font-size: 30px;
+            justify-content: center;
+            align-items: center;
+            display: grid;
+        }
+        
+        .toggleEdit {
+            color: red;
+        }
+        ms[heavy]:hover {
+            animation: 1s alert-color-flash infinite;
+        }
                                     
         </style>
 
 
         
     </head>
-    <body>
+    <body style="overflow: auto !important;">
         <div id="titlebar">
             <header>
                 <div class="logo"><img src="/pages/images/icon128.png"/></div>
                 <div class="title">MOD: grid</div>
                 <div class="filler"></div>
                 <div class="buttons">
+                    <div id="add-new" class="add-new" style="padding-right:20px">
+                        <select name="type"></select>
+                        <a class="button" title="add widget" data-action="addWidget"><ms>add</ms></a>
+                    </div>
+            
+                    <a class="button" title="Edit View"
+                    data-action="toggleEdit" id="toggleEditBtn" class=""
+                    href><ms>edit</ms></a>                    
                     <a class="button open-settings" href="./grid-settings.html?width=380&height=720&child-window"
                     title="Open settings window" target="grid-settings"><ms>settings</ms></a>
                     <div title="Minimize" class="button minimize electron-only"><ms>minimize</ms></div>

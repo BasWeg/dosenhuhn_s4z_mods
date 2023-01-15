@@ -12,13 +12,20 @@
             import {main} from './src/powerdist.mjs';
             main();
         </script>
+        <link rel="stylesheet" href="/pages/css/common.css"/>        
         <style>
+            html.solid-background {
+                background: var(--background-color);
+            }
+            html.solid-background body {
+                background: transparent !important;
+            }
             body {
                 overflow: hidden; /* Hide scrollbars */  
             }    
         </style>
         <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
-        <link rel="stylesheet" href="/pages/css/common.css"/>
+
         
         
     </head>
@@ -29,6 +36,8 @@
                 <div class="title">MOD: powerdist chart</div>
                 <div class="filler"></div>
                 <div class="buttons">
+                    <a class="button open-settings" href="./powerdist-settings.html?width=380&height=720&child-window"
+                    title="Open settings window" target="powerdist-settings"><ms>settings</ms></a>  
                     <div title="Minimize" class="button minimize electron-only"><ms>minimize</ms></div>
                     <div title="Close this window" class="button close electron-only"><ms>close</ms></div>
                 </div>

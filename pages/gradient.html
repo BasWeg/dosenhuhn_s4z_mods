@@ -12,7 +12,14 @@
             import {main} from './src/states.mjs';
             main();
         </script>
+                <link rel="stylesheet" href="/pages/css/common.css"/>
         <style>
+            html.solid-background {
+                background: var(--background-color);
+            }
+            html.solid-background body {
+                background: transparent !important;
+            }
             table td {
                 text-align: center !important;
             }     
@@ -35,6 +42,15 @@
                 /* height: 50%; */
                 /* vertical-align: bottom; */                
             }
+            #act_grd.showSlope{
+                background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" style="fill: grey; opacity:0.2;" width="400" height="100" viewBox="0 0 400 100"><path d="M0,100 L400,100 V0 z"/></svg>');
+                /* height: 50%; */
+                background-size: 60%;
+                background-repeat: no-repeat;
+                background-position: bottom;
+                /* vertical-align: bottom; */
+                background-position-y: 70%;
+            }
             #super{
                 /* position: absolute; */
                 align-items: center;
@@ -55,9 +71,9 @@
                 justify-content: center;
                 flex-direction: column;
                 /* align-content: space-around; */
-                padding-left: 5%;
-                padding-right: 5%;
-                padding-bottom: 5%;
+                padding-left: 10%;
+                padding-right: 10%;
+                padding-bottom: 10%;
                 z-index: 999;
                 visibility: hidden;
             } 
@@ -65,24 +81,7 @@
                 animation: change 0.2s infinite alternate;
                 visibility: visible !important;
             }            
-            #slope {
-                position: absolute;
-                /* align-items: center; */
-                /* width: 90%; */
-                /* height: 100%; */
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-                /* align-content: space-around; */
-                padding-left: 5%;
-                padding-right: 5%;
-                padding-bottom: 5%;
-            }      
-            #slope {
-                fill: grey;
-                opacity: 0.2;
-            }        
+     
 
               
             @keyframes change {
@@ -106,7 +105,7 @@
    
         </style>
         <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
-        <link rel="stylesheet" href="/pages/css/common.css"/>
+
 
         
     </head>
@@ -118,7 +117,7 @@
                 <div class="filler"></div>
                 <div class="buttons">
                     <a class="button open-settings" href="./gradient-settings.html?width=380&height=720&child-window"
-                    title="Open settings window" target="grid-settings"><ms>settings</ms></a>                    
+                    title="Open settings window" target="gradient-settings"><ms>settings</ms></a>                    
                     <div title="Minimize" class="button minimize electron-only"><ms>minimize</ms></div>
                     <div title="Close this window" class="button close electron-only"><ms>close</ms></div>
                 </div>
@@ -146,11 +145,6 @@
                         </g>
                     </g>
                 </svg>
-                <svg id="slope" viewbox="0 0 400 100">
-                    <g >
-                       <path d="M0,100 L400,100 V0 z"/>   
-                    </g>
-                  </svg>                
             </div>
 
         </div>

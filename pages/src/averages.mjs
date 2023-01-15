@@ -6,7 +6,7 @@ const doc = document.documentElement;
 const L = sauce.locale;
 const H = L.human;
 const num = H.number;
-const fieldsKey = 'dosenhuhn_averages_settings_v1';
+//const fieldsKey = 'dosenhuhn_averages_settings_v1';
 let imperial = common.storage.get('/imperialUnits');
 L.setImperial(imperial);
 
@@ -89,20 +89,20 @@ export async function main() {
     });
     setBackground();
 
-    common.settingsStore.addEventListener('changed', ev => {
-        const changed = ev.data.changed;
-        if (changed.size === 1) {
-            if (changed.has('backgroundColor')) {
-                setBackground();
-            } else if (changed.has('/imperialUnits')) {
-                imperial = changed.get('/imperialUnits');
-            } else if (!changed.has('/theme')) {
-                location.reload();
-            }
-        } else {
-            location.reload();
-        }
-    });
+    // common.settingsStore.addEventListener('changed', ev => {
+    //     const changed = ev.data.changed;
+    //     if (changed.size === 1) {
+    //         if (changed.has('backgroundColor')) {
+    //             setBackground();
+    //         } else if (changed.has('/imperialUnits')) {
+    //             imperial = changed.get('/imperialUnits');
+    //         } else if (!changed.has('/theme')) {
+    //             location.reload();
+    //         }
+    //     } else {
+    //         location.reload();
+    //     }
+    // });
     
     let athleteId;
     
@@ -151,3 +151,8 @@ function setBackground() {
 }
 
 
+export async function settingsMain() {
+    common.initInteractionListeners();
+    await common.initSettingsForm('form#general')();
+    //await initWindowsPanel();
+}

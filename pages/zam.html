@@ -23,7 +23,6 @@
         </style>
         <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
         <link rel="stylesheet" href="/pages/css/common.css"/>
-        <link rel="stylesheet" href="/pages/css/common.css"/>
         <link rel="stylesheet" href="/pages/css/nearby.css"/>
         
     </head>
@@ -31,9 +30,11 @@
         <div id="titlebar">
             <header>
                 <div class="logo"><img src="/pages/images/icon128.png"/></div>
-                <div class="title">MOD: VAM</div>
+                <div class="title">MOD: ZAM</div>
                 <div class="filler"></div>
                 <div class="buttons">
+                    <a class="button open-settings" href="./zam-settings.html?width=380&height=720&child-window"
+                    title="Open settings window" target="zam-settings"><ms>settings</ms></a>                       
                     <div title="Minimize" class="button minimize electron-only"><ms>minimize</ms></div>
                     <div title="Close this window" class="button close electron-only"><ms>close</ms></div>
                 </div>
@@ -54,24 +55,24 @@
                 <tbody style="width: 100%;">
                     <tr>
                         <td style="width: 20%;">1 min</td>
-                        <td style="width: 20%;" id="1min_pwr"></td>
-                        <td style="width: 20%;" id="1min_pwr_peak"></td>
-                        <td style="width: 20%;" id="1min_spd"></td>
-                        <td style="width: 20%;" id="1min_hr"></td>
+                        <td style="width: 20%;font-weight: 600;" id="1min_pwr"></td>
+                        <td style="width: 20%;font-weight: 600;" id="1min_pwr_peak"></td>
+                        <td style="width: 20%;font-weight: 600;" id="1min_spd"></td>
+                        <td style="width: 20%;font-weight: 600;" id="1min_hr"></td>
                     </tr>
                     <tr>
                         <td style="width: 20%;" >5 min</td>
-                        <td style="width: 20%;" id="5min_pwr"></td>
-                        <td style="width: 20%;" id="5min_pwr_peak"></td>
-                        <td style="width: 20%;" id="5min_spd"></td>
-                        <td style="width: 20%;" id="5min_hr"></td>
+                        <td style="width: 20%;font-weight: 600;" id="5min_pwr"></td>
+                        <td style="width: 20%;font-weight: 600;" id="5min_pwr_peak"></td>
+                        <td style="width: 20%;font-weight: 600;" id="5min_spd"></td>
+                        <td style="width: 20%;font-weight: 600;" id="5min_hr"></td>
                     </tr>
                     <tr>
                         <td style="width: 20%;">20 min</td>
-                        <td style="width: 20%;" id="20min_pwr"></td>
-                        <td style="width: 20%;" id="20min_pwr_peak"></td>
-                        <td style="width: 20%;" id="20min_spd"></td>
-                        <td style="width: 20%;" id="20min_hr"></td>
+                        <td style="width: 20%;font-weight: 600;" id="20min_pwr"></td>
+                        <td style="width: 20%;font-weight: 600;" id="20min_pwr_peak"></td>
+                        <td style="width: 20%;font-weight: 600;" id="20min_spd"></td>
+                        <td style="width: 20%;font-weight: 600;" id="20min_hr"></td>
                      </tr>
                      <tr style="font-variant: all-small-caps;">
                         <th style="width: 20%;">W'bal</th>
@@ -81,11 +82,11 @@
                         <th style="width: 20%;">HR(act)</th>                
                     </tr>
                     <tr>
-                        <td style="width: 20%;" id="act_wbal"></td>
-                        <td style="width: 20%;" id="act_pwr"></td>
-                        <td style="width: 20%;" id="act_np"></td>
-                        <td style="width: 20%;" id="act_speed"></td>
-                        <td style="width: 20%;" id="act_hr"></td>
+                        <td style="width: 20%;font-weight: 600;" id="act_wbal"></td>
+                        <td style="width: 20%;font-weight: 600;" id="act_pwr"></td>
+                        <td style="width: 20%;font-weight: 600;" id="act_np"></td>
+                        <td style="width: 20%;font-weight: 600;" id="act_speed"></td>
+                        <td style="width: 20%;font-weight: 600;" id="act_hr"></td>
                      </tr>
                     <tr>
                         <td colspan="5">
