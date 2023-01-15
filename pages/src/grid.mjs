@@ -8,7 +8,7 @@ const num = H.number;
 const fieldsKey = 'dosenhuhn_grid_settings_v1';
 let imperial = common.storage.get('/imperialUnits');
 L.setImperial(imperial);
-
+const grid_version = 1;
 // let fieldStates;
 
 let gameConnection;
@@ -40,11 +40,31 @@ common.settingsStore.setDefault({
     fontScale: 1,
     solidBackground: false,
     backgroundColor: '#00ff00',
+    grid_version: grid_version,
     widgets: default_widget_array,
 });
 
 const settings = common.settingsStore.get();
-//console.log(settings);
+
+if (settings.grid_version !== grid_version && grid_version == 1)
+{
+    console.log("grid version change: adapt");
+    const updatedWidgets = settings.widgets.map(widget => {
+        const updatedBounds = {
+          ...widget.bounds,
+          x: widget.bounds.x * 2,
+          w: widget.bounds.w * 2,
+        };
+      
+        return {
+          ...widget,
+          bounds: updatedBounds,
+        };
+      });
+      common.settingsStore.set('widgets',updatedWidgets);
+      common.settingsStore.set('grid_version',grid_version);   
+}
+
 
 let overlayMode;
 if (window.isElectron) {
@@ -122,6 +142,7 @@ export async function main() {
     //common.settingsStore.set('widgets',default_widget_array);
     let widgetArray = common.settingsStore.get('widgets') || default_widget_array;
     const options = {
+        column: 24,
         cellHeight: 20,
         margin: 4,
         float: true,
