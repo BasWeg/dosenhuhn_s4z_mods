@@ -387,20 +387,20 @@ export async function main() {
     });
     setBackground();
 
-    common.settingsStore.addEventListener('changed', ev => {
-        const changed = ev.data.changed;
-        if (changed.size === 1) {
-            if (changed.has('backgroundColor')) {
-                setBackground();
-            } else if (changed.has('/imperialUnits')) {
-                imperial = changed.get('/imperialUnits');
-            } else if (!changed.has('/theme')) {
-                location.reload();
-            }
-        } else {
-            location.reload();
-        }
-    });
+    // common.settingsStore.addEventListener('changed', ev => {
+    //     const changed = ev.data.changed;
+    //     if (changed.size === 1) {
+    //         if (changed.has('backgroundColor')) {
+    //             setBackground();
+    //         } else if (changed.has('/imperialUnits')) {
+    //             imperial = changed.get('/imperialUnits');
+    //         } else if (!changed.has('/theme')) {
+    //             location.reload();
+    //         }
+    //     } else {
+    //         location.reload();
+    //     }
+    // });
     
     // setRefresh();
     // let lastRefresh = 0;
@@ -538,27 +538,9 @@ function setBackground() {
 }
 
 
-// export async function settingsMain() {
-//     common.initInteractionListeners();
-//     fieldStates = common.storage.get(fieldsKey);
-//     const form = document.querySelector('form#fields');
-//     form.addEventListener('input', ev => {
-//         const id = ev.target.name;
-//         fieldStates[id] = ev.target.checked;
-//         common.storage.set(fieldsKey, fieldStates);
-//     });
-//     for (const {fields, label} of fieldGroups) {
-//         form.insertAdjacentHTML('beforeend', [
-//             '<div class="field-group">',
-//                 `<div class="title">${label}:</div>`,
-//                 ...fields.map(x => `
-//                     <label title="${common.sanitizeAttr(x.tooltip || '')}">
-//                         <key>${x.label}</key>
-//                         <input type="checkbox" name="${x.id}" ${fieldStates[x.id] ? 'checked' : ''}/>
-//                     </label>
-//                 `),
-//             '</div>'
-//         ].join(''));
-//     }
-//     await common.initSettingsForm('form#options')();
-// }
+export async function settingsMain() {
+    common.initInteractionListeners();
+    await common.initSettingsForm('form#general')();
+    //await initWindowsPanel();
+}
+
