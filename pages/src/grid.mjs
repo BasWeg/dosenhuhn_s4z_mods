@@ -3,17 +3,13 @@ import * as common from '/pages/src/common.mjs';
 
 const doc = document.documentElement;
 const L = sauce.locale;
-const H = L.human;
-const num = H.number;
+
 const fieldsKey = 'dosenhuhn_grid_settings_v1';
+
 let imperial = common.storage.get('/imperialUnits');
 L.setImperial(imperial);
 const grid_version = 1;
 // let fieldStates;
-
-let gameConnection;
-const page = location.pathname.split('/').at(-1).split('.')[0];
-
 
 const manifests = await common.rpc.getWindowManifests();
 const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
@@ -139,14 +135,6 @@ export async function main() {
         }
     });
 
-    
-    // setRefresh();
-    // let lastRefresh = 0;
-    let athleteId;
-
-    let distance = null;
-    let altitude = null;
-    let gradient = 0;
     //common.settingsStore.set('widgets',default_widget_array);
     let widgetArray = common.settingsStore.get('widgets') || default_widget_array;
     const options = {
@@ -160,102 +148,97 @@ export async function main() {
             handle: '.move-icon',
         }
     };
-var grid = GridStack.init(options);
-render(grid,widgetArray,false);
-// for (const mywidget of widgetArray) {
-//     grid.addWidget({x: mywidget.bounds.x, 
-//                     y: mywidget.bounds.y, 
-//                     w: mywidget.bounds.w,
-//                     h: mywidget.bounds.h, 
-//                     id: mywidget.id, 
-//                     content:  `<iframe class="iframe rounded" src="${mywidget.file}?windowId=${mywidget.id}" title="${mywidget.prettyName}"></iframe>`
-//                 }); //'<div class="move-icon"><ms>settings</ms></div>'+
-// }
 
+    // eslint-disable-next-line no-undef
+    var grid = GridStack.init(options);
+    render(grid,widgetArray,false);
 
-grid.on('resizestop', function(event, items) {
-    const serializedFull = grid.save(true, true);
-    const serializedData = serializedFull.children;
-    let widgets = common.settingsStore.get('widgets');
+    // eslint-disable-next-line no-unused-vars
+    grid.on('resizestop', function(_event, _items) {
+        const serializedFull = grid.save(true, true);
+        const serializedData = serializedFull.children;
+        let widgets = common.settingsStore.get('widgets');
 
-    for (const widget of serializedData) {
-        const bounds = {x: widget.x, y: widget.y, w: widget.w, h: widget.h};
-        const objIndex = widgets.findIndex((obj => obj.id == widget.id));
-        widgets[objIndex].bounds = bounds;
-    }
-    //console.log(widgets);
-     common.settingsStore.set('widgets', widgets);
-});
+        for (const widget of serializedData) {
+            const bounds = {x: widget.x, y: widget.y, w: widget.w, h: widget.h};
+            const objIndex = widgets.findIndex((obj => obj.id == widget.id));
+            widgets[objIndex].bounds = bounds;
+        }
+        //console.log(widgets);
+        common.settingsStore.set('widgets', widgets);
+    });
 
-grid.on('dragstop', function (event, el) {
-    var serializedFull = grid.save(true, true);
-    var serializedData = serializedFull.children;
-    let widgets = common.settingsStore.get('widgets');
-    
-    for (const widget of serializedData) {
-        const bounds = {x: widget.x, y: widget.y, w: widget.w, h: widget.h};
-        const objIndex = widgets.findIndex((obj => obj.id == widget.id));
-        widgets[objIndex].bounds = bounds;
-     }
-    common.settingsStore.set('widgets', widgets);
- });
-        //update_chart(watching.stats.power.timeInZones || []);
-        document.addEventListener('click', async ev => {
-            const a = ev.target.closest('header a[data-action]');
-            if (!a) {
-                return;
-            }
-            ev.preventDefault();
-            //console.log(a.dataset.action);
-            if (a.dataset.action === 'toggleEdit') {
-                toggleEdit = !toggleEdit;
-                document.getElementById('toggleEditBtn').classList.toggle('toggleEdit', !!toggleEdit);
-                render(grid,widgetArray,toggleEdit);
-            } else if (a.dataset.action === 'addWidget') {
-                const type = ev.target.closest('.add-new').querySelector('select').value;
-                const desc = descs[type];
-                const mywidget = { 
-                    type: desc.type,
-                    file: desc.file,
-                    groupTitle: desc.groupTitle,
-                    prettyName: desc.prettyName,
-                    prettyDesc: desc.prettyDesc,
-                    id: desc.type+'-'+Date.now(),
-                    bounds: {
-                        w: 1,
-                        h: 4,
-                    },
-                }
-                const newgrid = grid.addWidget({
-                    w: mywidget.bounds.w,
-                    h: mywidget.bounds.h, 
-                    id: mywidget.id, 
-                    content:  `<div class="edit_mode"><span>${mywidget.prettyName}</span><div class"buttons"><a title="remove element" data-action="remove" data-id="${mywidget.id}"><ms>delete</ms></a></div></div>`
-                });   
-                //console.log(newgrid);   
-                mywidget.bounds.x = parseInt(newgrid.getAttribute("gs-x"));       
-                mywidget.bounds.y = parseInt(newgrid.getAttribute("gs-y"));
-                widgetArray.push(mywidget);
-                common.settingsStore.set('widgets',widgetArray);
-                render(grid, widgetArray,toggleEdit);
-            };
-        });  
+    // eslint-disable-next-line no-unused-vars
+    grid.on('dragstop', function (_event, _el) {
+        var serializedFull = grid.save(true, true);
+        var serializedData = serializedFull.children;
+        let widgets = common.settingsStore.get('widgets');
         
-        document.querySelector('#content').addEventListener('click', ev => {
-            ev.preventDefault();
-            const a = ev.target.closest('a[data-action]');
-            if (!a) {
-                return;
+        for (const widget of serializedData) {
+            const bounds = {x: widget.x, y: widget.y, w: widget.w, h: widget.h};
+            const objIndex = widgets.findIndex((obj => obj.id == widget.id));
+            widgets[objIndex].bounds = bounds;
+        }
+        common.settingsStore.set('widgets', widgets);
+    });
+    
+    //update_chart(watching.stats.power.timeInZones || []);
+    document.addEventListener('click', async ev => {
+        const a = ev.target.closest('header a[data-action]');
+        if (!a) {
+            return;
+        }
+        ev.preventDefault();
+        //console.log(a.dataset.action);
+        if (a.dataset.action === 'toggleEdit') {
+            toggleEdit = !toggleEdit;
+            document.getElementById('toggleEditBtn').classList.toggle('toggleEdit', !!toggleEdit);
+            render(grid,widgetArray,toggleEdit);
+        } else if (a.dataset.action === 'addWidget') {
+            const type = ev.target.closest('.add-new').querySelector('select').value;
+            const desc = descs[type];
+            const mywidget = { 
+                type: desc.type,
+                file: desc.file,
+                groupTitle: desc.groupTitle,
+                prettyName: desc.prettyName,
+                prettyDesc: desc.prettyDesc,
+                id: desc.type+'-'+Date.now(),
+                bounds: {
+                    w: 1,
+                    h: 4,
+                },
             }
-            if (a.dataset.action === "remove") {
-                const objWithIdIndex = widgetArray.findIndex((obj) => obj.id === a.dataset.id);
-                if (objWithIdIndex > -1) {
-                    widgetArray.splice(objWithIdIndex, 1);
-                }
-                common.settingsStore.set('widgets',widgetArray);
-                render(grid, widgetArray,toggleEdit);
-            };
-        });        
+            const newgrid = grid.addWidget({
+                w: mywidget.bounds.w,
+                h: mywidget.bounds.h, 
+                id: mywidget.id, 
+                content:  `<div class="edit_mode"><span>${mywidget.prettyName}</span><div class"buttons"><a title="remove element" data-action="remove" data-id="${mywidget.id}"><ms>delete</ms></a></div></div>`
+            });   
+            //console.log(newgrid);   
+            mywidget.bounds.x = parseInt(newgrid.getAttribute("gs-x"));       
+            mywidget.bounds.y = parseInt(newgrid.getAttribute("gs-y"));
+            widgetArray.push(mywidget);
+            common.settingsStore.set('widgets',widgetArray);
+            render(grid, widgetArray,toggleEdit);
+        }
+    });  
+        
+    document.querySelector('#content').addEventListener('click', ev => {
+        ev.preventDefault();
+        const a = ev.target.closest('a[data-action]');
+        if (!a) {
+            return;
+        }
+        if (a.dataset.action === "remove") {
+            const objWithIdIndex = widgetArray.findIndex((obj) => obj.id === a.dataset.id);
+            if (objWithIdIndex > -1) {
+                widgetArray.splice(objWithIdIndex, 1);
+            }
+            common.settingsStore.set('widgets',widgetArray);
+            render(grid, widgetArray,toggleEdit);
+        }
+    });        
 }
 
 

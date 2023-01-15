@@ -76,12 +76,7 @@ export async function main() {
         render();
         
     });
-    common.storage.addEventListener('update', async ev => {
-        if (ev.data.key === fieldsKey) {
-            //fieldStates = ev.data.value;
-            render();
-        }
-    });
+
     common.storage.addEventListener('globalupdate', ev => {
         if (ev.data.key === '/imperialUnits') {
             L.setImperial(imperial = ev.data.value);
