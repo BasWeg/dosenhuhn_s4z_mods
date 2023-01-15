@@ -14,18 +14,22 @@ const grid_version = 1;
 let gameConnection;
 const page = location.pathname.split('/').at(-1).split('.')[0];
 
+
+const manifests = await common.rpc.getWindowManifests();
+const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
+let desc = descs['watching'];
+
 const default_widget_array = [
     {
-        type: "dosenhuhn_s4z_mods-dosenhuhn-nearby",
-        file: "/mods/dosenhuhn_s4z_mods/pages/nearby.html",
-        groupTitle: "[MOD]: DosenHuhn MODs for S4Z",
-        prettyName: "DH MOD - nearby",
-        prettyDesc: "change of nearby window to show (watching) teams",
-        overlay: true,
-        id: "user-dosenhuhn_s4z_mods-dosenhuhn-nearby-1673094536036-889544",
+        type: desc.type,
+        file: desc.file,
+        groupTitle: desc.groupTitle,
+        prettyName: desc.prettyName,
+        prettyDesc: desc.prettyDesc,
+        id: desc.type+'-'+Date.now(),
         bounds: {
             x: 0,
-            y: 9,
+            y: 0,
             w: 8,
             h: 10,
         },       
@@ -81,11 +85,11 @@ if (window.isElectron) {
 
 
 export async function main() {
+
     common.initInteractionListeners();
     //common.initNationFlags();  // bg okay
     var toggleEdit = false;
-    const manifests = await common.rpc.getWindowManifests();
-    const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
+
     // common.settingsStore.addEventListener('changed', async ev => {
     //     const changed = ev.data.changed;
     //     if (changed.has('solidBackground') || changed.has('backgroundColor')) {
@@ -103,6 +107,15 @@ export async function main() {
     //     render();
         
     // });
+    if (window.isElectron) {
+        const el = document.getElementById('content');
+        const webServerURL = await common.rpc.getWebServerURL();
+        const grid_url = webServerURL+descs['dosenhuhn_s4z_mods-dosenhuhn-grid'].file;
+        //console.log(el);
+        el.innerHTML = `<div>This is a browser only window!</div>
+                        <div><a class="button" external target="_blank" href="${grid_url}">go to grid webpage</a></div>`;
+        return;
+    }        
     common.storage.addEventListener('update', async ev => {
         if (ev.data.key === fieldsKey) {
             //fieldStates = ev.data.value;
@@ -111,12 +124,7 @@ export async function main() {
     });
 
     setBackground();
-    if (window.isElectron) {
-        const el = document.getElementById('content');
-        //console.log(el);
-        el.innerHTML = "This is a browser only window!";
-        return;
-    }
+
 
     common.settingsStore.addEventListener('changed', ev => {
         const changed = ev.data.changed;
@@ -265,8 +273,8 @@ async function render(grid,widgetArray,toggleEdit) {
                             content:  `<div class="edit_mode"><span>${mywidget.prettyName}</span><div class"buttons"><a title="remove element" data-action="remove" data-id="${mywidget.id}"><ms heavy>delete</ms></a></div></div>`
                         }); //'<div class="move-icon"><ms>settings</ms></div>'+
         }
-        const manifests = await common.rpc.getWindowManifests();
-        const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
+        // const manifests = await common.rpc.getWindowManifests();
+        // const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
         const mGroups = new Map();
         for (const m of manifests.filter(x => !x.private)) {
             if (!mGroups.has(m.groupTitle)) {
@@ -383,9 +391,9 @@ export async function settingsMain() {
 
 async function renderWindows() {
     const windows = Object.values(await common.rpc.getWindows()).filter(x => !x.private);
-    const manifests = await common.rpc.getWindowManifests();
+    //const manifests = await common.rpc.getWindowManifests();
     const el = document.querySelector('#windows');
-    const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
+   // const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
     const widgetArray = common.settingsStore.get('widgets');
     windows.sort((a, b) => !!a.closed - !!b.closed);
     el.querySelector('table.active-windows tbody').innerHTML = widgetArray.map(x => {
@@ -450,8 +458,8 @@ async function initWindowsPanel() {
         //renderAvailableMods(),
     ]);
     const winsEl = document.querySelector('#windows');
-    const manifests = await common.rpc.getWindowManifests();
-    const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
+    // const manifests = await common.rpc.getWindowManifests();
+    // const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
 
     winsEl.addEventListener('submit', ev => ev.preventDefault());
     winsEl.addEventListener('click', async ev => {
