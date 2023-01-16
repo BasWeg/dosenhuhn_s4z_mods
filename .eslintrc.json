@@ -5,6 +5,9 @@
         "node": true
     },
     "extends": "eslint:recommended",
+    "plugins": [
+        "html"
+      ],
     "overrides": [
     ],
     "parserOptions": {
