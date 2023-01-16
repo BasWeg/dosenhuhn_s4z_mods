@@ -4,10 +4,11 @@ const page = location.pathname.split('/').at(-1).split('.')[0];
 console.log(page);
 var queue =[];
 var teamid = "";
-var  mod_dh_settings = await common.rpc.getSetting('mod_dh_settings') || {};
 var type = "";
 
-teamid = mod_dh_settings.wbal_team_id ? mod_dh_settings.wbal_team_id : '';
+
+teamid = common.settingsStore.get('wbal_team_id') || '';
+
 document.getElementById("teamNumber").value =  teamid;   
 
 async function myFunction() {
@@ -81,7 +82,7 @@ async function doFetchTeamData(team){
     document.getElementById("demo").innerHTML = "Fetching data from zwiftracing...";
     let tname = "";
     let myjson = await fetch(url).then(response=>response.json());
-    console.log(JSON.stringify(myjson));
+    // console.log(JSON.stringify(myjson));
     if (myjson.totalResults > 0){ 
         // valid data - get teamname from 1st rider
         tname = myjson.riders[0].club.name;
@@ -92,7 +93,8 @@ async function doFetchTeamData(team){
         }
         document.getElementById("update_btn").style = "visibility:visible";
         document.getElementById("fetch_descr").textContent = tname;
-        generateTable(iqueue);    
+        generateTable(iqueue);
+        teamid = team; 
     }
     else {
         console.log("Kein Team");
@@ -118,7 +120,7 @@ async function doFetchEventData(event){
     let myeventlist = await fetch(url).then(response=>response.json());
     var index = myeventlist.map(function(o) { return o.eventId; }).indexOf(`${event}`);
     //check if eventid is in myeventlist
-    console.log(index);
+    //console.log(index);
     if (index < 0)
     {
         document.getElementById("fetch_descr").textContent = "NO EVENT FOUND!";
@@ -128,7 +130,7 @@ async function doFetchEventData(event){
     url = `https://dosenhuhn.de/get_event.php?event=${event}`;
     document.getElementById("demo").innerHTML = "Fetching data from zwiftracing...";
     let myjson = await fetch(url).then(response=>response.json());
-    console.log(JSON.stringify(myjson));
+    // console.log(JSON.stringify(myjson));
     // eslint-disable-next-line no-prototype-builtins
     if (!myjson.hasOwnProperty('message')){ 
         for (let pen of myjson){
@@ -162,17 +164,17 @@ export async function doWbalCPUpdate(){
     document.getElementById("demo").innerHTML = queue.length + " entries";
     console.log("----- UPDATE -----");
     Promise.all(queue).then(whatevs => {
-        console.log(whatevs);
+        // console.log(whatevs);
         for (let athlete of whatevs){
             if (athlete){
                
                let params = [athlete.athleteId,{wPrime:athlete.Wbal, cp:athlete.CP}];
-               console.log(JSON.stringify(params));
+            //    console.log(JSON.stringify(params));
                document.getElementById("demo").innerHTML = "Updating: " + JSON.stringify(params);
                common.rpc.updateAthlete(athlete.athleteId, {wPrime:athlete.Wbal, cp:athlete.CP});
             } else {
                 document.getElementById("demo").innerHTML = "API FAILED!"
-                console.log("Failed wbal lookup");
+                console.warn("Failed wbal lookup");
                 return;
             }
         }
@@ -182,8 +184,8 @@ export async function doWbalCPUpdate(){
         if (type == "wbal_tupdate")
         {
             // store team id
-            mod_dh_settings = {...mod_dh_settings, wbal_team_id: teamid}
-            common.rpc.setSetting('mod_dh_settings',mod_dh_settings);
+            //console.log('wbal_tupdate ',teamid);
+            common.settingsStore.set('wbal_team_id',teamid);
         }        
     })
 }
