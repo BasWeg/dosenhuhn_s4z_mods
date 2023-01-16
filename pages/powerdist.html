@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html tabindex="0" data-settings-key="dosenhuhn_powerdist_settings_v1">
+<html lang="en" tabindex="0" data-settings-key="dosenhuhn_powerdist_settings_v1">
     <head>
         <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';"/>
 
@@ -22,7 +22,11 @@
             }
             body {
                 overflow: hidden; /* Hide scrollbars */  
-            }    
+            }
+            #chart-container {
+                height: 100%;
+                vertical-align: middle;
+            }
         </style>
         <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
 
@@ -32,7 +36,7 @@
     <body>
         <div id="titlebar">
             <header>
-                <div class="logo"><img src="/pages/images/icon128.png"/></div>
+                <div class="logo"><img title="icon" src="/pages/images/icon128.png"/></div>
                 <div class="title">MOD: powerdist chart</div>
                 <div class="filler"></div>
                 <div class="buttons">
@@ -44,7 +48,7 @@
             </header>
         </div>
         <div id="content">
-            <div id="chart-container" style="height: 100%;vertical-align: middle"> </div>
+            <div id="chart-container"> </div>
 
         </div>
         <div id="hintbar">
