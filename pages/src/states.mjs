@@ -35,18 +35,18 @@ common.settingsStore.setDefault({
 
 const worldCourseDescs = [
     // CourseId is offered by api
-    {worldId: 1 , courseId: 6 , name:'Watopia'       , nicename: 'Watopia'        , scaling: 0.5 }, // ok
+    {worldId: 1 , courseId: 6 , name:'Watopia'       , nicename: 'Watopia'        , scaling: 0.5 }, 
     {worldId: 2 , courseId: 2 , name:'Richmond'      , nicename: 'Richmond'       , scaling: 1 },
-    {worldId: 3 , courseId: 7 , name:'London'        , nicename: 'London'         , scaling: 1 },  // ok
-    {worldId: 4 , courseId: 8 , name:'NewYork'       , nicename: 'New York'       , scaling: 0.75}, // ok
-    {worldId: 5 , courseId: 9 , name:'Innsbruck'     , nicename: 'Innsbruck'      , scaling: 1 },   // ok
+    {worldId: 3 , courseId: 7 , name:'London'        , nicename: 'London'         , scaling: 1 },  
+    {worldId: 4 , courseId: 8 , name:'NewYork'       , nicename: 'New York'       , scaling: 0.75}, 
+    {worldId: 5 , courseId: 9 , name:'Innsbruck'     , nicename: 'Innsbruck'      , scaling: 1 },  
     {worldId: 6 , courseId: 10, name:'Bologna'       , nicename: 'Bologna'        , scaling: 1 },
-    {worldId: 7 , courseId: 11, name:'Yorkshire'     , nicename: 'Yorkshire'      , scaling: 1 }, // ok
-    {worldId: 8 , courseId: 12, name:'CritCity'      , nicename: 'Crit City'      , scaling: 1 }, // Confirm
+    {worldId: 7 , courseId: 11, name:'Yorkshire'     , nicename: 'Yorkshire'      , scaling: 1 }, 
+    {worldId: 8 , courseId: 12, name:'CritCity'      , nicename: 'Crit City'      , scaling: 1 }, 
     {worldId: 9 , courseId: 13, name:'MakuriIslands' , nicename: 'Makuri Islands' , scaling: 1 },
-    {worldId: 10, courseId: 14, name:'France'        , nicename: 'France'         , scaling: 1 }, // ok
-    {worldId: 11, courseId: 15, name:'Paris'         , nicename: 'Paris'          , scaling: 1 }, // ok
-    {worldId: 12, courseId: 16, name:'GravelMountain', nicename: 'Gravel Mountain', scaling: 1 }, // Confirm
+    {worldId: 10, courseId: 14, name:'France'        , nicename: 'France'         , scaling: 1 }, 
+    {worldId: 11, courseId: 15, name:'Paris'         , nicename: 'Paris'          , scaling: 0.5 }, 
+    {worldId: 12, courseId: 16, name:'GravelMountain', nicename: 'Gravel Mountain', scaling: 0.5 }, 
 ];
 
 
@@ -142,7 +142,7 @@ export async function main() {
     });
     setBackground();
     showSlope();
-
+    render();
     // setRefresh();
     // let lastRefresh = 0;
     let athleteId;
@@ -217,7 +217,7 @@ export async function main() {
 
 
 function render() {
-
+    doc.style.setProperty('--font-scale', common.settingsStore.get('fontScale') || 1);
 }
 
 function setSuperTuck(gradient, speed, boShow, boblinkSuper, boblinkValue) {
