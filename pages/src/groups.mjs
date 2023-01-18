@@ -27,8 +27,10 @@ common.settingsStore.setDefault({
     maxZoomed: 8,
     groupsPrimaryField: 'power',
     zoomedPrimaryField: 'power',
+    zoomedPrimaryField2: 'draft',
     groupsSecondaryField: 'speed',
     zoomedSecondaryField: 'wbal',
+    zoomedSecondaryField2: 'none',
     zoomedGapField: 'distance',
     solidBackground: false,
     backgroundColor: '#00ff00',
@@ -228,29 +230,54 @@ function renderZoomed(groups) {
             power: athlete.state.power,
             weight: athlete.athlete && athlete.athlete.weight
         });
-        const rightLines = [`<div class="line">${priLine} ${athlete.state.draft}</div>`];
+        const rightLines = [`<div class="line">${priLine} | ${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}</div>`];
+        const minorField2 = settings.zoomedSecondaryField2 || 'none';
+        let minorValue2 = '';
+        if (minorField2 === 'heartrate') {
+            if (athlete.state.heartrate) {
+                minorValue2 = ` | ${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}`;
+            }
+        } else if (minorField2 === 'draft') {
+            if (athlete.state.draft != null) {
+                minorValue2 = ` | ${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}`;
+            }
+        } else if (minorField2 === 'speed') {
+            if (athlete.state.speed != null) {
+                minorValue2 = ` | ${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}`;
+            }
+        } else if (minorField2 === 'power-60s') {
+            const p = athlete.stats.power.smooth[60];
+            if (p != null) {
+                minorValue2 = ` | ${pwrFmt(p)} ` +
+                    `<abbr class="unit">(1m)</abbr>`;
+            }
+        } else if (minorField2 === 'wbal') {
+            const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
+            minorValue2 =  ` | ${H.number(mywbal*100)}${common.fmtBattery(mywbal)}`;
+        }    
+
         const minorField = settings.zoomedSecondaryField || 'heartrate';
         if (minorField === 'heartrate') {
             if (athlete.state.heartrate) {
-                rightLines.push(`<div class="line minor">${H.number(athlete.state.heartrate, {suffix: 'bpm', html: true})}</div>`);
+                rightLines.push(`<div class="line minor">${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}${minorValue2}</div>`);
             }
         } else if (minorField === 'draft') {
             if (athlete.state.draft != null) {
-                rightLines.push(`<div class="line minor">${H.number(athlete.state.draft, {suffix: '% (draft)', html: true})}</div>`);
+                rightLines.push(`<div class="line minor">${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}${minorValue2}</div>`);
             }
         } else if (minorField === 'speed') {
             if (athlete.state.speed != null) {
-                rightLines.push(`<div class="line minor">${H.pace(athlete.state.speed, {precision: 0, suffix: true, html: true})}</div>`);
+                rightLines.push(`<div class="line minor">${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}${minorValue2}</div>`);
             }
         } else if (minorField === 'power-60s') {
             const p = athlete.stats.power.smooth[60];
             if (p != null) {
                 rightLines.push(`<div class="line minor">${pwrFmt(p)} ` +
-                    `<abbr class="unit">(1m)</abbr></div>`);
+                    `<abbr class="unit">(1m)</abbr>${minorValue2}</div>`);
             }
         } else if (minorField === 'wbal') {
             const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
-            rightLines.push(`<div class="line">${common.fmtBattery(mywbal)}${H.number(mywbal*100)}%</div>`);
+            rightLines.push(`<div class="line">${H.number(mywbal*100)}${common.fmtBattery(mywbal)}${minorValue2}</div>`);
         }
 
         pos.leftLines.innerHTML = leftLines.join('');
