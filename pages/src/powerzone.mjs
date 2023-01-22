@@ -42,7 +42,7 @@ export async function main() {
 
     doc.classList.toggle('solid-background', true);
     doc.style.setProperty('--background-color', bgcolor);    
-    
+
     gameConnection = !!(gcs && gcs.connected);
     doc.classList.toggle('game-connection', gameConnection);
     common.subscribe('status', gcs => {
@@ -92,13 +92,12 @@ export async function main() {
             doc.style.setProperty('--background-color', bgcolor);
             return;
         }
-        //console.log(colors);
-        //console.log(powerZones);
         const value = watching.state.power / watching.athlete.ftp;
         //doc.classList.toggle('solid-background', true);
+        //console.log(value);
         for (let i = powerZones.length - 1; i >= 0; i--) {
             const z = powerZones[i];
-            if (value > z.from && value <= z.to) {
+            if (value > z.from) {
                 //document.body.style.setProperty('background-color', colors[z.zone]);
                 // If a three-character hexcolor, make six-character
                 let hexcolor=colors[z.zone];
