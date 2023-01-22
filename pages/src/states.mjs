@@ -54,6 +54,7 @@ const unit = x => `<abbr class="unit">${x}</abbr>`;
 const spd = (v, entry) => H.pace(v, {precision: 0, suffix: false, html: true, sport: entry.state.sport})+'<br>' +unit('kph');
 const pwr = v => v ? num(v)+ '<br>' + unit('W') : '-';
 const hr = v => v ? num(v)+ '<br>' + unit('bpm') : '-';
+const cad = v => v ? num(v)+ '<br>' + unit('rpm') : '-';
 const grad = v => num(v)+ '<br>' + unit('%');
 const grad_v2 = v => num(v) + unit('%');
 //const kj = (v, options) => v != null ? num(v, options) + unit('kJ') : '-';
@@ -152,7 +153,7 @@ export async function main() {
     let gradient = 0;
     let gradient_arr = [0];
     let speed_arr = [0];
-    
+    let worldtime_old;
     common.subscribe('athlete/watching', watching => {
         if (watching.athleteId !== athleteId) {
             athleteId = watching.athleteId;
@@ -160,41 +161,60 @@ export async function main() {
             speed_arr = [0];
             distance = null;
             altitude = null;
+            worldtime_old = 0;
         }
         
         const scaling = worldCourseDescs.find(a=>a.courseId==watching.state.courseId).scaling || 1;
         const altitude_new =  (watching.state.altitude) * scaling;  //  - 9000
         
-        const distance_new = watching.state.eventDistance;
+        //const distance_new = watching.state.eventDistance;
+        const worldtime_new = watching.state.worldTime;
+        //console.log(watching.state);
         
-
+        if (!worldtime_old)
+        {
+            worldtime_old = worldtime_new;
+        }
         //console.log("course: " + watching.state.courseId);
-        if (!distance || !altitude)
+        if (!altitude)
         {
             gradient = 0;
-            distance = distance_new;
+           // distance = 0;
             altitude = altitude_new;
         }
-        else if (Math.abs(distance_new - distance) > 500)
+        const distance_new = watching.state.speed * (worldtime_new-worldtime_old)/60/60;
+        console.log(distance_new);
+        // if (Math.abs(distance_new - distance) > 500)
+        // {
+        //     gradient = 0;
+        //     distance = distance_new;
+        //     altitude = altitude_new;
+        // }
+        // else if (Math.abs(distance_new - distance) > 0)
+        // {
+        //     gradient = ((altitude_new - altitude) / Math.abs(distance_new - distance));
+        //     gradient_arr.push(gradient);
+        //     speed_arr.push(watching.state.speed);
+        //     distance = distance_new
+        //     altitude = altitude_new;
+        // }
+        if (distance_new > 0)
         {
-            gradient = 0;
-            distance = distance_new;
-            altitude = altitude_new;
-        }
-        else if (Math.abs(distance_new - distance) > 0)
-        {
-            gradient = ((altitude_new - altitude) / Math.abs(distance_new - distance));
+            gradient = ((altitude_new - altitude) / distance_new);
             gradient_arr.push(gradient);
             speed_arr.push(watching.state.speed);
             distance = distance_new
             altitude = altitude_new;
-        }
-        console.log(smoothCount);
+        }        
+        //console.log(smoothCount);
         while (gradient_arr.length > smoothCount)
         {
             gradient_arr.shift();
             speed_arr.shift();
         }
+        console.log(watching.state.worldTime-worldtime_old);
+
+        worldtime_old = watching.state.worldTime;
         //console.log(gradient_arr);
         const gradient_average = gradient_arr.reduce((a, b) => a + b, 0) / gradient_arr.length;
         const speed_average = speed_arr.reduce((a, b) => a + b, 0) / speed_arr.length;
@@ -204,7 +224,8 @@ export async function main() {
             document.getElementById('act_pwr').innerHTML = (gradient > 3.4) ? fmtWkg(watching.state.power,watching) : pwr(watching.state.power);
             document.getElementById('act_wbal').innerHTML = wbalpct(watching.stats.power.wBal,watching); 
             document.getElementById('act_hr').innerHTML = hr(watching.state.heartrate);
-            document.getElementById('act_grd').innerHTML = grad(gradient_average);
+            //document.getElementById('act_grd').innerHTML = grad(gradient_average);
+            document.getElementById('act_cad').innerHTML = cad(watching.state.cadence);
             setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue);                      
         } else {
             document.getElementById('act_grd').innerHTML = grad_v2(gradient_average);
@@ -222,44 +243,48 @@ function render() {
 
 function setSuperTuck(gradient, speed, boShow, boblinkSuper, boblinkValue) {
     const super_dom = document.getElementById('super_svg') || false;
+    const grd_dom = document.getElementById('act_grd') || false;
     if (boShow)
     {    
         if ((gradient < -3) && (speed > 58))
         {
-            if(super_dom) document.getElementById('super_svg').classList.toggle('boblinkSuper', !!boblinkSuper);
-            document.getElementById('act_grd').classList.toggle('boblinkValue', !!boblinkValue);
+            if(super_dom) super_dom.classList.toggle('boblinkSuper', !!boblinkSuper);
+            if(grd_dom) grd_dom.classList.toggle('boblinkValue', !!boblinkValue);
         }
         else
         {
-            if(super_dom) document.getElementById('super_svg').classList.toggle('boblinkSuper', false);
-            document.getElementById('act_grd').classList.toggle('boblinkValue', false);
+            if(super_dom) super_dom.classList.toggle('boblinkSuper', false);
+            if(grd_dom) grd_dom.classList.toggle('boblinkValue', false);
         }
     }
     else
     {
-        if(super_dom) document.getElementById('super_svg').classList.toggle('boblinkSuper', false);
-        document.getElementById('act_grd').classList.toggle('boblinkValue', false);        
+        if(super_dom) super_dom.classList.toggle('boblinkSuper', false);
+        if(grd_dom) grd_dom.classList.toggle('boblinkValue', false);        
     }
 }
 
 function setGradientColor(gradient) {
-    if (gradient >= 10)
+    const grd_dom = document.getElementById('act_grd') || false;
+    if (grd_dom)
     {
-        document.getElementById('act_grd').style.setProperty('color', 'red');
-    }  
-    else if (gradient > 6)
-    {
-        document.getElementById('act_grd').style.setProperty('color', 'orange');
+        if (gradient >= 10)
+        {
+            grd_dom.style.setProperty('color', 'red');
+        }  
+        else if (gradient > 6)
+        {
+            grd_dom.style.setProperty('color', 'orange');
+        }
+        else if (gradient >= 3)
+        {
+            grd_dom.style.setProperty('color', 'yellow');
+        }
+        else
+        {
+            grd_dom.style.removeProperty('color');
+        }
     }
-    else if (gradient >= 3)
-    {
-        document.getElementById('act_grd').style.setProperty('color', 'yellow');
-    }
-    else
-    {
-        document.getElementById('act_grd').style.removeProperty('color');
-    }
-
     
 }
 
