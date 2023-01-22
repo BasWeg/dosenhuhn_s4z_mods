@@ -346,7 +346,7 @@ function setBackground() {
                 doc.classList.toggle('solid-background', true);
                 for (let i = powerZones.length - 1; i >= 0; i--) {
                     const z = powerZones[i];
-                    if (value > z.from && value <= z.to) {
+                    if (value > z.from) {
                         doc.style.setProperty('--background-color', colors[z.zone]);
                         break;
                     }
