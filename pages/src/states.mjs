@@ -299,8 +299,13 @@ function setBackground() {
 }
 
 function showSlope() {
-    const {showSlope} = common.settingsStore.get();
-    document.getElementById('act_grd').classList.toggle('showSlope', !!showSlope);
+    const grd_dom = document.getElementById('act_grd') || false;
+    if (grd_dom)
+    {
+        const {showSlope} = common.settingsStore.get();
+        grd_dom.classList.toggle('showSlope', !!showSlope);
+    }
+
 }
 
 
