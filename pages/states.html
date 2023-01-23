@@ -22,15 +22,13 @@
                 text-align: center !important;
                 width: 20%;
             }            
-            table td {
-                text-align: center !important;
-            }
             td[heavy] {
                 font-weight: 600;
-                font-size: calc(100% + 2vw);
+                font-size: calc(var(--font-scale) * 2em);
             }
             table th {
                 text-align: center !important;
+                font-size: calc(var(--font-scale) * 1em);
                 width: 20%;
             }              
             table thead {
@@ -74,8 +72,8 @@
             <table id="table">
                 <thead >
                     <tr>
-                        <th >GRD</th>
                         <th >PWR</th>
+                        <th >CAD</th>                        
                         <th >HR</th>
                         <th >SPD</th>
                         <th >W'bal</th>
@@ -84,9 +82,9 @@
 
                 <tbody>
                     <tr>
-                        <td heavy id="act_grd" class=""></td>
                         <td heavy id="act_pwr"></td>
-                        <td heavy id="act_hr"></td>                        
+                        <td heavy id="act_cad"></td>                        
+                        <td heavy id="act_hr"></td>                
                         <td heavy id="act_speed"></td>
                         <td heavy id="act_wbal"></td>                        
                      </tr>
