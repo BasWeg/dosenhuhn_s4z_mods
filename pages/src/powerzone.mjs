@@ -9,7 +9,9 @@ const doc = document.documentElement;
 
 let gameConnection;
 
-
+common.settingsStore.setDefault({
+    opacity: 1,
+});
 
 let overlayMode;
 if (window.isElectron) {
@@ -22,19 +24,24 @@ if (window.isElectron) {
     }
 }
 
-
+const opacity = common.settingsStore.get('opacity');
+var opacityhex = ('00' + (parseInt((255*opacity)).toString(16).toUpperCase())).slice(-2);
+var bgcolor = "#000000"+opacityhex;
 
 export async function main() {
     common.initInteractionListeners();
     //common.initNationFlags();  // bg okay
-    document.body.style.setProperty('background-color', "black");
-    doc.style.setProperty('--background-color', "black");
+    //document.body.style.setProperty('background-color', "black");
+ 
     // doc.classList.toggle('solid-background', true);
     // let refresh;
     // const setRefresh = () => {
     //     refresh = (common.settingsStore.get('refreshInterval') || 0) * 1000 - 100; // within 100ms is fine.
     // };
     const gcs = await common.rpc.getGameConnectionStatus();
+
+    doc.classList.toggle('solid-background', true);
+    doc.style.setProperty('--background-color', bgcolor);    
 
     gameConnection = !!(gcs && gcs.connected);
     doc.classList.toggle('game-connection', gameConnection);
@@ -49,12 +56,14 @@ export async function main() {
                 {overlay: changed.get('overlayMode')});
             await common.rpc.reopenWindow(window.electron.context.id);
         }
-        if (changed.has('refreshInterval')) {
-         //   setRefresh();
+        if (changed.has('opacity')) {
+            const opacity = common.settingsStore.get('opacity');
+            opacityhex = ('00' + (parseInt((255*opacity)).toString(16).toUpperCase())).slice(-2);
+            bgcolor = (bgcolor.substring(0, 7)+opacityhex);
+            doc.style.setProperty('--background-color', bgcolor); 
         }  
 
-        render();
-        
+     
     });
 
     common.storage.addEventListener('globalupdate', ev => {
@@ -63,17 +72,6 @@ export async function main() {
         }
     });
 
-
-    common.settingsStore.addEventListener('changed', ev => {
-        const changed = ev.data.changed;
-        if (changed.size === 1) {
-            if (!changed.has('/theme')) {
-                location.reload();
-            }
-        } else {
-            location.reload();
-        }
-    });
     
     // setRefresh();
     // let lastRefresh = 0;
@@ -89,56 +87,37 @@ export async function main() {
             powerZones = null;
             common.rpc.getPowerZones(1).then(zones =>{ powerZones = zones; colors = common.getPowerZoneColors(powerZones)});
         }
-        if (!colors) {
+        if (!colors || !watching.athlete || !watching.athlete.ftp) {
+            bgcolor = "#000000"+opacityhex;
+            doc.style.setProperty('--background-color', bgcolor);
             return;
         }
-        //console.log(colors);
-        //console.log(powerZones);
         const value = watching.state.power / watching.athlete.ftp;
-        doc.classList.toggle('solid-background', true);
+        //doc.classList.toggle('solid-background', true);
+        //console.log(value);
         for (let i = powerZones.length - 1; i >= 0; i--) {
             const z = powerZones[i];
-            if (value > z.from && value <= z.to) {
-                document.body.style.setProperty('background-color', colors[z.zone]);
-                doc.style.setProperty('--background-color', colors[z.zone]);
+            if (value > z.from) {
+                //document.body.style.setProperty('background-color', colors[z.zone]);
+                // If a three-character hexcolor, make six-character
+                let hexcolor=colors[z.zone];
+                if (hexcolor.length === 4) {
+                    hexcolor = '#'+hexcolor.substring(1, 4).split('').map(function (hex) {
+                        return hex + hex;
+                    }).join('');
+                }
+                bgcolor = hexcolor+opacityhex;
+                doc.style.setProperty('--background-color', bgcolor);
                 break;
             }
         }        
-       // doc.style.setProperty('background-color', backgroundColor);
-        //console.log(incline_avg);
-
-
-        //update_chart(watching.stats.power.timeInZones || []);
     });    
 }
 
 
-function render() {
 
+export async function settingsMain() {
+    common.initInteractionListeners();
+    await common.initSettingsForm('form#general')();
+    //await initWindowsPanel();
 }
-
-
-// export async function settingsMain() {
-//     common.initInteractionListeners();
-//     fieldStates = common.storage.get(fieldsKey);
-//     const form = document.querySelector('form#fields');
-//     form.addEventListener('input', ev => {
-//         const id = ev.target.name;
-//         fieldStates[id] = ev.target.checked;
-//         common.storage.set(fieldsKey, fieldStates);
-//     });
-//     for (const {fields, label} of fieldGroups) {
-//         form.insertAdjacentHTML('beforeend', [
-//             '<div class="field-group">',
-//                 `<div class="title">${label}:</div>`,
-//                 ...fields.map(x => `
-//                     <label title="${common.sanitizeAttr(x.tooltip || '')}">
-//                         <key>${x.label}</key>
-//                         <input type="checkbox" name="${x.id}" ${fieldStates[x.id] ? 'checked' : ''}/>
-//                     </label>
-//                 `),
-//             '</div>'
-//         ].join(''));
-//     }
-//     await common.initSettingsForm('form#options')();
-// }
