@@ -46,12 +46,14 @@ setBackground();
 
 
 function pwrFmt(p) {
-    return H.power(p, {suffix: true, html: true});
+    //return H.power(p, {suffix: true, html: true});
+    return H.number(p, {suffix: '<ms>bolt</ms>', html: true});
 }
 
 
 function wkgFmt(wkg) {
-    return H.wkg(wkg, {suffix: true, html: true});
+    //return H.wkg(wkg, {suffix: true, html: true});
+    return H.number(wkg, {precision: 1,suffix: '<ms>bolt</ms>', html: true});
 }
 
 
@@ -235,25 +237,25 @@ function renderZoomed(groups) {
         let minorValue2 = '';
         if (minorField2 === 'heartrate') {
             if (athlete.state.heartrate) {
-                minorValue2 = ` | ${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}`;
+                minorValue2 = `|${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}`;
             }
         } else if (minorField2 === 'draft') {
             if (athlete.state.draft != null) {
-                minorValue2 = ` | ${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}`;
+                minorValue2 = `|${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}`;
             }
         } else if (minorField2 === 'speed') {
             if (athlete.state.speed != null) {
-                minorValue2 = ` | ${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}`;
+                minorValue2 = `|${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}`;
             }
         } else if (minorField2 === 'power-60s') {
             const p = athlete.stats.power.smooth[60];
             if (p != null) {
-                minorValue2 = ` | ${pwrFmt(p)} ` +
+                minorValue2 = `|${pwrFmt(p)} ` +
                     `<abbr class="unit">(1m)</abbr>`;
             }
         } else if (minorField2 === 'wbal') {
             const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
-            minorValue2 =  ` | ${H.number(mywbal*100)}${common.fmtBattery(mywbal)}`;
+            minorValue2 =  `|${H.number(mywbal*100)}${common.fmtBattery(mywbal)}`;
         }    
 
         const minorField = settings.zoomedSecondaryField || 'heartrate';
