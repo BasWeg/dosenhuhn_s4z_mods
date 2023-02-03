@@ -47,6 +47,7 @@ const worldCourseDescs = [
     {worldId: 10, courseId: 14, name:'France'        , nicename: 'France'         , scaling: 1 }, 
     {worldId: 11, courseId: 15, name:'Paris'         , nicename: 'Paris'          , scaling: 0.5 }, 
     {worldId: 12, courseId: 16, name:'GravelMountain', nicename: 'Gravel Mountain', scaling: 0.5 }, 
+    {worldId: 13, courseId: 17, name:'Scotland'      , nicename: 'Scotland'       , scaling: 0.5 }, 
 ];
 
 
@@ -165,7 +166,8 @@ export async function main() {
         }
         
         const scaling = worldCourseDescs.find(a=>a.courseId==watching.state.courseId).scaling || 1;
-        const altitude_new =  (watching.state.altitude) * scaling;  //  - 9000
+        const rawZ = state.z != null ? state.z : state.altitude
+        const altitude_new =  rawZ * scaling;  //  - 9000
         
         //const distance_new = watching.state.eventDistance;
         const worldtime_new = watching.state.worldTime;
@@ -183,7 +185,7 @@ export async function main() {
             altitude = altitude_new;
         }
         const distance_new = watching.state.speed * (worldtime_new-worldtime_old)/60/60;
-        console.log(distance_new);
+        //console.log(distance_new);
         // if (Math.abs(distance_new - distance) > 500)
         // {
         //     gradient = 0;
