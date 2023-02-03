@@ -166,7 +166,7 @@ export async function main() {
         }
         
         const scaling = worldCourseDescs.find(a=>a.courseId==watching.state.courseId).scaling || 1;
-        const rawZ = state.z != null ? state.z : state.altitude
+        const rawZ = watching.state.z != null ? watching.state.z : watching.state.altitude
         const altitude_new =  rawZ * scaling;  //  - 9000
         
         //const distance_new = watching.state.eventDistance;
