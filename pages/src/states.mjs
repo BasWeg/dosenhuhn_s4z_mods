@@ -56,7 +56,7 @@ const spd = (v, entry) => H.pace(v, {precision: 0, suffix: false, html: true, sp
 const pwr = v => v ? num(v)+ '<br>' + unit('W') : '-';
 const hr = v => v ? num(v)+ '<br>' + unit('bpm') : '-';
 const cad = v => v ? num(v)+ '<br>' + unit('rpm') : '-';
-const grad = v => num(v)+ '<br>' + unit('%');
+//const grad = v => num(v)+ '<br>' + unit('%');
 const grad_v2 = v => num(v) + unit('%');
 //const kj = (v, options) => v != null ? num(v, options) + unit('kJ') : '-';
 // const wbal =  (x, entry) => (x != null && entry.athlete && entry.athlete.wPrime) ?
@@ -149,7 +149,7 @@ export async function main() {
     // let lastRefresh = 0;
     let athleteId;
 
-    let distance = null;
+    //let distance = null;
     let altitude = null;
     let gradient = 0;
     let gradient_arr = [0];
@@ -160,7 +160,7 @@ export async function main() {
             athleteId = watching.athleteId;
             gradient_arr = [0];
             speed_arr = [0];
-            distance = null;
+           // distance = null;
             altitude = null;
             worldtime_old = 0;
         }
@@ -205,7 +205,7 @@ export async function main() {
             gradient = ((altitude_new - altitude) / distance_new);
             gradient_arr.push(gradient);
             speed_arr.push(watching.state.speed);
-            distance = distance_new
+            //distance = distance_new
             altitude = altitude_new;
         }        
         //console.log(smoothCount);
