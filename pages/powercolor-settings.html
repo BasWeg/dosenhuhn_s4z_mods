@@ -32,11 +32,29 @@
             <form id="general" class="section">
                 <div class="title">General</div>
                 <label>
+                    <key>Border radius:</key>
+                    <input type="range" name="borderradius" min="0" max="30" step="1"/>
+                    <input type="number" name="borderradius" min="0" max="30" step="1" style="--size: 5"/>
+                </label>                    
+                <label>
                     <key>Opacity:</key>
                     <input type="range" name="opacity" min="0.0" max="1" step="0.05"/>
                     <input type="number" name="opacity" min="0.0" max="1" step="0.05" style="--size: 5"/>
                 </label>   
-                                                            
+                <label>
+                    <key>Gradient radius:</key>
+                    <input type="range" name="gradient" min="0" max="100" step="1"/>
+                    <input type="number" name="gradient" min="0" max="100" step="1" style="--size: 5"/>
+                </label>  
+                <label>
+                    <key>Gradient Type:</key>
+                    <select name="gradienttype">
+                        <option value="farthest-corner">farthest-corner</option>
+                        <option value="farthest-side">farthest-side</option>
+                        <option value="closest-corner">closest-corner</option>
+                        <option value="closest-side">closest-side</option>
+                    </select>
+                </label>                                                                               
             </form>
            
         </div>
