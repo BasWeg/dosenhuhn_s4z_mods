@@ -50,14 +50,14 @@ const worldCourseDescs = [
     {worldId: 13, courseId: 17, name:'Scotland'      , nicename: 'Scotland'       , scaling: 0.5 }, 
 ];
 
-
+var grad_precision = 0;
 const unit = x => `<abbr class="unit">${x}</abbr>`;
 const spd = (v, entry) => H.pace(v, {precision: 0, suffix: false, html: true, sport: entry.state.sport})+'<br>' +unit('kph');
 const pwr = v => v ? num(v)+ '<br>' + unit('W') : '-';
 const hr = v => v ? num(v)+ '<br>' + unit('bpm') : '-';
 const cad = v => v ? num(v)+ '<br>' + unit('rpm') : '-';
 //const grad = v => num(v)+ '<br>' + unit('%');
-const grad_v2 = v => num(v) + unit('%');
+const grad_v2 = v => num(v, {precision: grad_precision, fixed: true}) + unit('%');
 //const kj = (v, options) => v != null ? num(v, options) + unit('kJ') : '-';
 // const wbal =  (x, entry) => (x != null && entry.athlete && entry.athlete.wPrime) ?
 //                 common.fmtBattery(x / entry.athlete.wPrime) + kj(x / 1000, {precision: 1}) : '-';
