@@ -386,7 +386,8 @@ function renderGroups(groups) {
                 // check if in group is a teammate
                // console.log(x);
                 x.athlete ??= {};
-                if ((x.athlete.team ?? null) === watchingteam) {
+                //console.log(x.athlete.team ?? null);
+                if ((x.athlete.team ?? null) == watchingteam) {
                     team = watchingteam;
                 }
             }
