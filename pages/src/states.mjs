@@ -120,7 +120,7 @@ export async function main() {
                 {overlay: changed.get('overlayMode')});
             await common.rpc.reopenWindow(window.electron.context.id);
         }
-        console.log(changed);
+       // console.log(changed);
         if (changed.has('showSlope')) {
             showSlope();
         }
@@ -214,7 +214,7 @@ export async function main() {
             gradient_arr.shift();
             speed_arr.shift();
         }
-        console.log(watching.state.worldTime-worldtime_old);
+        //console.log(watching.state.worldTime-worldtime_old);
 
         worldtime_old = watching.state.worldTime;
         //console.log(gradient_arr);
