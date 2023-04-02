@@ -12,17 +12,27 @@
             import {main} from './src/powerzone.mjs';
             main();
         </script>
+
+        <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
+        <link rel="stylesheet" href="/pages/css/common.css"/> 
         <style>
             table td {
                 text-align: center !important;
             }     
             body {
                 overflow: hidden !important; /* Hide scrollbars */  
-            }             
+            }    
+    
+            html.solid-background body {
+                background: radial-gradient(var(--gradient-type), var(--background-color),var(--background-color) var(--gradient-radius),#ffffff00);
+            }   
+            html.gradient-background body {
+            background: transparent !important;
+            }
+            html.electron-mode:not(.frame) > body {
+                border-radius: var(--border-radius);
+            }                                         
         </style>
-        <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
-        <link rel="stylesheet" href="/pages/css/common.css"/> 
-        <link rel="stylesheet" href="/pages/css/nearby.css"/>      
         
     </head>
     <body>
