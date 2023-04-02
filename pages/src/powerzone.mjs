@@ -11,6 +11,9 @@ let gameConnection;
 
 common.settingsStore.setDefault({
     opacity: 1,
+    gradient: 100,
+    gradienttype: 'farthest-corner',
+    borderradius: 2
 });
 
 let overlayMode;
@@ -25,6 +28,13 @@ if (window.isElectron) {
 }
 
 const opacity = common.settingsStore.get('opacity');
+const gradient = common.settingsStore.get('gradient') || 100;
+common.settingsStore.set('gradient',gradient);
+const borderradius = common.settingsStore.get('borderradius') || 2;
+common.settingsStore.set('borderradius',borderradius);
+const gradienttype = common.settingsStore.get('gradienttype') ||'farthest-corner';
+common.settingsStore.set('gradienttype',gradienttype);
+
 var opacityhex = ('00' + (parseInt((255*opacity)).toString(16).toUpperCase())).slice(-2);
 var bgcolor = "#000000"+opacityhex;
 
@@ -41,7 +51,10 @@ export async function main() {
     const gcs = await common.rpc.getGameConnectionStatus();
 
     doc.classList.toggle('solid-background', true);
-    doc.style.setProperty('--background-color', bgcolor);    
+    doc.style.setProperty('--background-color', bgcolor);
+    doc.style.setProperty('--gradient-radius', gradient + '%'); 
+    doc.style.setProperty('--gradient-type', gradienttype); 
+    doc.style.setProperty('--border-radius', borderradius + 'mm');
 
     gameConnection = !!(gcs && gcs.connected);
     doc.classList.toggle('game-connection', gameConnection);
@@ -62,6 +75,18 @@ export async function main() {
             bgcolor = (bgcolor.substring(0, 7)+opacityhex);
             doc.style.setProperty('--background-color', bgcolor); 
         }  
+        if (changed.has('gradient')) {
+            const gradient = common.settingsStore.get('gradient');
+            doc.style.setProperty('--gradient-radius', gradient + '%'); 
+        }
+        if (changed.has('gradienttype')) {
+            const gradienttype = common.settingsStore.get('gradienttype');
+            doc.style.setProperty('--gradient-type', gradienttype); 
+        }        
+        if (changed.has('borderradius')) {
+            const borderradius = common.settingsStore.get('borderradius');
+            doc.style.setProperty('--border-radius', borderradius + 'mm'); 
+        }          
 
      
     });
