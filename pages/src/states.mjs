@@ -30,7 +30,8 @@ common.settingsStore.setDefault({
     blinkSuper: false,
     blinkValue : false,
     showSlope: false,
-    smoothCount: 3
+    smoothCount: 3,
+    grad_precision: 0
 });
 
 const worldCourseDescs = [
@@ -95,6 +96,7 @@ export async function main() {
     common.initInteractionListeners();
     let settings = common.settingsStore.get();
     let smoothCount = common.settingsStore.get('smoothCount') || 3;
+    grad_precision = common.settingsStore.get('grad_precision') || 0;
     
     //common.initNationFlags();  // bg okay
   
@@ -126,7 +128,11 @@ export async function main() {
         }
         if (changed.has('smoothCount')) {
             smoothCount = changed.get('smoothCount');
-        }        
+        }
+        if (changed.has('grad_precision')) {   
+            grad_precision = changed.get('grad_precision');
+        }
+             
 
         render();
         
