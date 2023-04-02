@@ -31,23 +31,24 @@ common.settingsStore.setDefault({
     blinkValue : false,
     showSlope: false,
     smoothCount: 3,
+    grad_precision: 0
 });
 
 const worldCourseDescs = [
     // CourseId is offered by api
-    {worldId: 1 , courseId: 6 , name:'Watopia'       , nicename: 'Watopia'        , scaling: 0.5 }, 
-    {worldId: 2 , courseId: 2 , name:'Richmond'      , nicename: 'Richmond'       , scaling: 1 },
-    {worldId: 3 , courseId: 7 , name:'London'        , nicename: 'London'         , scaling: 1 },  
-    {worldId: 4 , courseId: 8 , name:'NewYork'       , nicename: 'New York'       , scaling: 0.75}, 
-    {worldId: 5 , courseId: 9 , name:'Innsbruck'     , nicename: 'Innsbruck'      , scaling: 1 },  
-    {worldId: 6 , courseId: 10, name:'Bologna'       , nicename: 'Bologna'        , scaling: 1 },
-    {worldId: 7 , courseId: 11, name:'Yorkshire'     , nicename: 'Yorkshire'      , scaling: 1 }, 
-    {worldId: 8 , courseId: 12, name:'CritCity'      , nicename: 'Crit City'      , scaling: 1 }, 
-    {worldId: 9 , courseId: 13, name:'MakuriIslands' , nicename: 'Makuri Islands' , scaling: 1 },
-    {worldId: 10, courseId: 14, name:'France'        , nicename: 'France'         , scaling: 1 }, 
-    {worldId: 11, courseId: 15, name:'Paris'         , nicename: 'Paris'          , scaling: 0.5 }, 
-    {worldId: 12, courseId: 16, name:'GravelMountain', nicename: 'Gravel Mountain', scaling: 0.5 }, 
-    {worldId: 13, courseId: 17, name:'Scotland'      , nicename: 'Scotland'       , scaling: 0.5 }, 
+    {worldId: 1 , courseId: 6 , name:'Watopia'       , nicename: 'Watopia'        , scaling: 0.5, isPD4: false }, 
+    {worldId: 2 , courseId: 2 , name:'Richmond'      , nicename: 'Richmond'       , scaling: 1, isPD4: false },
+    {worldId: 3 , courseId: 7 , name:'London'        , nicename: 'London'         , scaling: 1, isPD4: false },  
+    {worldId: 4 , courseId: 8 , name:'NewYork'       , nicename: 'New York'       , scaling: 0.75, isPD4: false}, 
+    {worldId: 5 , courseId: 9 , name:'Innsbruck'     , nicename: 'Innsbruck'      , scaling: 1, isPD4: false },  
+    {worldId: 6 , courseId: 10, name:'Bologna'       , nicename: 'Bologna'        , scaling: 1, isPD4: false },
+    {worldId: 7 , courseId: 11, name:'Yorkshire'     , nicename: 'Yorkshire'      , scaling: 1, isPD4: false }, 
+    {worldId: 8 , courseId: 12, name:'CritCity'      , nicename: 'Crit City'      , scaling: 1, isPD4: false }, 
+    {worldId: 9 , courseId: 13, name:'MakuriIslands' , nicename: 'Makuri Islands' , scaling: 1, isPD4: true },
+    {worldId: 10, courseId: 14, name:'France'        , nicename: 'France'         , scaling: 1, isPD4: false }, 
+    {worldId: 11, courseId: 15, name:'Paris'         , nicename: 'Paris'          , scaling: 0.5, isPD4: false }, 
+    {worldId: 12, courseId: 16, name:'GravelMountain', nicename: 'Gravel Mountain', scaling: 0.5, isPD4: false }, 
+    {worldId: 13, courseId: 17, name:'Scotland'      , nicename: 'Scotland'       , scaling: 0.5, isPD4: false }, 
 ];
 
 var grad_precision = 0;
@@ -95,13 +96,11 @@ export async function main() {
     common.initInteractionListeners();
     let settings = common.settingsStore.get();
     let smoothCount = common.settingsStore.get('smoothCount') || 3;
+    grad_precision = common.settingsStore.get('grad_precision') || 0;
+    
     //common.initNationFlags();  // bg okay
   
-    // let refresh;
-    // const setRefresh = () => {
-    //     refresh = (common.settingsStore.get('refreshInterval') || 0) * 1000 - 100; // within 100ms is fine.
-    // };
-    const gcs = await common.rpc.getGameConnectionStatus();
+     const gcs = await common.rpc.getGameConnectionStatus();
 
     gameConnection = !!(gcs && gcs.connected);
     doc.classList.toggle('game-connection', gameConnection);
@@ -129,7 +128,11 @@ export async function main() {
         }
         if (changed.has('smoothCount')) {
             smoothCount = changed.get('smoothCount');
-        }        
+        }
+        if (changed.has('grad_precision')) {   
+            grad_precision = changed.get('grad_precision');
+        }
+             
 
         render();
         
@@ -166,9 +169,10 @@ export async function main() {
         }
         
         const scaling = worldCourseDescs.find(a=>a.courseId==watching.state.courseId).scaling || 1;
+        const isPD4 = worldCourseDescs.find(a=>a.courseId==watching.state.courseId).isPD4 ??  false;
         const rawZ = watching.state.z != null ? watching.state.z : watching.state.altitude
         const altitude_new =  rawZ * scaling;  //  - 9000
-        
+        const draft = watching.state.draft ?? 0; 
         //const distance_new = watching.state.eventDistance;
         const worldtime_new = watching.state.worldTime;
         //console.log(watching.state);
@@ -228,10 +232,10 @@ export async function main() {
             document.getElementById('act_hr').innerHTML = hr(watching.state.heartrate);
             //document.getElementById('act_grd').innerHTML = grad(gradient_average);
             document.getElementById('act_cad').innerHTML = cad(watching.state.cadence);
-            setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue);                      
+            setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue, draft, isPD4);                      
         } else {
             document.getElementById('act_grd').innerHTML = grad_v2(gradient_average);
-            setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue);
+            setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue, draft, isPD4);
         } 
         setGradientColor(gradient_average);
     });    
@@ -243,12 +247,12 @@ function render() {
     doc.style.setProperty('--font-scale', common.settingsStore.get('fontScale') || 1);
 }
 
-function setSuperTuck(gradient, speed, boShow, boblinkSuper, boblinkValue) {
+function setSuperTuck(gradient, speed, boShow, boblinkSuper, boblinkValue, draft, isPD4) {
     const super_dom = document.getElementById('super_svg') || false;
     const grd_dom = document.getElementById('act_grd') || false;
     if (boShow)
     {    
-        if ((gradient < -3) && (speed > 58))
+        if ((gradient < -3) && (speed > 58) && !(isPD4 && draft))
         {
             if(super_dom) super_dom.classList.toggle('boblinkSuper', !!boblinkSuper);
             if(grd_dom) grd_dom.classList.toggle('boblinkValue', !!boblinkValue);

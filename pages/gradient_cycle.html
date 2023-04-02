@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html tabindex="0" data-settings-key="dosenhuhn_states_settings_v1">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';"/>
+
+        <title>Mod: gradient</title>
+
+        <script type="module">
+            import {main} from './src/states.mjs';
+            main();
+        </script>
+        <style>
+            table td {
+                text-align: center !important;
+            }     
+            body {
+                overflow: hidden !important; /* Hide scrollbars */
+            }
+            .unit {
+                font-size: calc(1rem + 10vw);
+            }
+            #act_grd{
+                display: flex;
+                justify-content: center;
+                align-items: baseline;
+                font-size: calc(2rem + 40vw);
+                font-weight: 800;
+                /* height: 50%; */
+                /* vertical-align: bottom; */                
+            }
+            #val{
+                display: flex;
+                justify-content: center;
+                align-items: baseline;
+                font-size: calc(2rem + 40vw);
+                font-weight: 800;
+                /* height: 50%; */
+                /* vertical-align: bottom; */                
+            }
+            #super{
+                /* position: absolute; */
+                align-items: center;
+                width: 90%;
+                /* height: 100%; */
+                display: flex;
+                align-items: center;
+                /* justify-content: center; */
+                /* flex-direction: column; */
+            }
+            #supert{
+                width: 40%;
+    position: absolute;
+            }
+            #super_svg{
+                position: absolute;
+                /* align-items: center; */
+                /* width: 90%; */
+                /* height: 100%; */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                /* align-content: space-around; */
+                padding-left: 5%;
+                padding-right: 5%;
+                padding-bottom: 5%;
+            }   
+            #super_img   {
+                animation: change 0.2s infinite alternate;
+            }     
+            #super_img2 path   {
+                animation: change2 0.2s infinite alternate;
+            }                 
+            @keyframes change {
+                from {
+                    opacity: 0.1;
+                }
+                to {
+                    fill: #f06d06;
+                    opacity: 1;
+                }
+                }
+
+                @keyframes change2 {
+                from {
+                    opacity: 0.1;
+                }
+                to {
+                    stroke: #f06d06;
+                    opacity: 1;
+                }
+                }                
+   
+        </style>
+        <link id="favicon" rel="shortcut icon" href="../../../../images/favicon.png"/>
+        <link rel="stylesheet" href="/pages/css/common.css"/>
+
+        
+    </head>
+    <body>
+        <div id="titlebar">
+            <header>
+                <div class="logo"><img src="/pages/images/icon128.png"/></div>
+                <div class="title">MOD: gradient</div>
+                <div class="filler"></div>
+                <div class="buttons">
+                    <div title="Minimize" class="button minimize electron-only"><ms>minimize</ms></div>
+                    <div title="Close this window" class="button close electron-only"><ms>close</ms></div>
+                </div>
+            </header>
+        </div>
+        <div id="content">
+            <div id="val">
+                <span id ="act_grd">0</span>
+                <div>
+                    <div id="supert">    
+                        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g id="super_img2">
+                        <path d="M167.597 69.8099C170.185 59.1448 178.108 54.9723 188.461 54.1708C228.281 51.0874 232.786 90.6048 207.994 104.216C184.559 117.082 155.905 94.636 170.704 69.8099" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M99.1885 175.414C114.161 172.085 139.954 153.196 154.796 156.977C169.299 160.671 165.206 177.303 193.634 173.166C205.083 171.498 209.791 162.029 218.79 156.527C230.982 149.074 251.378 154.286 264.689 152.93C273.041 152.079 281.04 148.433 289.403 148.433" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M166.641 120.169C183.055 122.169 203.188 123.906 218.99 117.489C219.502 117.281 222.899 115.653 223.389 116.15C228.206 121.041 226.907 143.519 226.907 149.198C226.907 152.505 229.802 189.579 228.227 191.178C227.728 191.685 178.03 198.807 177.198 198.324C171.805 195.195 170.998 187.019 170.599 181.353C169.258 162.293 170.16 142.878 170.16 123.742" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M169.339 195.759C155.09 193.418 104.965 229.375 95.4279 229.375C94.1601 229.375 85.5542 217.592 83 212.456" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M230.045 190.253C231.768 190.341 233.742 190.556 235.383 191.139C245.196 194.629 299.975 222.128 304.329 221.261C310.559 220.02 312.664 210.253 316.383 205.314" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M166.64 122.801C158.476 128.893 111.676 166.432 108.395 174.065C104.239 169.434 101.17 169.409 99.1885 173.989" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M223.3 120.103C226.711 122.176 230.295 124.013 233.561 126.27C243.094 132.859 252.954 138.932 262.56 145.157C270.245 150.136 274.73 143.444 279.959 152.48" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M198.223 229.375C198.01 257.17 197.668 317.625 197.668 345.393" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M215.206 283.944C241.426 280.042 220.577 295.959 229.117 302.451C232.124 304.737 238.971 302.892 240.838 302.451" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M181.479 286.714C160.617 291.654 174.628 267.788 168.422 263.623C165.693 261.792 159.054 265.369 155.848 265.369" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M187.296 180.62C216.556 161.278 221.858 205.092 195.201 205.092C185.844 205.092 179.536 187.857 184.66 181.057C187.403 177.418 191.695 176.39 195.201 174.065" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M198.845 207.791C198.695 210.973 199.015 214.234 199.227 217.234" stroke="#000000" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/></g>
+                        </svg>                
+                        
+                   </div>
+                    <abbr class="unit">%</abbr></div>
+            </div>
+
+        </div>
+        </div>
+        <div id="hintbar">
+            <div class="hint"></div>
+        </div>
+    </body>
+</html>

@@ -78,14 +78,15 @@ async function doFetchTeamData(team){
     document.getElementById("event_or_team").textContent = "Team:";
     document.getElementById("update_btn").style = "visibility:hidden";
 //    let url = `https://www.zwiftracing.app/api/riders?club=${team}&page=0&pageSize=1000`;
-    let url = `https://www.dosenhuhn.de/get_team.php?club=${team}`;
+    let url = `https://www.dosenhuhn.de/get_team_v2.php?club=${team}`;
     document.getElementById("demo").innerHTML = "Fetching data from zwiftracing...";
     let tname = "";
     let myjson = await fetch(url).then(response=>response.json());
     // console.log(JSON.stringify(myjson));
-    if (myjson.totalResults > 0){ 
+    // eslint-disable-next-line no-prototype-builtins
+    if (myjson.hasOwnProperty("name")){ 
         // valid data - get teamname from 1st rider
-        tname = myjson.riders[0].club.name;
+        tname = myjson.name;
         console.log(tname);
         for (let rider of myjson.riders){
             //document.getElementById("demo").innerHTML = "Fetching: " + rider?.riderId + " - " + rider?.name + " - WBAL:" + Math.round(rider?.power?.AWC ?? 20000);
@@ -116,7 +117,7 @@ async function doFetchEventData(event){
     document.getElementById("update_btn").style = "visibility:hidden";    
     //https://www.zwiftracing.app/api/events/3239317
 //    let url = `https://www.zwiftracing.app/api/riders?club=${team}&page=0&pageSize=1000`;
-    let url = `https://dosenhuhn.de/get_event.php`;
+    let url = `https://dosenhuhn.de/get_event_v2.php`;
     let myeventlist = await fetch(url).then(response=>response.json());
     var index = myeventlist.map(function(o) { return o.eventId; }).indexOf(`${event}`);
     //check if eventid is in myeventlist
@@ -127,7 +128,7 @@ async function doFetchEventData(event){
         return []; 
     } 
      
-    url = `https://dosenhuhn.de/get_event.php?event=${event}`;
+    url = `https://dosenhuhn.de/get_event_v2.php?event=${event}`;
     document.getElementById("demo").innerHTML = "Fetching data from zwiftracing...";
     let myjson = await fetch(url).then(response=>response.json());
     // console.log(JSON.stringify(myjson));
