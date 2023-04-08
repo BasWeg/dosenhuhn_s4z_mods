@@ -99,7 +99,7 @@ export async function main() {
     grad_precision = common.settingsStore.get('grad_precision') || 0;
     if (document.getElementById('act_grd') || false)
     {
-        document.getElementById('act_grd').setProperty('--grad_precision', grad_precision);
+        document.getElementById('act_grd').style.setProperty('--grad_precision', (grad_precision > 0 ) ? 1 : 0);
     }
     //common.initNationFlags();  // bg okay
   
@@ -134,6 +134,10 @@ export async function main() {
         }
         if (changed.has('grad_precision')) {   
             grad_precision = changed.get('grad_precision');
+            if (document.getElementById('act_grd') || false)
+            {
+                document.getElementById('act_grd').style.setProperty('--grad_precision', (grad_precision > 0 ) ? 1 : 0);
+            }            
         }
              
 
@@ -238,7 +242,7 @@ export async function main() {
             setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue, draft, isPD4);                      
         } else {
             document.getElementById('act_grd').innerHTML = grad_v2(gradient_average);
-            document.getElementById('act_grd').setProperty('--grad_precision', grad_precision);
+            document.getElementById('act_grd').style.setProperty('--grad_precision', (grad_precision > 0 ) ? 1 : 0);
             setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue, draft, isPD4);
         } 
         setGradientColor(gradient_average);
