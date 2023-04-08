@@ -36,19 +36,19 @@ common.settingsStore.setDefault({
 
 const worldCourseDescs = [
     // CourseId is offered by api
-    {worldId: 1 , courseId: 6 , name:'Watopia'       , nicename: 'Watopia'        , scaling: 0.5, isPD4: false }, 
-    {worldId: 2 , courseId: 2 , name:'Richmond'      , nicename: 'Richmond'       , scaling: 1, isPD4: false },
-    {worldId: 3 , courseId: 7 , name:'London'        , nicename: 'London'         , scaling: 1, isPD4: false },  
-    {worldId: 4 , courseId: 8 , name:'NewYork'       , nicename: 'New York'       , scaling: 0.75, isPD4: false}, 
-    {worldId: 5 , courseId: 9 , name:'Innsbruck'     , nicename: 'Innsbruck'      , scaling: 1, isPD4: false },  
-    {worldId: 6 , courseId: 10, name:'Bologna'       , nicename: 'Bologna'        , scaling: 1, isPD4: false },
-    {worldId: 7 , courseId: 11, name:'Yorkshire'     , nicename: 'Yorkshire'      , scaling: 1, isPD4: false }, 
-    {worldId: 8 , courseId: 12, name:'CritCity'      , nicename: 'Crit City'      , scaling: 1, isPD4: false }, 
+    {worldId: 1 , courseId: 6 , name:'Watopia'       , nicename: 'Watopia'        , scaling: 0.5, isPD4: true }, 
+    {worldId: 2 , courseId: 2 , name:'Richmond'      , nicename: 'Richmond'       , scaling: 1, isPD4: true },
+    {worldId: 3 , courseId: 7 , name:'London'        , nicename: 'London'         , scaling: 1, isPD4: true },  
+    {worldId: 4 , courseId: 8 , name:'NewYork'       , nicename: 'New York'       , scaling: 0.75, isPD4: true}, 
+    {worldId: 5 , courseId: 9 , name:'Innsbruck'     , nicename: 'Innsbruck'      , scaling: 1, isPD4: true },  
+    {worldId: 6 , courseId: 10, name:'Bologna'       , nicename: 'Bologna'        , scaling: 1, isPD4: true },
+    {worldId: 7 , courseId: 11, name:'Yorkshire'     , nicename: 'Yorkshire'      , scaling: 1, isPD4: true }, 
+    {worldId: 8 , courseId: 12, name:'CritCity'      , nicename: 'Crit City'      , scaling: 1, isPD4: true }, 
     {worldId: 9 , courseId: 13, name:'MakuriIslands' , nicename: 'Makuri Islands' , scaling: 1, isPD4: true },
-    {worldId: 10, courseId: 14, name:'France'        , nicename: 'France'         , scaling: 1, isPD4: false }, 
-    {worldId: 11, courseId: 15, name:'Paris'         , nicename: 'Paris'          , scaling: 0.5, isPD4: false }, 
-    {worldId: 12, courseId: 16, name:'GravelMountain', nicename: 'Gravel Mountain', scaling: 0.5, isPD4: false }, 
-    {worldId: 13, courseId: 17, name:'Scotland'      , nicename: 'Scotland'       , scaling: 0.5, isPD4: false }, 
+    {worldId: 10, courseId: 14, name:'France'        , nicename: 'France'         , scaling: 1, isPD4: true }, 
+    {worldId: 11, courseId: 15, name:'Paris'         , nicename: 'Paris'          , scaling: 0.5, isPD4: true }, 
+    {worldId: 12, courseId: 16, name:'GravelMountain', nicename: 'Gravel Mountain', scaling: 0.5, isPD4: true }, 
+    {worldId: 13, courseId: 17, name:'Scotland'      , nicename: 'Scotland'       , scaling: 0.5, isPD4: true }, 
 ];
 
 var grad_precision = 0;
@@ -97,7 +97,10 @@ export async function main() {
     let settings = common.settingsStore.get();
     let smoothCount = common.settingsStore.get('smoothCount') || 3;
     grad_precision = common.settingsStore.get('grad_precision') || 0;
-    
+    if (document.getElementById('act_grd') || false)
+    {
+        document.getElementById('act_grd').setProperty('--grad_precision', grad_precision);
+    }
     //common.initNationFlags();  // bg okay
   
      const gcs = await common.rpc.getGameConnectionStatus();
@@ -235,6 +238,7 @@ export async function main() {
             setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue, draft, isPD4);                      
         } else {
             document.getElementById('act_grd').innerHTML = grad_v2(gradient_average);
+            document.getElementById('act_grd').setProperty('--grad_precision', grad_precision);
             setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue, draft, isPD4);
         } 
         setGradientColor(gradient_average);
