@@ -97,7 +97,10 @@ export async function main() {
     let settings = common.settingsStore.get();
     let smoothCount = common.settingsStore.get('smoothCount') || 3;
     grad_precision = common.settingsStore.get('grad_precision') || 0;
-    
+    if (document.getElementById('act_grd') || false)
+    {
+        document.getElementById('act_grd').setProperty('--grad_precision', grad_precision);
+    }
     //common.initNationFlags();  // bg okay
   
      const gcs = await common.rpc.getGameConnectionStatus();
@@ -235,6 +238,7 @@ export async function main() {
             setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue, draft, isPD4);                      
         } else {
             document.getElementById('act_grd').innerHTML = grad_v2(gradient_average);
+            document.getElementById('act_grd').setProperty('--grad_precision', grad_precision);
             setSuperTuck(gradient_average,speed_average,settings.showSuperHint,settings.blinkSuper, settings.blinkValue, draft, isPD4);
         } 
         setGradientColor(gradient_average);
