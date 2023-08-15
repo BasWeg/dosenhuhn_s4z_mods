@@ -193,6 +193,10 @@ function fmtActions() {
                title="Watch this athlete"><ms>video_camera_front</ms></a>`;
 }
 
+function fmtFlag(code) {
+  const url = common.fmtFlag(code);
+  return url.replace("deps", "/pages/deps");
+}
 
 const fieldGroups = [{
     group: 'athlete',
@@ -202,7 +206,7 @@ const fieldGroups = [{
         {id: 'avatar', defaultEn: true, label: 'Avatar', headerLabel: '<ms>account_circle</ms>',
          get: x => x.athlete && x.athlete.sanitizedFullname, fmt: fmtAvatar},
         {id: 'nation', defaultEn: true, label: 'Country Flag', headerLabel: '<ms>flag</ms>',
-         get: x => x.athlete && x.athlete.countryCode, fmt: common.fmtFlag},
+         get: x => x.athlete && x.athlete.countryCode, fmt: fmtFlag}, //common.fmtFlag
         {id: 'name', defaultEn: true, label: 'Name', get: x => x.athlete && x.athlete.sanitizedFullname,
          fmt: fmtName},
         {id: 'f-last', defaultEn: false, label: 'F. Last', get: x => x.athlete && x.athlete.fLast,
