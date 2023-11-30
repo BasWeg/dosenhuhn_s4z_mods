@@ -1,10 +1,7 @@
 import * as sauce from '/pages/src/../../shared/sauce/index.mjs';
 import * as common from '/pages/src/common.mjs';
 
-// const sauce = await import(`${mypath}/src/../../shared/sauce/index.mjs`);
-// const common = await import(`${mypath}/src/common.mjs`);
-// const sauce = await import(`/pages/src/../../shared/sauce/index.mjs`);
-// const common = await import(`/pages/src/common.mjs`);
+
 const L = sauce.locale;
 const H = L.human;
 const positions = new Map();
@@ -12,6 +9,7 @@ let zoomedPosition = common.storage.get('zoomedPosition');
 let imperial = common.settingsStore.get('/imperialUnits');
 L.setImperial(imperial);
 let curGroups;
+let eventSubgroup;
 let contentEl;
 let metaEl;
 let aheadEl;
@@ -21,7 +19,6 @@ const doc = document.documentElement;
 
 common.settingsStore.setDefault({
     detectAttacks: true,
-    hideHeader: false,
     maxAhead: 4,
     maxBehind: 2,
     maxZoomed: 8,
@@ -35,6 +32,8 @@ common.settingsStore.setDefault({
     solidBackground: false,
     backgroundColor: '#00ff00',
     refreshInterval: 2,
+    hideHeader: false,
+    labelAngle: 50,
 });
 
 // XXX Need a migration system.
@@ -45,9 +44,29 @@ const settings = common.settingsStore.get();
 setBackground();
 
 
-function pwrFmt(p) {
-    //return H.power(p, {suffix: true, html: true});
-    return H.number(p, {suffix: '<ms>bolt</ms>', html: true});
+const _subgroups = new Map();
+function getSubgroupLazy(id) {
+    if (!_subgroups.has(id)) {
+        _subgroups.set(id, null);
+        common.rpc.getEventSubgroup(id).then(x => _subgroups.set(id, x));
+    }
+    return _subgroups.get(id);
+}
+
+
+function setMaxPositions() {
+    let v;
+    if (zoomedPosition != null) {
+        v = settings.maxZoomed || 8;
+    } else {
+        v = (settings.maxAhead || 0) + (settings.maxBehind || 0) + 1;
+    }
+    doc.style.setProperty('--max-positions', v);
+}
+
+
+function pwrFmt(p, options) {
+    return H.power(p, {suffix: true, html: true, ...options});
 }
 
 
@@ -69,40 +88,34 @@ function getOrCreatePosition(relPos) {
         el.style.setProperty('--rel-pos', relPos);
         el.innerHTML = `
             <div class="desc left empty">
-                <div class="actions">
-                    <ms data-action="watch" title="Watch">video_camera_front</ms>
-                </div>
                 <div class="lines"></div>
+                <div class="actions"><ms data-action="watch" title="Watch">video_camera_front</ms></div>
             </div>
-            <a class="bubble" target="_blank"></a>
-            <div class="desc right empty">
-                <div class="lines"></div>
+            <div class="bubble-holder">
+                <div class="rings"></div>
+                <a class="bubble" target="_blank"></a>
             </div>
+            <div class="desc right empty"><div class="lines"></div></div>
         `;
         const gap = document.createElement('div');
         gap.classList.add('gap');
         gap.style.setProperty('--rel-pos', relPos);
-        gap.innerHTML = `
-            <div class="desc">
-                <div class="lines">
-                    <div class="line time"></div>
-                    <div class="line minor est" title="Estimated gap">(est)</div>
-                </div>
-            </div>
-        `;
+        gap.innerHTML = `<div class="desc"><div class="lines"></div></div>`;
         containerEl.appendChild(el);
         containerEl.appendChild(gap);
         const nodes = {
             watchTarget: null,
             el,
+            bubbleHolder: el.querySelector('.bubble-holder'),
+            bubble: el.querySelector('.bubble'),
             leftDesc: el.querySelector('.desc.left'),
             leftLines: el.querySelector('.desc.left .lines'),
             rightDesc: el.querySelector('.desc.right'),
             rightLines: el.querySelector('.desc.right .lines'),
-            bubble: el.querySelector('.bubble'),
             gap: {
                 el: gap,
-                leftLine: gap.querySelector('.lines .line.time'),
+                desc: gap.querySelector('.desc'),
+                lines: gap.querySelector('.desc .lines'),
             },
             actions: {
                 watch: el.querySelector('[data-action="watch"]'),
@@ -114,6 +127,7 @@ function getOrCreatePosition(relPos) {
                 ev.preventDefault();
                 zoomedPosition = relPos;
                 common.storage.set('zoomedPosition', zoomedPosition);
+                setMaxPositions();
                 render();
             }
         });
@@ -142,9 +156,14 @@ function render() {
 }
 
 
-function isAttack(power, groupPower) {
+function isAttack(power, groupPower=Infinity) {
     return settings.detectAttacks &&
         (power > 650 || (power > 400 && power > groupPower * 2));
+}
+
+
+function fmtLine(html, classes='', title='') {
+    return `<div class="line ${classes}" title="${title}">${html}</div>`;
 }
 
 
@@ -153,30 +172,32 @@ function renderZoomed(groups) {
         return;
     }
     const groupCenterIdx = groups.findIndex(x => x.watching);
-    const pos = zoomedPosition;
-    const idx = Math.max(0, Math.min(groupCenterIdx + pos, groups.length - 1));
+    const position = zoomedPosition;
+    const idx = Math.max(0, Math.min(groupCenterIdx + position, groups.length - 1));
     const group = groups[idx];
     if (!group) {
         console.warn("XXX Unexpected missing group");
         return;
     }
     const groupSize = group.athletes.length;
-    const watchingCenterIdx = pos === 0 ? group.athletes.findIndex(x => x.watching) : 0;
+    const watchingCenterIdx = position === 0 ? group.athletes.findIndex(x => x.watching) : 0;
     const ahead = Math.max(0, watchingCenterIdx - Math.ceil(settings.maxZoomed / 2));
     const end = Math.min(group.athletes.length, ahead + settings.maxZoomed);
     const behind = group.athletes.length - end;
     const athletes = group.athletes.slice(ahead, end);
     contentEl.style.setProperty('--total-athletes', athletes.length);  // visual only
     const athletesLabel = groupSize === 1 ? 'Athlete' : 'Athletes';
-    const groupLabel = pos ? `${H.place(Math.abs(pos))} ${pos > 0 ? 'behind' : 'ahead'}` : 'Your Group';
+    const groupLabel = position ?
+        `${H.place(Math.abs(position))} ${position > 0 ? 'behind' : 'ahead'}` :
+        'Your Group';
     const primaryFmt = {
         power: ({power}) => pwrFmt(power),
         wkg: ({power, weight}) => weight ? wkgFmt(power / weight) : pwrFmt(power),
     }[settings.zoomedPrimaryField || 'power'];
-    metaEl.innerHTML = [
+    common.softInnerHTML(metaEl, [
         `${groupLabel}, ${groupSize} ${athletesLabel}`,
         `${primaryFmt(group)}, ${spdFmt(group.speed)}`,
-    ].map(x => `<div class="line">${x}</div>`).join('');
+    ].map(x => `<div class="line">${x}</div>`).join(''));
     const active = new Set();
     aheadEl.classList.toggle('visible', !!ahead);
     if (ahead) {
@@ -192,7 +213,7 @@ function renderZoomed(groups) {
         active.add(i);
         const pos = getOrCreatePosition(i);
         pos.bubble.title = `Click for athlete details`;
-        pos.bubble.href = `/pages/profile.html?id=${athlete.athleteId}&width=800&height=340`;
+        pos.bubble.href = `/pages/profile.html?id=${athlete.athleteId}&windowType=profile`;
         pos.el.classList.toggle('watching', !!athlete.watching);
         pos.el.style.setProperty('--athletes', 1);
         let label;
@@ -209,19 +230,37 @@ function renderZoomed(groups) {
                 label = a.initials;
             }
         }
-        if (label) {
-            pos.bubble.textContent = label;
+        const unusedLabels = pos.subgroupsInUse || new Set();
+        if (eventSubgroup) {
+            const sg = getSubgroupLazy(athlete.state.eventSubgroupId);
+            const sgLabel = sg && sg.subgroupLabel;
+            if (sgLabel) {
+                pos.bubbleHolder.style.setProperty(`--subgroup-${sgLabel}`, 1);
+                unusedLabels.delete(sgLabel);
+            }
+            pos.subgroupsInUse = new Set(sgLabel ? [sgLabel] : []);
+            pos.bubbleHolder.classList.toggle('subgroup-wheel', !!sgLabel);
         } else {
-            pos.bubble.innerHTML = `<img src="${avatar}"/>`;
+            if (pos.subgroupsInUse) {
+                pos.subgroupsInUse.clear();
+            } else {
+                pos.subgroupsInUse = new Set();
+            }
+            pos.bubbleHolder.classList.remove('subgroup-wheel');
         }
+        for (const x of unusedLabels) {
+            pos.bubbleHolder.style.removeProperty(`--subgroup-${x}`);
+        }
+
+        common.softInnerHTML(pos.bubble, label || `<img src="${avatar}"/>`);
         const leftLines = [];
-        if (isAttack(athlete.state.power, group.power)) {
-            pos.el.classList.add('attn', 'attack');
-            leftLines.push(`<div class="line major attn">Attack!</div>`);
+        const attacking = isAttack(athlete.state.power, group.power);
+        pos.el.classList.toggle('attn', attacking);
+        if (attacking) {
+            leftLines.push(fmtLine('Attack!', 'major attn'));
         } else {
-            pos.el.classList.remove('attn', 'attack');
             if (fLast) {
-                leftLines.push(`<div class="line minor">${fLast}</div>`);
+                leftLines.push(fmtLine(fLast, 'minor', fLast));
                 if (team) {
                     leftLines.push(common.teamBadge(team));
                 }
@@ -281,18 +320,10 @@ function renderZoomed(groups) {
             const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
             rightLines.push(`<div class="line">${H.number(mywbal*100)}${common.fmtBattery(mywbal)}${minorValue2}</div>`);
         }
-
-        pos.leftLines.innerHTML = leftLines.join('');
-        pos.leftDesc.classList.toggle('empty', !leftLines.length);
-        pos.rightLines.innerHTML = rightLines.join('');
-        pos.rightDesc.classList.toggle('empty', !rightLines.length);
         const gap = next ? Math.abs(next.gap - athlete.gap) : 0;
-        pos.gap.el.style.setProperty('--inner-gap', gap);
-        pos.gap.el.style.setProperty('--outer-gap', gap);
-        pos.gap.el.style.setProperty('--gap-sign', -1);
-        let dur;
-        pos.gap.el.classList.toggle('real', true);
+        let gapLine = '';
         if (gap) {
+            let dur;
             if (settings.zoomedGapField === 'time') {
                 dur = gap > 0.5 && (H.number(gap) + 's');
             } else {
@@ -301,11 +332,20 @@ function renderZoomed(groups) {
                 dur = gapDistance && gapDistance > 2 &&
                     (H.number(gapDistance * (imperial ? 3.28084 : 1)) + units);
             }
+            if (dur) {
+                gapLine = fmtLine(dur);
+            }
         }
-        pos.gap.leftLine.textContent = dur ? dur : '';
-        pos.gap.el.classList.toggle('alone', !gap);
-        pos.gap.el.classList.toggle('has-label', !!dur);
-        pos.actions.watch.classList.toggle('hidden', athlete.watching);
+        common.softInnerHTML(pos.leftLines, leftLines.join(''));
+        common.softInnerHTML(pos.rightLines, rightLines.join(''));
+        common.softInnerHTML(pos.gap.lines, gapLine);
+        pos.leftDesc.classList.toggle('empty', !leftLines.length);
+        pos.rightDesc.classList.toggle('empty', !rightLines.length);
+        pos.gap.desc.classList.toggle('empty', !gapLine);
+        pos.gap.el.style.setProperty('--inner-gap', gap);
+        pos.gap.el.style.setProperty('--outer-gap', gap);
+        pos.gap.el.style.setProperty('--gap-sign', -1);
+        pos.actions.watch.classList.toggle('hidden', !!athlete.watching);
         if (!athlete.watching) {
             pos.watchTarget = athlete.athleteId;
         }
@@ -313,6 +353,22 @@ function renderZoomed(groups) {
     for (const [i, {el}] of positions.entries()) {
         el.classList.toggle('hidden', !active.has(i));
     }
+}
+
+
+function getSubgroupDistro(group) {
+    const sgLabels = new Map();
+    let total = 0;
+    for (const x of group.athletes) {
+        const sg = getSubgroupLazy(x.state.eventSubgroupId);
+        const label = sg && sg.subgroupLabel;
+        if (label) {
+            const c = sgLabels.get(label) || 0;
+            sgLabels.set(label, c + 1);
+            total++;
+        }
+    }
+    return new Map(Array.from(sgLabels).map(([k, v]) => [k, v / total]));
 }
 
 
@@ -341,16 +397,16 @@ function renderGroups(groups) {
     const totAthletes = groups.reduce((agg, x) => agg + x.athletes.length, 0);
     contentEl.style.setProperty('--total-athletes', totAthletes);
     const athletesLabel = totAthletes === 1 ? 'Athlete' : 'Athletes';
-    metaEl.innerHTML = `<div class="line">${totAthletes} ${athletesLabel}</div>`;
+    common.softInnerHTML(metaEl, fmtLine(`${totAthletes} ${athletesLabel}`));
     const active = new Set();
-    aheadEl.classList.toggle('visible', !!ahead);
     if (ahead) {
         aheadEl.textContent = `+${ahead} ahead`;
     }
-    behindEl.classList.toggle('visible', !!behind);
     if (behind) {
         behindEl.textContent = `+${behind} behind`;
     }
+    aheadEl.classList.toggle('visible', !!ahead);
+    behindEl.classList.toggle('visible', !!behind);
     for (const [i, group] of groups.entries()) {
         // NOTE: gap measurement is always to the next group or null.
         const next = groups[i + 1];
@@ -363,13 +419,39 @@ function renderGroups(groups) {
         }
         pos.el.classList.toggle('watching', !!group.watching);
         pos.el.style.setProperty('--athletes', group.athletes.length);
+        const unusedLabels = pos.subgroupsInUse || new Set();
+        if (eventSubgroup) {
+            const labels = getSubgroupDistro(group);
+            for (const [label, pct] of labels.entries()) {
+                pos.bubbleHolder.style.setProperty(`--subgroup-${label}`, pct.toFixed(6));
+                unusedLabels.delete(label);
+            }
+            pos.subgroupsInUse = new Set(labels.keys());
+            pos.bubbleHolder.classList.toggle('subgroup-wheel', labels.size > 0);
+        } else {
+            if (pos.subgroupsInUse) {
+                pos.subgroupsInUse.clear();
+            } else {
+                pos.subgroupsInUse = new Set();
+            }
+            pos.bubbleHolder.classList.remove('subgroup-wheel');
+        }
+        for (const x of unusedLabels) {
+            pos.bubbleHolder.style.removeProperty(`--subgroup-${x}`);
+        }
         let label;
         let team;
+        let attacking = false;
         const leftLines = [];
         const rightLines = [];
         if (group.athletes.length === 1 && group.athletes[0].athlete) {
             label = group.athletes[0].athlete.initials || '1';
-            pos.el.classList.remove('attn', 'attack');
+            attacking = isAttack(group.power);
+            if (attacking) {
+                const weight = group.athletes[0].athlete.weight;
+                leftLines.push(fmtLine('Attack!', 'attn'));
+                leftLines.push(fmtLine(primaryFmt({power: group.power, weight}), 'minor attn'));
+            }
             if (group.athletes[0].athlete.team == watchingteam) {
                 team = watchingteam;
                 //if(group.athletes[0].athlete.avatar) leftAvatars.push(`<img src="${group.athletes[0].athlete.avatar}"/>`);
@@ -382,6 +464,7 @@ function renderGroups(groups) {
                 const p = x.stats.power.smooth[5];
                 if (p > max) {
                     max = p;
+                    weight = x.athlete && x.athlete.weight;
                 }
                 // check if in group is a teammate
                // console.log(x);
@@ -391,62 +474,81 @@ function renderGroups(groups) {
                     team = watchingteam;
                 }
             }
-            if (isAttack(max, group.power)) {
-                pos.el.classList.add('attn', 'attack');
-                leftLines.push(`<div class="line attn">Attack!</div>`);
-                leftLines.push(`<div class="line minor attn">${primaryFmt({power: max, weight})}</div>`);
-            } else {
-                pos.el.classList.remove('attn', 'attack');
+            attacking = isAttack(max, group.power);
+            if (attacking) {
+                leftLines.push(fmtLine('Attack!', 'attn'));
+                leftLines.push(fmtLine(primaryFmt({power: max, weight}), 'minor attn'));
             }
         }
+		pos.el.classList.toggle('attn', attacking);
         pos.bubble.textContent = label;
+        rightLines.push(fmtLine(primaryFmt(group), '', 'Group average'));
         if (team) {
             const hue = common.badgeHue(team);
             leftLines.push(`<div class="badge" style="--hue: ${hue};">${team}</div>`);
         }
-        rightLines.push(`<div class="line">${primaryFmt(group)}</div>`);
+
         const minorField = settings.groupsSecondaryField || 'speed';
         if (minorField === 'heartrate') {
             if (group.heartrate) {
-                rightLines.push(`<div class="line minor">${H.number(group.heartrate, {suffix: 'bpm', html: true})}</div>`);
+                rightLines.push(fmtLine(H.number(group.heartrate, {suffix: 'bpm', html: true}), 'minor'));
             }
         } else if (minorField === 'draft') {
             if (group.draft != null) {
-                rightLines.push(`<div class="line minor">${H.number(group.draft, {suffix: '% (draft)', html: true})}</div>`);
+                rightLines.push(fmtLine(
+                    H.number(group.draft, {suffix: 'w <ms large>air</ms>', html: true}),
+                    'minor', 'Draft'));
             }
         } else if (minorField === 'speed') {
             if (group.speed != null) {
-                rightLines.push(`<div class="line minor">${H.pace(group.speed, {precision: 0, suffix: true, html: true})}</div>`);
+                rightLines.push(fmtLine(
+                    H.pace(group.speed, {precision: 0, suffix: true, html: true}),
+                    'minor'));
             }
-        } else if (minorField === 'power-highest') {
-            const highest = sauce.data.max(group.athletes.map(x => x.state.power));
-            if (highest != null) {
-                rightLines.push(`<div class="line minor">${pwrFmt(highest)} ` +
-                    `<abbr class="unit">(highest)</abbr></div>`);
-            }
-        } else if (minorField === 'power-median') {
-            const med = sauce.data.median(group.athletes.map(x => x.state.power));
-            if (med != null) {
-                rightLines.push(`<div class="line minor">${pwrFmt(med)} ` +
-                    `<abbr class="unit">(median)</abbr></div>`);
+        } else if (group.athletes.length > 1 || settings.groupsPrimaryField !== 'power') {
+            if (minorField === 'power-highest') {
+                const highest = sauce.data.max(group.athletes.map(x => x.state.power));
+                if (highest != null) {
+                    rightLines.push(fmtLine(
+                        pwrFmt(highest, {suffix: '!'}),
+                        'minor', 'Highest individual power'));
+                }
+            } else if (minorField === 'power-median') {
+                const med = sauce.data.median(group.athletes.map(x => x.state.power));
+                if (med != null) {
+                    rightLines.push(fmtLine(pwrFmt(med, {suffix: 'M'}), 'minor', 'Median group power'));
+                }
             }
         }
-        pos.leftLines.innerHTML = leftLines.join('');
-        pos.leftDesc.classList.toggle('empty', !leftLines.length);
-        pos.rightLines.innerHTML = rightLines.join('');
-        pos.rightDesc.classList.toggle('empty', !rightLines.length);
         const innerGap = next ? group.innerGap : 0;
         const gap = relPos < 0 ? group.gap : next ? next.gap : 0;
+        const dur = innerGap && H.duration(Math.abs(gap), {short: true, separator: ' '});
+        const gapText = dur ? (gap > 0 ? '+' : '-') + dur : '';
+        const gapLines = [];
+        if (gapText) {
+            gapLines.push(fmtLine(gapText));
+            if (next && next.isGapEst) {
+                gapLines.push(fmtLine('(est)', 'minor', 'est'));
+            }
+        }
+        common.softInnerHTML(pos.leftLines, leftLines.join(''));
+        common.softInnerHTML(pos.rightLines, rightLines.join(''));
+        common.softInnerHTML(pos.gap.lines, gapLines.join(''));
+        pos.leftDesc.classList.toggle('empty', !leftLines.length);
+        pos.rightDesc.classList.toggle('empty', !rightLines.length);
+        pos.gap.desc.classList.toggle('empty', !gapLines.length);
         pos.gap.el.style.setProperty('--inner-gap', innerGap);
         pos.gap.el.style.setProperty('--outer-gap', Math.abs(gap));
         pos.gap.el.style.setProperty('--gap-sign', gap > 0 ? 1 : -1);
-        pos.gap.el.classList.toggle('real', !!next && !next.isGapEst);
         pos.gap.el.classList.toggle('alone', !innerGap);
-        pos.gap.el.classList.toggle('has-label', !!innerGap);
-        const dur = innerGap && H.duration(Math.abs(gap), {short: true, seperator: ' '});
-        pos.gap.leftLine.textContent = dur ? (gap > 0 ? '+' : '-') + dur : '';
-        pos.actions.watch.classList.toggle('hidden', group.watching);
-        if (!group.watching) {
+        pos.actions.watch.classList.toggle('hidden', !!group.watching);
+        pos.el.classList.toggle('pack-position', !!group.watching && group.athletes.length > 1);
+        if (group.watching) {
+            if (group.athletes.length > 1) {
+                const wIdx = group.athletes.findIndex(x => x.watching);
+                pos.el.style.setProperty('--pack-position', (wIdx / (group.athletes.length - 1)).toFixed(6));
+            }
+        } else {
             pos.watchTarget = group.athletes[Math.trunc(group.athletes.length / 2)].athleteId;
         }
     }
@@ -457,17 +559,22 @@ function renderGroups(groups) {
 
 
 function setBackground() {
-    const {solidBackground, backgroundColor, hideHeader} = settings;
-    doc.classList.toggle('solid-background', !!solidBackground);
-    if (solidBackground) {
-        doc.style.setProperty('--background-color', backgroundColor);
+    doc.classList.toggle('solid-background', !!settings.solidBackground);
+    if (settings.solidBackground) {
+        doc.style.setProperty('--background-color', settings.backgroundColor);
     } else {
         doc.style.removeProperty('--background-color');
     }
-    const metaEl = document.querySelector('#meta');
-    if (metaEl) {
-        metaEl.style = (hideHeader) ? 'visibility:hidden' : 'visibility:visible';
+    if (settings.horizMode != null) {
+        doc.classList.toggle('horizontal', settings.horizMode);
     }
+    if (settings.hideHeader != null) {
+        doc.classList.toggle('hide-header', settings.hideHeader);
+    }
+    if (settings.labelAngle != null) {
+        doc.style.setProperty('--label-angle', settings.labelAngle);
+    }
+    setMaxPositions();
 }
 
 
@@ -481,6 +588,7 @@ export async function main() {
     contentEl.querySelector('.zoom-out').addEventListener('click', ev => {
         zoomedPosition = null;
         common.storage.set('zoomedPosition', zoomedPosition);
+        setMaxPositions();
         render();
     });
     common.settingsStore.addEventListener('changed', ev => {
@@ -488,15 +596,15 @@ export async function main() {
         if (changed.has('/imperialUnits')) {
             L.setImperial(imperial = changed.get('/imperialUnits'));
         }
-        
+       
         setBackground();
         render();
     });
     const gcs = await common.rpc.getGameConnectionStatus();
     if (gcs) {
-        common.subscribe('status', status =>
-            doc.classList.toggle('game-connection', status.connected),
-            {source: 'gameConnection'});
+        common.subscribe('status',
+                         status => doc.classList.toggle('game-connection', status.connected),
+                         {source: 'gameConnection', persistent: true});
         doc.classList.toggle('game-connection', gcs.connected);
     }
     let ts = 0;
@@ -508,6 +616,9 @@ export async function main() {
         const now = Date.now();
         if (now - ts > (settings.refreshInterval * 1000 - 100)) {
             ts = now;
+            eventSubgroup = groups.find(x => x.watching)
+                ?.athletes.find(x => x.watching)
+                ?.state.eventSubgroupId;
             render();
         }
     });
