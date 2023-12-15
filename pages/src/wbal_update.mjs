@@ -4,12 +4,23 @@ const page = location.pathname.split('/').at(-1).split('.')[0];
 console.log(page);
 var queue =[];
 var teamid = "";
+var icuapi = "";
+var icuid = "";
+var zwiftid = "";
 var type = "";
 
 
+
 teamid = common.settingsStore.get('wbal_team_id') || '';
+icuapi = common.settingsStore.get('wbal_icu_api') || '';
+icuid = common.settingsStore.get('wbal_icu_id') || '';
+zwiftid = common.settingsStore.get('wbal_icu_zwiftid') || '';
+
 
 document.getElementById("teamNumber").value =  teamid;   
+document.getElementById("intervalsAPI").value =  icuapi; 
+document.getElementById("intervalsID").value =  icuid; 
+document.getElementById("zwiftID").value =  zwiftid; 
 
 async function myFunction() {
     await doWbalCPUpdate();
@@ -160,12 +171,53 @@ async function doFetchEventData(event){
     return iqueue;
 } 
 
+async function doFetchIntervalsData(apikey, id, zwiftid){
+    //curl -u API_KEY:51yt7dh7qbbtwvoxzxyd4qgak https://intervals.icu/api/v1/athlete/i10518/mmp-model?type=Ride
+//{"type":"FFT_CURVES","criticalPower":279,"wPrime":18860,"pMax":1090,"inputPointIndexes":[70,77],"ftp":285}
+    let iqueue = [];
+    document.getElementById("event_or_team").textContent = "Intervals:";
+    document.getElementById("update_btn").style = "visibility:hidden";    
+    //https://www.zwiftracing.app/api/events/3239317
+//    let url = `https://www.zwiftracing.app/api/riders?club=${team}&page=0&pageSize=1000`;
+
+var headers = new Headers({
+    'Authorization': `Basic ${btoa("API_KEY:" + apikey)}`
+});     
+    let url = `https://intervals.icu/api/v1/athlete/${id}/mmp-model?type=Ride`;
+    //console.log(url);
+    document.getElementById("demo").innerHTML = "Fetching data from intervals.icu...";
+    let myjson = await fetch(url,{headers: headers}).then(response=>response.json());
+    //console.log(JSON.stringify(myjson));
+    if (myjson?.type){ 
+    // eslint-disable-next-line no-prototype-builtins
+                //document.getElementById("demo").innerHTML = "Fetching: " + rider?.riderId + " - " + rider?.name + " - WBAL:" + Math.round(rider?.power?.AWC ?? 20000);
+        iqueue.push({athleteId:zwiftid, Wbal:Math.round(myjson?.wPrime ?? 20000), CP:Math.round(myjson?.criticalPower ?? 200)});
+        document.getElementById("update_btn").style = "visibility:visible";
+        document.getElementById("fetch_descr").textContent = `CP: ${myjson?.criticalPower} - WPrime: ${myjson?.wPrime} `;
+        generateTable(iqueue);
+        common.settingsStore.set('wbal_icu_api',apikey);
+        common.settingsStore.set('wbal_icu_id',id); 
+        common.settingsStore.set('wbal_icu_zwiftid',zwiftid); 
+            
+    }
+    else {
+        console.log("Kein ICU");
+        document.getElementById("fetch_descr").textContent = "NO Data FOUND!";
+        const table = document.querySelector('#content table');
+        const tbody = table.querySelector('tbody');
+        tbody.innerHTML = '';        
+    } 
+
+    document.getElementById("demo").innerHTML = "... fetching done";
+    
+    return iqueue;
+} 
 
 export async function doWbalCPUpdate(){
     document.getElementById("demo").innerHTML = queue.length + " entries";
     console.log("----- UPDATE -----");
     Promise.all(queue).then(whatevs => {
-        // console.log(whatevs);
+         //console.log(whatevs);
         for (let athlete of whatevs){
             if (athlete){
                
@@ -187,7 +239,8 @@ export async function doWbalCPUpdate(){
             // store team id
             //console.log('wbal_tupdate ',teamid);
             common.settingsStore.set('wbal_team_id',teamid);
-        }        
+        } 
+
     })
 }
 
@@ -208,6 +261,13 @@ export async function main() {
             type = "wbal_eupdate";
             queue = await doFetchEventData(document.getElementById("eventNumber").value);
         }
+        else if (btn.dataset.action ==='fetch-icu'){
+            type = "wbal_icu";
+            icuapi = document.getElementById("intervalsAPI").value;
+            icuid = document.getElementById("intervalsID").value;
+            zwiftid = +(document.getElementById("zwiftID").value);
+            queue = await doFetchIntervalsData(icuapi,icuid,zwiftid);
+        }        
     });
     document.getElementById("update_btn").style = "visibility:hidden";
 

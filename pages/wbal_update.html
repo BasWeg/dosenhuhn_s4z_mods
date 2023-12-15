@@ -25,7 +25,7 @@
                 font-variant: all-small-caps;
                 font-weight: bold;
                 }
-            #teamNumber, #eventNumber {
+            #teamNumber, #eventNumber, #zwiftID {
                 width: 14ch;
             }
             #fileInput {
@@ -74,14 +74,29 @@
         <div id="content">
         <div id="meta" class="app-drag"></div>
         <form >
-        <div class="title">Either update teams wbal/cp</div>
+            <div class="title">Update zwift ID with intervals.icu data</div>
+            <label title="Intervals API Key">
+                <key>Intervals API:</key>
+                <input type="string" id="intervalsAPI" value=""/>
+            </label>
+            <label title="Intervals User ID">                
+                <key>Intervals ID:</key>
+                <input type="string" id="intervalsID" value=""/>
+            </label>
+            <label title="Zwift ID">                
+                <key>Zwift ID:</key>
+                <input type="number" id="zwiftID" value=""/>
+                <div class="std button" title="Refresh" data-action="fetch-icu"><ms>search</ms></div>
+            </label>            
+            <hr class="solid">            
+        <div class="title">Update teams wbal/cp from ZR.app</div>
         <label title="The team number from zwiftracing or ZP">
             <key>Team Number:</key>
             <input type="number" id="teamNumber" value=""/>
             <div class="std button" title="Refresh" data-action="fetch-tzr"><ms>search</ms></div>
         </label>
         <hr class="solid">
-        <div class="title">Or update event participants wbal/cp - Inactive at the moment</div>            
+        <div class="title">Update event participants wbal/cp - Inactive at the moment</div>            
         <label title="The event number from zwiftracing or ZP">
             <key>Event Number:</key>
             <input type="number" id="eventNumber" disabled="disabled" value=""/>
