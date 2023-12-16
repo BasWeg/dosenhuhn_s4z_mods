@@ -128,7 +128,8 @@ async function doFetchEventData(event){
     document.getElementById("update_btn").style = "visibility:hidden";    
     //https://www.zwiftracing.app/api/events/3239317
 //    let url = `https://www.zwiftracing.app/api/riders?club=${team}&page=0&pageSize=1000`;
-    let url = `https://dosenhuhn.de/get_event_v2.php`;
+    //let url = `https://dosenhuhn.de/get_event_v2.php`;
+    let url = `https://dosenhuhn.de/get_event.php`;
     let myeventlist = await fetch(url).then(response=>response.json());
     var index = myeventlist.map(function(o) { return o.eventId; }).indexOf(`${event}`);
     //check if eventid is in myeventlist
@@ -139,7 +140,8 @@ async function doFetchEventData(event){
         return []; 
     } 
      
-    url = `https://dosenhuhn.de/get_event_v2.php?event=${event}`;
+    //url = `https://dosenhuhn.de/get_event_v2.php?event=${event}`;
+    url = `https://dosenhuhn.de/get_event.php?event=${event}`;
     document.getElementById("demo").innerHTML = "Fetching data from zwiftracing...";
     let myjson = await fetch(url).then(response=>response.json());
     // console.log(JSON.stringify(myjson));
