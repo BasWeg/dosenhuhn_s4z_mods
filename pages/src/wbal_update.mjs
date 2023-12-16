@@ -172,13 +172,10 @@ async function doFetchEventData(event){
 } 
 
 async function doFetchIntervalsData(apikey, id, zwiftid){
-    //curl -u API_KEY:51yt7dh7qbbtwvoxzxyd4qgak https://intervals.icu/api/v1/athlete/i10518/mmp-model?type=Ride
-//{"type":"FFT_CURVES","criticalPower":279,"wPrime":18860,"pMax":1090,"inputPointIndexes":[70,77],"ftp":285}
     let iqueue = [];
     document.getElementById("event_or_team").textContent = "Intervals:";
     document.getElementById("update_btn").style = "visibility:hidden";    
-    //https://www.zwiftracing.app/api/events/3239317
-//    let url = `https://www.zwiftracing.app/api/riders?club=${team}&page=0&pageSize=1000`;
+
 
 var headers = new Headers({
     'Authorization': `Basic ${btoa("API_KEY:" + apikey)}`
