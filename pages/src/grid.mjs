@@ -108,7 +108,6 @@ if (window.isElectron) {
 export async function main() {
 
     common.initInteractionListeners();
-    //common.initNationFlags();  // bg okay
     var toggleEdit = false;
 
     // common.settingsStore.addEventListener('changed', async ev => {
@@ -160,8 +159,7 @@ export async function main() {
         }
     });
 
-    //common.settingsStore.set('widgets',default_widget_array);
-    let widgetArray = getActiveWidgets() || default_widget_array;// common.settingsStore.get('widgets') || default_widget_array;
+    let widgetArray = getActiveWidgets() || default_widget_array;
     const options = {
         column: 24,
         cellHeight: 20,
@@ -182,39 +180,36 @@ export async function main() {
     grid.on('resizestop', function(_event, _items) {
         const serializedFull = grid.save(true, true);
         const serializedData = serializedFull.children;
-        let widgets = getActiveWidgets();//common.settingsStore.get('widgets');
+        let widgets = getActiveWidgets();
 
         for (const widget of serializedData) {
             const bounds = {x: widget.x, y: widget.y, w: widget.w, h: widget.h};
             const objIndex = widgets.findIndex((obj => obj.id == widget.id));
             widgets[objIndex].bounds = bounds;
         }
-        //console.log(widgets);
-        setActiveWidgets(widgets);//common.settingsStore.set('widgets', widgets);
+        setActiveWidgets(widgets);
     });
 
     // eslint-disable-next-line no-unused-vars
     grid.on('dragstop', function (_event, _el) {
         var serializedFull = grid.save(true, true);
         var serializedData = serializedFull.children;
-        let widgets = getActiveWidgets();//common.settingsStore.get('widgets');
+        let widgets = getActiveWidgets();
         
         for (const widget of serializedData) {
             const bounds = {x: widget.x, y: widget.y, w: widget.w, h: widget.h};
             const objIndex = widgets.findIndex((obj => obj.id == widget.id));
             widgets[objIndex].bounds = bounds;
         }
-        setActiveWidgets(widgets)//common.settingsStore.set('widgets', widgets);
+        setActiveWidgets(widgets);
     });
     
-    //update_chart(watching.stats.power.timeInZones || []);
     document.addEventListener('click', async ev => {
         const a = ev.target.closest('header a[data-action]');
         if (!a) {
             return;
         }
         ev.preventDefault();
-        //console.log(a.dataset.action);
         if (a.dataset.action === 'toggleEdit') {
             toggleEdit = !toggleEdit;
             document.getElementById('toggleEditBtn').classList.toggle('toggleEdit', !!toggleEdit);
@@ -240,11 +235,10 @@ export async function main() {
                 id: mywidget.id, 
                 content:  `<div class="edit_mode"><span>${mywidget.prettyName}</span><div class"buttons"><a title="remove element" data-action="remove" data-id="${mywidget.id}"><ms>delete</ms></a></div></div>`
             });   
-            //console.log(newgrid);   
             mywidget.bounds.x = parseInt(newgrid.getAttribute("gs-x"));       
             mywidget.bounds.y = parseInt(newgrid.getAttribute("gs-y"));
             widgetArray.push(mywidget);
-            setActiveWidgets(widgetArray);//common.settingsStore.set('widgets',widgetArray);
+            setActiveWidgets(widgetArray);
             render(grid, widgetArray,toggleEdit);
         }
     });  
@@ -260,7 +254,7 @@ export async function main() {
             if (objWithIdIndex > -1) {
                 widgetArray.splice(objWithIdIndex, 1);
             }
-            setActiveWidgets(widgetArray);//common.settingsStore.set('widgets',widgetArray);
+            setActiveWidgets(widgetArray);
             render(grid, widgetArray,toggleEdit);
         }
     });        
@@ -279,10 +273,9 @@ async function render(grid,widgetArray,toggleEdit) {
                             h: mywidget.bounds.h, 
                             id: mywidget.id, 
                             content:  `<div class="edit_mode"><span>${mywidget.prettyName}</span><div class"buttons"><a title="remove element" data-action="remove" data-id="${mywidget.id}"><ms heavy>delete</ms></a></div></div>`
-                        }); //'<div class="move-icon"><ms>settings</ms></div>'+
+                        }); 
         }
-        // const manifests = await common.rpc.getWindowManifests();
-        // const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
+
         const mGroups = new Map();
         for (const m of manifests.filter(x => !x.private)) {
             if (!mGroups.has(m.groupTitle)) {
@@ -296,42 +289,7 @@ async function render(grid,widgetArray,toggleEdit) {
                 `<option title="${common.sanitizeAttr(common.stripHTML(x.prettyDesc))}"
                          value="${x.type}">${common.stripHTML(x.prettyName)}</option>`)}</optgroup>`
         ).join('');
-
-        // el.addEventListener('click', async ev => {
-        //     const a = ev.target.closest('header a[data-action]');
-        //     if (!a) {
-        //         return;
-        //     }
-        //     ev.preventDefault();
-        //     console.log(a.dataset.action);
-        //     if (a.dataset.action === 'addWidget') {
-        //         const type = ev.target.closest('.add-new').querySelector('select').value;
-        //         const desc = descs[type];
-        //         const mywidget = { 
-        //             type: desc.type,
-        //             file: desc.file,
-        //             groupTitle: desc.groupTitle,
-        //             prettyName: desc.prettyName,
-        //             prettyDesc: desc.prettyDesc,
-        //             id: desc.type+'-'+Date.now(),
-        //             bounds: {
-        //                 w: 1,
-        //                 h: 2,
-        //             },
-        //         }
-        //         const newgrid = grid.addWidget({
-        //             w: mywidget.bounds.w,
-        //             h: mywidget.bounds.h, 
-        //             id: mywidget.id, 
-        //             content:  `<div class="edit_mode"><span>${mywidget.prettyName}</span><div class"buttons"><a title="remove element" data-action="remove" data-id="${mywidget.id}"><ms>delete</ms></a></div></div>`
-        //         });   
-        //         console.log(newgrid);   
-        //         mywidget.bounds.x = parseInt(newgrid.getAttribute("gs-x"));       
-        //         mywidget.bounds.y = parseInt(newgrid.getAttribute("gs-y"));
-        //         widgetArray.push(new_widget);
-        //         common.settingsStore.set('widgets',mywidget);
-        //     };
-        // });          
+     
     }
     else
     {
@@ -343,7 +301,7 @@ async function render(grid,widgetArray,toggleEdit) {
                             h: mywidget.bounds.h, 
                             id: mywidget.id, 
                             content:  `<iframe class="iframe rounded" src="${mywidget.file}?windowId=${mywidget.id}" title="${mywidget.prettyName}"></iframe>`
-                        }); //'<div class="move-icon"><ms>settings</ms></div>'+
+                        }); 
         }
     }
 }
@@ -391,7 +349,6 @@ function setBackground() {
 
 export async function settingsMain() {
     common.initInteractionListeners();
-    //common.settingsStore.set('widgets',default_widget_array);
     await common.initSettingsForm('form#general')();
     await initWindowsPanel();
 }
@@ -543,7 +500,6 @@ async function initWindowsPanel() {
     winsEl.addEventListener('click', async ev => {
         const link = ev.target.closest('table a.link');
         if (!link) {
-            console.log("nope");
             return;
         }
         const id = ev.target.closest('[data-id]').dataset.id;
