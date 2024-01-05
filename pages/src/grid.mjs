@@ -3,15 +3,16 @@ import * as common from '/pages/src/common.mjs';
 
 const doc = document.documentElement;
 const L = sauce.locale;
+const H = L.human;
 
 const fieldsKey = 'dosenhuhn_grid_settings_v1';
 
 let imperial = common.storage.get('/imperialUnits');
 L.setImperial(imperial);
-const grid_version = 1;
+const grid_version = 2;
 // let fieldStates;
 
-const manifests = await common.rpc.getWindowManifests();
+const manifests = await common.rpc.getWidgetWindowManifests();
 const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
 let desc = descs['watching'];
 
@@ -31,7 +32,15 @@ const default_widget_array = [
         },       
     },
 ];
-  
+
+const default_profiles_array = [
+    {
+        id: Date.now(),
+        name: "default",
+        active: true,
+        widgets:  default_widget_array      
+    },
+];
 
 common.settingsStore.setDefault({
     autoscroll: true,
@@ -42,6 +51,7 @@ common.settingsStore.setDefault({
     backgroundColor: '#00ff00',
     grid_version: grid_version,
     widgets: default_widget_array,
+    profiles: default_profiles_array,
 });
 
 const settings = common.settingsStore.get();
@@ -63,6 +73,21 @@ if (settings.grid_version !== grid_version && grid_version == 1)
       });
       common.settingsStore.set('widgets',updatedWidgets);
       common.settingsStore.set('grid_version',grid_version);   
+}
+
+if (settings.grid_version !== grid_version && grid_version == 2)
+{
+    console.log("grid version change: adapt");
+    const new_profiles = [
+        {
+            id: Date.now(),
+            name: "default",
+            active: true,
+            widgets:  settings.widgets      
+        },
+    ];
+    common.settingsStore.set('profiles',new_profiles);
+    common.settingsStore.set('grid_version',grid_version);   
 }
 
 
@@ -136,7 +161,7 @@ export async function main() {
     });
 
     //common.settingsStore.set('widgets',default_widget_array);
-    let widgetArray = common.settingsStore.get('widgets') || default_widget_array;
+    let widgetArray = getActiveWidgets() || default_widget_array;// common.settingsStore.get('widgets') || default_widget_array;
     const options = {
         column: 24,
         cellHeight: 20,
@@ -157,7 +182,7 @@ export async function main() {
     grid.on('resizestop', function(_event, _items) {
         const serializedFull = grid.save(true, true);
         const serializedData = serializedFull.children;
-        let widgets = common.settingsStore.get('widgets');
+        let widgets = getActiveWidgets();//common.settingsStore.get('widgets');
 
         for (const widget of serializedData) {
             const bounds = {x: widget.x, y: widget.y, w: widget.w, h: widget.h};
@@ -165,21 +190,21 @@ export async function main() {
             widgets[objIndex].bounds = bounds;
         }
         //console.log(widgets);
-        common.settingsStore.set('widgets', widgets);
+        setActiveWidgets(widgets);//common.settingsStore.set('widgets', widgets);
     });
 
     // eslint-disable-next-line no-unused-vars
     grid.on('dragstop', function (_event, _el) {
         var serializedFull = grid.save(true, true);
         var serializedData = serializedFull.children;
-        let widgets = common.settingsStore.get('widgets');
+        let widgets = getActiveWidgets();//common.settingsStore.get('widgets');
         
         for (const widget of serializedData) {
             const bounds = {x: widget.x, y: widget.y, w: widget.w, h: widget.h};
             const objIndex = widgets.findIndex((obj => obj.id == widget.id));
             widgets[objIndex].bounds = bounds;
         }
-        common.settingsStore.set('widgets', widgets);
+        setActiveWidgets(widgets)//common.settingsStore.set('widgets', widgets);
     });
     
     //update_chart(watching.stats.power.timeInZones || []);
@@ -219,7 +244,7 @@ export async function main() {
             mywidget.bounds.x = parseInt(newgrid.getAttribute("gs-x"));       
             mywidget.bounds.y = parseInt(newgrid.getAttribute("gs-y"));
             widgetArray.push(mywidget);
-            common.settingsStore.set('widgets',widgetArray);
+            setActiveWidgets(widgetArray);//common.settingsStore.set('widgets',widgetArray);
             render(grid, widgetArray,toggleEdit);
         }
     });  
@@ -235,7 +260,7 @@ export async function main() {
             if (objWithIdIndex > -1) {
                 widgetArray.splice(objWithIdIndex, 1);
             }
-            common.settingsStore.set('widgets',widgetArray);
+            setActiveWidgets(widgetArray);//common.settingsStore.set('widgets',widgetArray);
             render(grid, widgetArray,toggleEdit);
         }
     });        
@@ -373,11 +398,9 @@ export async function settingsMain() {
 
 
 async function renderWindows() {
-    const windows = Object.values(await common.rpc.getWindows()).filter(x => !x.private);
-    //const manifests = await common.rpc.getWindowManifests();
+    const windows = Object.values(await common.rpc.getWidgetWindowSpecs()).filter(x => !x.private);
     const el = document.querySelector('#windows');
-   // const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
-    const widgetArray = common.settingsStore.get('widgets');
+    const widgetArray = getActiveWidgets();
     windows.sort((a, b) => !!a.closed - !!b.closed);
     el.querySelector('table.active-windows tbody').innerHTML = widgetArray.map(x => {
         const desc = descs[x.type] || {
@@ -425,73 +448,219 @@ async function renderWindows() {
 }
 
 async function removeWindow(id) {
-    const widgetArray = common.settingsStore.get('widgets');
+    const widgetArray = getActiveWidgets();
     const objWithIdIndex = widgetArray.findIndex((obj) => obj.id === id);
     if (objWithIdIndex > -1) {
         widgetArray.splice(objWithIdIndex, 1);
     }
-    common.settingsStore.set('widgets',widgetArray);
+    setActiveWidgets(widgetArray);
     renderWindows();
+    renderProfiles();
+}
+
+async function renameProfile(id, name)
+{
+    const profiles = common.settingsStore.get('profiles') || [];
+    const ProfileId = profiles.findIndex((obj) => obj.id === id*1);
+    profiles[ProfileId].name = name;
+    common.settingsStore.set('profiles', profiles);
+}
+
+async function removeProfile(id)
+{
+    const profiles = common.settingsStore.get('profiles') || [];
+    const ProfileId = profiles.findIndex((obj) => obj.id === id*1);
+    if (ProfileId > -1) {
+        profiles.splice(ProfileId, 1);
+    }
+    common.settingsStore.set('profiles', profiles);  
+}
+
+async function createProfile()
+{
+    const profiles = common.settingsStore.get('profiles') || [];
+    const new_profile = {
+            id: Date.now(),
+            name: "new",
+            active: false,
+            widgets:  []      
+        };
+    profiles.push(new_profile);
+    common.settingsStore.set('profiles', profiles);
+}
+
+async function importProfile(data)
+{
+    const profiles = common.settingsStore.get('profiles') || [];
+    data.id = Date.now(); // new id
+    data.active = false; // overwrite active
+    profiles.push(data);
+    common.settingsStore.set('profiles', profiles);
+}
+
+function getActiveWidgets() {
+    const profiles = common.settingsStore.get('profiles') || [];
+    const ActiveId = profiles.findIndex((obj) => obj.active === true);
+    return profiles[ActiveId].widgets;
+}
+
+function setActiveWidgets(widgets) {
+    const profiles = common.settingsStore.get('profiles') || [];
+    const ActiveId = profiles.findIndex((obj) => obj.active === true);
+    profiles[ActiveId].widgets = widgets;
+    common.settingsStore.set('profiles',profiles);
+}
+
+async function renderProfiles() {
+    const profiles = common.settingsStore.get('profiles') || [];
+    const el = document.querySelector('#windows');
+    el.querySelector('table.profiles tbody').innerHTML = profiles.map((x) => {
+        return `
+            <tr data-id="${x.id}" class="profile ${x.active ? 'active' : 'closed'}">
+                <td class="name">${common.stripHTML(x.name)}<a class="link profile-edit-name"
+                    title="Edit name"><ms>edit</ms></a></td>
+                <td class="windows">${H.number(Object.keys(x.widgets).length)}</td>
+                <td class="btn">${x.active ? 'Current' : '<a class="link profile-select">Activate</a>'}</td>
+                <td class="btn" title="Export this profile to a file"
+                    ><a class="link profile-export"><ms>download</ms></a></td>
+                <td class="btn" title="Duplicate this profile"
+                    ><a class="link profile-clone"><ms>file_copy</ms></a></td>
+                <td class="btn" title="Delete this profile"
+                    >${x.active ? '' : '<a class="link danger profile-delete"><ms>delete_forever</ms></a>'}</td>
+            </tr>
+        `;
+    }).join('\n');
 }
 
 async function initWindowsPanel() {
     await Promise.all([
-        //renderProfiles(),
         renderWindows(),
-        //renderAvailableMods(),
+        renderProfiles(),        
     ]);
     const winsEl = document.querySelector('#windows');
-    // const manifests = await common.rpc.getWindowManifests();
-    // const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
 
     winsEl.addEventListener('submit', ev => ev.preventDefault());
     winsEl.addEventListener('click', async ev => {
         const link = ev.target.closest('table a.link');
         if (!link) {
+            console.log("nope");
             return;
         }
         const id = ev.target.closest('[data-id]').dataset.id;
+        const profilesarray = common.settingsStore.get('profiles')
         if (link.classList.contains('win-restore')) {
             //await common.rpc.openWindow(id);
         } else if (link.classList.contains('profile-select')) {
-            //await common.rpc.activateProfile(id);
-            //await renderProfiles();
+            const objWithIdIndex = profilesarray.findIndex((obj) => obj.id === id*1);
+            const oldActiveId = profilesarray.findIndex((obj) => obj.active === true);
+            profilesarray[oldActiveId].active = false;
+            profilesarray[objWithIdIndex].active = true;
+            //common.settingsStore.set('widgets',profilesarray[objWithIdIndex].widgets);
+            common.settingsStore.set('profiles',profilesarray);
             await renderWindows();
+            await renderProfiles();
         } else if (link.classList.contains('win-delete')) {
             console.log("delete",id);
             await removeWindow(id);
-            //await common.rpc.removeWindow(id);
         } else if (link.classList.contains('profile-delete')) {
-            //await common.rpc.removeProfile(id).catch(e => alert(`Remove Error\n\n${e.message}`));
-            //await renderProfiles();
+            if (confirm('Delete this profile and all its windows?')) {
+                await removeProfile(id).catch(e => alert(`Remove Error...\n\n${e.message}`));
+                await renderProfiles();
+            }
         } else if (link.classList.contains('profile-clone')) {
-            //await common.rpc.cloneProfile(id).catch(e => alert(`Clone Error\n\n${e.message}`));
-            //await renderProfiles();
+            const objWithIdIndex = profilesarray.findIndex((obj) => obj.id === id*1);
+            const tocloneprofile = profilesarray[objWithIdIndex];
+            const clonedprofile = {
+                id: Date.now(),
+                name: tocloneprofile.name + "-cloned",
+                active: false,
+                widgets:  tocloneprofile.widgets      
+            };
+            profilesarray.push(clonedprofile);
+            common.settingsStore.set('profiles',profilesarray);    
+            await renderProfiles();
         } else if (link.classList.contains('profile-export')) {
-            // const data = await common.rpc.exportProfile(id);
-            // const f = new File([JSON.stringify(data)], `${data.profile.name}.json`, {type: 'application/json'});
-            // const l = document.createElement('a');
-            // l.download = f.name;
-            // l.style.display = 'none';
-            // l.href = URL.createObjectURL(f);
-            // try {
-            //     document.body.appendChild(l);
-            //     l.click();
-            // } finally {
-            //     URL.revokeObjectURL(l.href);
-            //     l.remove();
-            // }
+            const objWithIdIndex = profilesarray.findIndex((obj) => obj.id === id*1);
+            const data = profilesarray[objWithIdIndex];
+            const f = new File([JSON.stringify(data)], `${data.name}.json`, {type: 'application/json'});
+            const l = document.createElement('a');
+            l.download = f.name;
+            l.style.display = 'none';
+            l.href = URL.createObjectURL(f);
+            try {
+                document.body.appendChild(l);
+                l.click();
+            } finally {
+                URL.revokeObjectURL(l.href);
+                l.remove();
+            }
+        }  else if (link.classList.contains('profile-edit-name')) {
+            const td = ev.target.closest('td');
+            const input = document.createElement('input');
+            input.value = td.childNodes[0].textContent;
+            input.title = 'Press Enter to save or Escape';
+            td.innerHTML = '';
+            td.appendChild(input);
+            input.focus();
+            let actionTaken;
+            const save = async () => {
+                if (actionTaken) {
+                    return;
+                }
+                actionTaken = true;
+                const name = common.sanitize(input.value);
+                await renameProfile(id, name);
+                await renderProfiles();
+            };
+            input.addEventListener('blur', save);
+            input.addEventListener('keydown', keyEv => {
+                if (keyEv.code === 'Enter') {
+                    save();
+                } if (keyEv.code === 'Escape') {
+                    actionTaken = true;
+                    renderProfiles();
+                }
+            });
         }  
+    });
+
+    winsEl.addEventListener('click', async ev => {
+        const btn = ev.target.closest('.button[data-action]');
+        if (!btn) {
+            return;
+        }
+        if (btn.dataset.action === 'profile-create') {
+            await createProfile();
+            await renderProfiles();
+        } else if (btn.dataset.action === 'profile-import') {
+            const fileEl = document.createElement('input');
+            fileEl.type = 'file';
+            fileEl.accept='.json';
+            fileEl.addEventListener('change', async () => {
+                fileEl.remove();
+                const f = fileEl.files[0];
+                if (!f) {
+                    return;
+                }
+                try {
+                    const data = JSON.parse(await f.text());
+                    await importProfile(data);
+                    await renderProfiles();
+                    alert(`Successfully Imported: \n\n${data.name}`);
+                } catch(e) {
+                    alert(`Import Error\n\n${e.message}`);
+                    throw e;
+                }
+            });
+            document.body.append(fileEl);
+            fileEl.click();
+        }
     });
 
     winsEl.querySelector('.add-new input[type="button"]').addEventListener('click', async ev => {
         ev.preventDefault();
         const type = ev.currentTarget.closest('.add-new').querySelector('select').value;
-        // const id = await common.rpc.createWindow({type});
-        // await common.rpc.openWindow(id);
-        
-        
-        const widgetArray = common.settingsStore.get('widgets');
+        const widgetArray = getActiveWidgets();//common.settingsStore.get('widgets');
         const desc = descs[type];
         const new_widget = { 
             type: desc.type,
@@ -507,8 +676,9 @@ async function initWindowsPanel() {
             },
         }
         widgetArray.push(new_widget);
-        common.settingsStore.set('widgets',widgetArray);
+        setActiveWidgets(widgetArray);//common.settingsStore.set('widgets',widgetArray);
         await renderWindows();
+        await renderProfiles();
     });
    
 }
