@@ -143,21 +143,6 @@
         }
     },    
     {
-        "file": "pages/watching-grid.html",
-        "id": "dosenhuhn-watching-grid",
-        "name": "DH MOD - watching grid",
-        "description": "watching grid view",
-        "always_visible": true,
-        "overlay": true,
-        "frame": false,
-        "default_bounds": {
-            "width": 400,
-            "height": 400,
-            "x": -300,
-            "y": 100
-        }
-    },    
-    {
         "file": "pages/grid.html",
         "id": "dosenhuhn-grid",
         "name": "DH MOD - grid",
