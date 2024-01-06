@@ -674,6 +674,10 @@ async function initWindowsPanel() {
                     throw e;
                 }
             });
+            fileEl.addEventListener("cancel", (evt) => {
+                console.log("You closed the file picker dialog without selecting a file.");
+                fileEl.remove();
+              });
             document.body.append(fileEl);
             fileEl.click();
         }
