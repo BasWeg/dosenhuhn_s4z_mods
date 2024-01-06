@@ -427,7 +427,30 @@ async function removeProfile(id)
 {
     const profiles = common.settingsStore.get('profiles') || [];
     const ProfileId = profiles.findIndex((obj) => obj.id === id*1);
+    const myStorage = localStorage;
+    const myStorageKeys = [];
+    for (let i = 0; i < myStorage.length; i++) {
+        myStorageKeys.push(myStorage.key(i))
+    }
+    //console.log(myStorageKeys);
     if (ProfileId > -1) {
+        const profile = profiles[ProfileId];
+        // loop through all profile widgets to get according storage, delete storage
+        for (let i = 0; i < profile.widgets.length; i++ )
+        {
+            for (let j = 0; j < myStorageKeys.length; j++)
+            {
+                const myKey = myStorageKeys[j];
+            
+                //console.log(profile.widgets[i].id + " -- " + newWidgetId);
+                if (myKey.indexOf(profile.widgets[i].id) > -1) {
+                    myStorage.removeItem(myKey);
+                }
+
+            }
+        }
+
+
         profiles.splice(ProfileId, 1);
     }
     common.settingsStore.set('profiles', profiles);  
@@ -449,10 +472,65 @@ async function createProfile()
 async function importProfile(data)
 {
     const profiles = common.settingsStore.get('profiles') || [];
-    data.id = Date.now(); // new id
-    data.active = false; // overwrite active
-    profiles.push(data);
+    // add new values to localStorage
+    for (let i = 0; i < data.storage.length; i++)
+    {
+        localStorage.setItem(data.storage[i].key, data.storage[i].value);
+    }
+    data.profile.name = data.profile.name + "-new";
+    profiles.push(data.profile);
     common.settingsStore.set('profiles', profiles);
+}
+
+async function exportProfile(id)
+{
+    const myStorage = localStorage;
+    const myStorageKeys = [];
+    for (let i = 0; i < myStorage.length; i++) {
+        myStorageKeys.push(myStorage.key(i))
+    }
+    const profiles = common.settingsStore.get('profiles') || [];
+    //console.log(myStorageKeys);
+    const objWithIdIndex = profiles.findIndex((obj) => obj.id === id*1);
+    const profile = JSON.parse(JSON.stringify(profiles[objWithIdIndex])); // deep copy
+    profile.id = Date.now();
+    profile.active = false;
+    const exportData = {
+        profile: profile,
+        storage: [],
+    }
+    // loop through all profile widgets to get according storage, generate new ID for the widgets
+    for (let i = 0; i < profile.widgets.length; i++ )
+    {
+        const newId = Date.now();
+        const regex = /\d{10,14}/;
+        const newWidgetId =  profile.widgets[i].id.replace(regex,newId);
+        for (let j = 0; j < myStorageKeys.length; j++)
+        {
+            const myKey = myStorageKeys[j];
+          
+            //console.log(profile.widgets[i].id + " -- " + newWidgetId);
+            if (myKey.indexOf(profile.widgets[i].id) > -1) {
+                const newKey = myKey.replace(profile.widgets[i].id,newWidgetId);               
+                exportData.storage.push({key: newKey, value: myStorage.getItem(myKey)});
+            }
+
+        }
+        profile.widgets[i].id = newWidgetId;
+    }
+
+    const f = new File([JSON.stringify(exportData, null, 4)], `${exportData.profile.name}.json`, {type: 'application/json'});
+    const l = document.createElement('a');
+    l.download = f.name;
+    l.style.display = 'none';
+    l.href = URL.createObjectURL(f);
+    try {
+        document.body.appendChild(l);
+        l.click();
+    } finally {
+        URL.revokeObjectURL(l.href);
+        l.remove();
+    }
 }
 
 function getActiveWidgets() {
@@ -536,20 +614,8 @@ async function initWindowsPanel() {
             common.settingsStore.set('profiles',profilesarray);    
             await renderProfiles();
         } else if (link.classList.contains('profile-export')) {
-            const objWithIdIndex = profilesarray.findIndex((obj) => obj.id === id*1);
-            const data = profilesarray[objWithIdIndex];
-            const f = new File([JSON.stringify(data)], `${data.name}.json`, {type: 'application/json'});
-            const l = document.createElement('a');
-            l.download = f.name;
-            l.style.display = 'none';
-            l.href = URL.createObjectURL(f);
-            try {
-                document.body.appendChild(l);
-                l.click();
-            } finally {
-                URL.revokeObjectURL(l.href);
-                l.remove();
-            }
+            await exportProfile(id)
+
         }  else if (link.classList.contains('profile-edit-name')) {
             const td = ev.target.closest('td');
             const input = document.createElement('input');
@@ -602,7 +668,7 @@ async function initWindowsPanel() {
                     const data = JSON.parse(await f.text());
                     await importProfile(data);
                     await renderProfiles();
-                    alert(`Successfully Imported: \n\n${data.name}`);
+                    alert(`Successfully Imported: \n\n${data.profile.name}`);
                 } catch(e) {
                     alert(`Import Error\n\n${e.message}`);
                     throw e;
