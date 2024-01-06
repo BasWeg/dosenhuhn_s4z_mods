@@ -407,7 +407,22 @@ async function renderWindows() {
 async function removeWindow(id) {
     const widgetArray = getActiveWidgets();
     const objWithIdIndex = widgetArray.findIndex((obj) => obj.id === id);
+
+    
     if (objWithIdIndex > -1) {
+        // remove localStorage of this window
+        const id = widgetArray[objWithIdIndex].id;
+        const myStorage = localStorage;
+        const StorageKeysToDelete = [];
+        for (let i = 0; i < myStorage.length; i++) {
+            if (myStorage.key(i).indexOf(id) > -1) {
+                StorageKeysToDelete.push(myStorage.key(i));
+            }
+        }
+        console.log(StorageKeysToDelete);
+        StorageKeysToDelete.forEach(element => {
+            myStorage.removeItem(element);
+        });      
         widgetArray.splice(objWithIdIndex, 1);
     }
     setActiveWidgets(widgetArray);
@@ -469,20 +484,7 @@ async function createProfile()
     common.settingsStore.set('profiles', profiles);
 }
 
-async function importProfile(data)
-{
-    const profiles = common.settingsStore.get('profiles') || [];
-    // add new values to localStorage
-    for (let i = 0; i < data.storage.length; i++)
-    {
-        localStorage.setItem(data.storage[i].key, data.storage[i].value);
-    }
-    data.profile.name = data.profile.name + "-new";
-    profiles.push(data.profile);
-    common.settingsStore.set('profiles', profiles);
-}
-
-async function exportProfile(id)
+async function getclonedProfile(id)
 {
     const myStorage = localStorage;
     const myStorageKeys = [];
@@ -493,33 +495,77 @@ async function exportProfile(id)
     //console.log(myStorageKeys);
     const objWithIdIndex = profiles.findIndex((obj) => obj.id === id*1);
     const profile = JSON.parse(JSON.stringify(profiles[objWithIdIndex])); // deep copy
-    profile.id = Date.now();
+    //profile.id = Date.now();
     profile.active = false;
     const exportData = {
+        version: 1,
         profile: profile,
-        storage: [],
     }
     // loop through all profile widgets to get according storage, generate new ID for the widgets
-    for (let i = 0; i < profile.widgets.length; i++ )
+    for (let i = 0; i < exportData.profile.widgets.length; i++ )
     {
-        const newId = Date.now();
-        const regex = /\d{10,14}/;
-        const newWidgetId =  profile.widgets[i].id.replace(regex,newId);
+        exportData.profile.widgets[i].storage = [];
+        // const newId = Date.now();
+        // const regex = /\d{10,14}/;
+        // const newWidgetId =  profile.widgets[i].id.replace(regex,newId);
         for (let j = 0; j < myStorageKeys.length; j++)
         {
             const myKey = myStorageKeys[j];
           
             //console.log(profile.widgets[i].id + " -- " + newWidgetId);
             if (myKey.indexOf(profile.widgets[i].id) > -1) {
-                const newKey = myKey.replace(profile.widgets[i].id,newWidgetId);               
-                exportData.storage.push({key: newKey, value: myStorage.getItem(myKey)});
+                //const newKey = myKey.replace(profile.widgets[i].id,newWidgetId);               
+                exportData.profile.widgets[i].storage.push({key: myKey, value: myStorage.getItem(myKey)});
             }
 
         }
-        profile.widgets[i].id = newWidgetId;
+        //profile.widgets[i].id = newWidgetId;
     }
+    return exportData;
+}
 
-    const f = new File([JSON.stringify(exportData, null, 4)], `${exportData.profile.name}.json`, {type: 'application/json'});
+async function cloneProfile(id)
+{
+    const clonedProfile = await getclonedProfile(id)
+    await importProfile(clonedProfile,"-cloned");
+}
+
+async function importProfile(data, ext)
+{
+    const profiles = common.settingsStore.get('profiles') || [];
+    // propagate new UniqueId for widgets
+    const newId = Date.now();
+    data.profile.id = newId;
+    const regex = /\d{10,14}/;
+    for (let i = 0; i < data.profile.widgets.length; i++)
+    {
+        const widget = data.profile.widgets[i];
+        const incId = newId+i;
+        const newWidgetId =  widget.id.replace(regex,incId);
+        for (let j = 0; j < widget.storage.length; j++)
+        {
+            const toStore = widget.storage[j];
+            const newKey = toStore.key.replace(widget.id,newWidgetId);               
+            localStorage.setItem(newKey, toStore.value);  
+        }
+        widget.id = newWidgetId;
+        delete widget.storage;     
+    }
+    // add new values to localStorage
+    // for (let i = 0; i < data.storage.length; i++)
+    // {
+    //     localStorage.setItem(data.storage[i].key, data.storage[i].value);
+    // }
+    data.profile.name = data.profile.name + ext;
+    profiles.push(data.profile);
+    common.settingsStore.set('profiles', profiles);
+}
+
+async function exportProfile(id)
+{
+    const clonedProfile = await getclonedProfile(id)
+
+    const f = new File([JSON.stringify(clonedProfile, null, 4)], `${clonedProfile.profile.name}.json`, {type: 'application/json'});
     const l = document.createElement('a');
     l.download = f.name;
     l.style.display = 'none';
@@ -602,16 +648,7 @@ async function initWindowsPanel() {
                 await renderProfiles();
             }
         } else if (link.classList.contains('profile-clone')) {
-            const objWithIdIndex = profilesarray.findIndex((obj) => obj.id === id*1);
-            const tocloneprofile = profilesarray[objWithIdIndex];
-            const clonedprofile = {
-                id: Date.now(),
-                name: tocloneprofile.name + "-cloned",
-                active: false,
-                widgets:  tocloneprofile.widgets      
-            };
-            profilesarray.push(clonedprofile);
-            common.settingsStore.set('profiles',profilesarray);    
+            await cloneProfile(id);
             await renderProfiles();
         } else if (link.classList.contains('profile-export')) {
             await exportProfile(id)
@@ -666,7 +703,7 @@ async function initWindowsPanel() {
                 }
                 try {
                     const data = JSON.parse(await f.text());
-                    await importProfile(data);
+                    await importProfile(data,"-import");
                     await renderProfiles();
                     alert(`Successfully Imported: \n\n${data.profile.name}`);
                 } catch(e) {
