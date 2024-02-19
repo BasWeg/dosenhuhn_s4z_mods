@@ -171,7 +171,7 @@ export async function main() {
             return;
         }
      
-        const timeInZones = watching.stats.power.timeInZones || [];
+        const timeInZones = watching.stats.power.timeInZones.filter(item => item.zone !="SS") || [];
 
         chart_options.series = [];
         const sum = timeInZones.reduce((total, item) => total + item.time, 0);

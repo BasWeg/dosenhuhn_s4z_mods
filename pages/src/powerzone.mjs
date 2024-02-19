@@ -120,9 +120,9 @@ export async function main() {
         const value = watching.state.power / watching.athlete.ftp;
         //doc.classList.toggle('solid-background', true);
         //console.log(value);
-        for (let i = powerZones.length - 1; i >= 0; i--) {
+                for (let i = powerZones.length - 1; i >= 0; i--) {
             const z = powerZones[i];
-            if (value > z.from) {
+            if (z.zone != "SS" && value > z.from) {
                 //document.body.style.setProperty('background-color', colors[z.zone]);
                 // If a three-character hexcolor, make six-character
                 let hexcolor=colors[z.zone];
