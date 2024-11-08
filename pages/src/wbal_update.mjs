@@ -190,9 +190,9 @@ var headers = new Headers({
     if (myjson?.type){ 
     // eslint-disable-next-line no-prototype-builtins
                 //document.getElementById("demo").innerHTML = "Fetching: " + rider?.riderId + " - " + rider?.name + " - WBAL:" + Math.round(rider?.power?.AWC ?? 20000);
-        iqueue.push({athleteId:zwiftid, Wbal:Math.round(myjson?.wPrime ?? 20000), CP:Math.round(myjson?.criticalPower ?? 200)});
+        iqueue.push({athleteId:zwiftid, Wbal:Math.round(myjson?.wPrime ?? 20000), CP:Math.round(myjson?.ftp ?? 200)});
         document.getElementById("update_btn").style = "visibility:visible";
-        document.getElementById("fetch_descr").textContent = `CP: ${myjson?.criticalPower} - WPrime: ${myjson?.wPrime} `;
+        document.getElementById("fetch_descr").textContent = `FTP: ${myjson?.ftp} - WPrime: ${myjson?.wPrime} `;
         generateTable(iqueue);
         common.settingsStore.set('wbal_icu_api',apikey);
         common.settingsStore.set('wbal_icu_id',id); 
