@@ -7,6 +7,7 @@
         <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';"/>
 
         <title>Nearby Athletes - Settings - Sauce for Zwift™</title>
+        <script src="./src/preloads.js"></script>
 
         <link id="favicon" rel="shortcut icon" href="/pages/images/favicon.png"/>
         <link rel="stylesheet" href="/pages/css/common.css"/>
@@ -18,20 +19,65 @@
                 align-items: stretch;
             }
 
-            form#fields .title {
+            form#fields > .title {
                 flex: 1 0 100%;
             }
 
             form#fields .field-group {
+                display: flex;
+                flex-direction: column;
                 background: #3333;
-                padding: 1em 1.5em;
+                padding: 0.1em 0.6em 0.6em;
                 margin: 1em;
                 border-radius: 0.28em;
                 flex: 1 1 0;
             }
 
-            form#fields .field-group label {
+            form#fields .field-group .field {
+                display: flex;
+                align-items: center;
                 justify-content: space-between;
+                font-size: 0.9em;
+                border-radius: 0.28em;
+                padding: 0.1em 0.4em;
+            }
+
+            form#fields .field-group label {
+                flex: 1;
+                margin-right: 1em;
+                margin-bottom: 0;
+                justify-content: space-between;
+            }
+
+            .col-adj {
+                flex: 0 0 auto;
+                display: flex;
+                align-items: center;
+                font-variant: tabular-nums;
+            }
+
+            .field:hover {
+                background-color: #fff1;
+                border-radius: 0.28em;
+            }
+
+            .field:hover label,
+            .field:hover input {
+                cursor: pointer;
+            }
+
+            .field.disabled .col-adj {
+                opacity: 0.5;
+                pointer-events: none;
+            }
+
+            .field.disabled label key {
+                opacity: 0.7;
+            }
+
+            .col-adj .value {
+                min-width: 2ch;
+                text-align: center;
             }
         </style>
 
@@ -57,6 +103,10 @@
                 <label>
                     <key>Refresh interval:</key>
                     <input type="number" min="0" step="1" name="refreshInterval"/> <small>(seconds)</small>
+                </label>
+                <label title="Only show riders with a gap equal to or less than this. Blank or 0 to show all (default).">
+                    <key>Max gap:</key>
+                    <input type="number" min="0" step="1" name="maxGap"/> <small>(seconds)</small>
                 </label>
                 <label title="Keep the athlete being watched scrolled into view except when you manually scroll out of range">
                     <key>Auto scroll athlete:</key>
@@ -91,9 +141,12 @@
                     </select>
                 </label>
                 <label>
-                    <key>Imperial units</key>
-                    <input type="checkbox" name="/imperialUnits"/>
+                    <key data-added="2023-03-31">Hide header:</key>
+                    <input type="checkbox" name="hideHeader"/>
                 </label>
+
+                <hr/>
+
                 <label>
                     <key>Theme override:</key>
                     <select is="sauce-theme" override></select>
@@ -106,6 +159,8 @@
                     <key>Background color:</key>
                     <input type="color" name="backgroundColor" data-depends-on="solidBackground"/>
                     <input type="text" name="backgroundColor" data-depends-on="solidBackground" size="7"/>
+                    <input type="number" title="Opacity" name="backgroundAlpha" data-depends-on="solidBackground"
+                           style="--size: 5" min="0" max="100" value="100"/>%
                 </label>
             </form>
             <form id="fields" class="section">

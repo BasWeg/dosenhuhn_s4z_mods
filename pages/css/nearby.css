@@ -7,6 +7,9 @@ html.solid-background body {
 html.solid-background table thead {
   background: var(--background-color);
 }
+html.hide-header table thead {
+  display: none;
+}
 
 html:not(.overlay-mode) .overlay-only {
   display: none !important;
@@ -33,7 +36,7 @@ table thead {
   position: sticky;
   z-index: 1;
   top: 0;
-  background-image: linear-gradient(to bottom, hsla(var(--theme-bg-hue), var(--theme-bg-sat), calc(var(--theme-bg-light) + (-10% * var(--theme-bg-shade-dir))), 100%), hsla(var(--theme-bg-hue), var(--theme-bg-sat), calc(var(--theme-bg-light) + (0% * var(--theme-bg-shade-dir))), 100%));
+  background-image: linear-gradient(to bottom, hsl(var(--theme-bg-hue) var(--theme-bg-sat) calc(var(--theme-bg-light) + -10% * var(--theme-bg-shade-dir))/100%), hsl(var(--theme-bg-hue) var(--theme-bg-sat) calc(var(--theme-bg-light) + 0% * var(--theme-bg-shade-dir))/100%));
 }
 table thead td {
   padding-top: 0.5em;
@@ -45,6 +48,9 @@ table thead td {
 }
 table thead td:hover {
   background-color: rgba(153, 51, 85, 0.3333333333);
+}
+table thead td ms {
+  font-weight: 350;
 }
 table thead td[data-id=avatar] {
   text-align: center;
@@ -80,12 +86,19 @@ table tr.hiding {
   visibility: hidden;
   pointer-events: none;
 }
-
-table tr.watching {
-  background-image: linear-gradient(135deg, hsla(var(--theme-primary-hue), var(--theme-primary-sat), var(--theme-primary-light), 85%), hsla(var(--theme-primary-hue), var(--theme-primary-sat), calc(var(--theme-primary-light) + (-10% * var(--theme-primary-shade-dir))), 80%));
-  color: hsla(var(--theme-primary-hue), var(--theme-primary-sat), calc(var(--theme-primary-light) + (100% * var(--theme-primary-shade-dir))), 100%);
+table tr.marked {
+  background-image: linear-gradient(135deg, hsl(var(--theme-marked-hue) var(--theme-marked-sat) var(--theme-marked-light)/75%), hsl(var(--theme-marked-hue) var(--theme-marked-sat) calc(var(--theme-marked-light) + -10% * var(--theme-marked-shade-dir))/80%));
+  color: hsl(var(--theme-marked-hue) var(--theme-marked-sat) calc(var(--theme-marked-light) + 100% * var(--theme-marked-shade-dir))/100%);
 }
-table tr.hidden {
+table tr.following {
+  background-image: linear-gradient(135deg, hsl(var(--theme-following-hue) var(--theme-following-sat) var(--theme-following-light)/80%), hsl(var(--theme-following-hue) var(--theme-following-sat) calc(var(--theme-following-light) + -10% * var(--theme-following-shade-dir))/80%));
+  color: hsl(var(--theme-following-hue) var(--theme-following-sat) calc(var(--theme-following-light) + 100% * var(--theme-following-shade-dir))/100%);
+}
+table tr.watching {
+  background-image: linear-gradient(135deg, hsl(var(--theme-primary-hue) var(--theme-primary-sat) var(--theme-primary-light)/85%), hsl(var(--theme-primary-hue) var(--theme-primary-sat) calc(var(--theme-primary-light) + -10% * var(--theme-primary-shade-dir))/80%));
+  color: hsl(var(--theme-primary-hue) var(--theme-primary-sat) calc(var(--theme-primary-light) + 100% * var(--theme-primary-shade-dir))/100%);
+}
+table tr.hidden, table tr.filtered {
   display: none;
 }
 table tr:hover td {
@@ -176,7 +189,6 @@ table tr:hover .link ms {
   scroll-behavior: smooth;
   padding: 0;
   overflow: auto;
-  overflow: overlay;
   position: relative;
   font-size: calc(var(--font-scale) * 1em);
 }

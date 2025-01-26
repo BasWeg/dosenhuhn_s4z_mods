@@ -137,7 +137,7 @@ html.horizontal #meta {
 }
 .desc .lines .line {
   overflow: hidden;
-  text-overflow: ellipsis;
+  
   font-variant-numeric: tabular-nums;
   font-weight: 500;
   letter-spacing: -0.04em;
@@ -160,7 +160,7 @@ html.horizontal #meta {
 }
 .desc .lines .line.minor {
   font-size: 0.8em;
-  font-weight: 400;
+  font-weight: 500;
   opacity: 0.88;
   line-height: 1;
 }
@@ -469,12 +469,12 @@ html.horizontal .position .desc.right .lines {
 html:not(.horizontal) .position .desc.right:not(.empty)::before,
 html:not(.horizontal) .position .desc.left:not(.empty)::after,
 html:not(.horizontal) .gap .desc:not(.empty)::after {
-  content: "⋯";
+  content: "-";
 }
 
 html.horizontal .position .desc.right:not(.empty)::after,
 html.horizontal .position .desc.left:not(.empty)::after {
-  content: "⋯";
+  content: "-";
 }
 
 .desc::before,

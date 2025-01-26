@@ -8,6 +8,8 @@
 
         <title>MOD: Groups - Settings - Sauce for Zwift™</title>
 
+        <script src="/pages/src/preloads.js"></script>
+
         <link id="favicon" rel="shortcut icon" href="/pages/images/favicon.png"/>
         <link rel="stylesheet" href="/pages/css/common.css"/>
 
@@ -28,7 +30,7 @@
             </header>
         </div>
         <div id="settings">
-            <form>
+            <form class="section">
                 <label>
                     <key>Refresh interval:</key>
                     <input type="number" min="0" step="1" name="refreshInterval"/> <small>(seconds)</small>
@@ -38,10 +40,27 @@
                     <input type="checkbox" name="detectAttacks"/>
                 </label>
                 <label>
-                    <key>Hide header:</key>
+                    <key data-added="2023-03-31">Horizontal mode:</key>
+                    <input type="checkbox" name="horizMode"/>
+                </label>
+                <label class="indent">
+                    <key data-added="2024-12-04">Left-to-Right:</key>
+                    <input data-depends-on="horizMode" type="checkbox" name="horizLTR"/>
+                </label>
+                <label class="indent">
+                    <key data-added="2023-03-31">Label angle:</key>
+                    <input type="range" name="labelAngle" min="0" max="90" value="50" step="1"
+                           data-depends-on="horizMode"/>
+                    <input type="number" name="labelAngle" value="60" style="--size: 5"
+                           data-depends-on="horizMode"/> degrees
+                </label>
+                <label title="Hide the top header containing overall information">
+                    <key data-added="2023-03-31">Hide header:</key>
                     <input type="checkbox" name="hideHeader"/>
                 </label>
+
                 <hr/>
+                <div class="title">Groups View</div>
 
                 <label>
                     <key>Groups ahead:</key>
@@ -70,6 +89,12 @@
                 </label>
 
                 <hr/>
+                <div class="title">Zoomed View</div>
+
+                <label title="The maximum number of athletes to show while zoomed in">
+                    <key data-added="2023-03-31">Max athletes:</key>
+                    <input type="number" min="1" step="1" name="maxZoomed"/>
+                </label>
 
                 <label>
                     <key>Top zoomed field:</key>
@@ -78,10 +103,20 @@
                         <option value="wkg">W/kg</option>
                     </select>
                 </label>
+                <label>                    
+                    <key>Top zoomed field 2:</key>
+                    <select name="zoomedPrimaryField2">
+                        <option value="none">-</option>
+                        <option value="draft">Draft</option>
+                        <option value="wbal">wBal</option>
+                        <option value="speed">Speed</option>
+                        <option value="heartrate">Heart Rate</option>
+                    </select>                    
+                </label>
                 <label>
                     <key>Bottom zoomed field:</key>
                     <select name="zoomedSecondaryField">
-						<option value="wbal">wBal</option>
+                        <option value="wbal">wBal</option>
                         <option value="speed">Speed</option>
                         <option value="draft">Draft</option>
                         <option value="heartrate">Heart Rate</option>
@@ -92,7 +127,7 @@
                     <key>Bottom zoomed field 2:</key>
                     <select name="zoomedSecondaryField2">
                         <option value="none">-</option>
-						<option value="wbal">wBal</option>
+                        <option value="wbal">wBal</option>
                         <option value="speed">Speed</option>
                         <option value="draft">Draft</option>
                         <option value="heartrate">Heart Rate</option>
@@ -111,19 +146,7 @@
 
                 <label>
                     <key>Theme override:</key>
-                    <select name="themeOverride">
-                        <option value="">Use app setting</option>
-                        <option value="sauce">Sauce</option>
-                        <option value="bluepink">Ice Blue Pink</option>
-                        <option value="green">Green Lantern</option>
-                        <option value="burgundy">Ron Burgundy</option>
-                        <option value="aqua">Aqua Salad</option>
-                        <option value="watermelon">Watermelon</option>
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="transparent-light">Transparent - Light</option>
-                        <option value="transparent-dark">Transparent - Dark</option>
-                    </select>
+                    <select is="sauce-theme" override></select>
                 </label>
                 <label title="Mostly useful for streamers using OBS window and browser sources">
                     <key>Solid background:</key>
@@ -133,6 +156,8 @@
                     <key>Background color:</key>
                     <input type="color" name="backgroundColor" data-depends-on="solidBackground"/>
                     <input type="text" name="backgroundColor" data-depends-on="solidBackground" size="7"/>
+                    <input type="number" title="Opacity" name="backgroundAlpha" data-depends-on="solidBackground"
+                           style="--size: 5" min="0" max="100" value="100"/>%
                 </label>
             </form>
         </div>

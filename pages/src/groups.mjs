@@ -6,8 +6,6 @@ const L = sauce.locale;
 const H = L.human;
 const positions = new Map();
 let zoomedPosition = common.storage.get('zoomedPosition');
-let imperial = common.settingsStore.get('/imperialUnits');
-L.setImperial(imperial);
 let curGroups;
 let eventSubgroup;
 let contentEl;
@@ -34,6 +32,7 @@ common.settingsStore.setDefault({
     refreshInterval: 2,
     hideHeader: false,
     labelAngle: 50,
+    horizLTR: true,
 });
 
 // XXX Need a migration system.
@@ -41,7 +40,6 @@ common.settingsStore.get('groupsPrimaryField', 'power');
 common.settingsStore.get('zoomedPrimaryField', 'power');
 
 const settings = common.settingsStore.get();
-setBackground();
 
 
 const _subgroups = new Map();
@@ -271,30 +269,52 @@ function renderZoomed(groups) {
             power: athlete.state.power,
             weight: athlete.athlete && athlete.athlete.weight
         });
-        const rightLines = [`<div class="line">${priLine} | ${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}</div>`];
+        const mainField2 = settings.zoomedPrimaryField2 || 'none';
+        let mainValue2 = '';
+        if (mainField2 === 'heartrate') {
+            if (athlete.state.heartrate) {
+                mainValue2 = `| ${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}`;
+            }
+        } else if (mainField2 === 'draft') {
+            if (athlete.state.draft != null) {
+                mainValue2 = `| ${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}`;
+            }
+        } else if (mainField2 === 'speed') {
+            if (athlete.state.speed != null) {
+                mainValue2 = `| ${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}`;
+            }
+        }  else if (mainField2 === 'wbal') {
+            const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
+            const mywbalunit = `<ms>${common.fmtBattery(mywbal)}</ms>`
+            mainValue2 =  `| ${H.number(mywbal*100, {suffix: mywbalunit, html: true})}`;
+        } 
+
+        const rightLines = [`<div class="line">${priLine} ${mainValue2}</div>`];
+
         const minorField2 = settings.zoomedSecondaryField2 || 'none';
         let minorValue2 = '';
         if (minorField2 === 'heartrate') {
             if (athlete.state.heartrate) {
-                minorValue2 = `|${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}`;
+                minorValue2 = `| ${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}`;
             }
         } else if (minorField2 === 'draft') {
             if (athlete.state.draft != null) {
-                minorValue2 = `|${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}`;
+                minorValue2 = `| ${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}`;
             }
         } else if (minorField2 === 'speed') {
             if (athlete.state.speed != null) {
-                minorValue2 = `|${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}`;
+                minorValue2 = `| ${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}`;
             }
         } else if (minorField2 === 'power-60s') {
             const p = athlete.stats.power.smooth[60];
             if (p != null) {
-                minorValue2 = `|${pwrFmt(p)} ` +
+                minorValue2 = `| ${pwrFmt(p)} ` +
                     `<abbr class="unit">(1m)</abbr>`;
             }
-        } else if (minorField2 === 'wbal') {
+        } else if (minorField2 === 'wbal' && athlete.athlete) {
             const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
-            minorValue2 =  `|${H.number(mywbal*100)}${common.fmtBattery(mywbal)}`;
+            const mywbalunit = `<ms>${common.fmtBattery(mywbal)}</ms>`
+            minorValue2 =  `| ${H.number(mywbal*100, {suffix: mywbalunit, html: true})}`;
         }    
 
         const minorField = settings.zoomedSecondaryField || 'heartrate';
@@ -316,7 +336,7 @@ function renderZoomed(groups) {
                 rightLines.push(`<div class="line minor">${pwrFmt(p)} ` +
                     `<abbr class="unit">(1m)</abbr>${minorValue2}</div>`);
             }
-        } else if (minorField === 'wbal') {
+        } else if (minorField === 'wbal' && athlete.athlete) {
             const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
             rightLines.push(`<div class="line">${H.number(mywbal*100)}${common.fmtBattery(mywbal)}${minorValue2}</div>`);
         }
@@ -328,9 +348,9 @@ function renderZoomed(groups) {
                 dur = gap > 0.5 && (H.number(gap) + 's');
             } else {
                 const gapDistance = Math.abs(next.gapDistance - athlete.gapDistance);
-                const units = imperial ? 'ft' : 'm';
+                const units = common.imperialUnits ? 'ft' : 'm';
                 dur = gapDistance && gapDistance > 2 &&
-                    (H.number(gapDistance * (imperial ? 3.28084 : 1)) + units);
+                    (H.number(gapDistance * (common.imperialUnits ? 3.28084 : 1)) + units);
             }
             if (dur) {
                 gapLine = fmtLine(dur);
@@ -480,7 +500,7 @@ function renderGroups(groups) {
                 leftLines.push(fmtLine(primaryFmt({power: max, weight}), 'minor attn'));
             }
         }
-		pos.el.classList.toggle('attn', attacking);
+        pos.el.classList.toggle('attn', attacking);
         pos.bubble.textContent = label;
         rightLines.push(fmtLine(primaryFmt(group), '', 'Group average'));
         if (team) {
@@ -558,15 +578,13 @@ function renderGroups(groups) {
 }
 
 
-function setBackground() {
-    doc.classList.toggle('solid-background', !!settings.solidBackground);
-    if (settings.solidBackground) {
-        doc.style.setProperty('--background-color', settings.backgroundColor);
-    } else {
-        doc.style.removeProperty('--background-color');
-    }
+function setStyles() {
+    common.setBackground(settings);
     if (settings.horizMode != null) {
         doc.classList.toggle('horizontal', settings.horizMode);
+        if (settings.horizLTR != null) {
+            doc.classList.toggle('horizontal-ltr', settings.horizLTR);
+        }
     }
     if (settings.hideHeader != null) {
         doc.classList.toggle('hide-header', settings.hideHeader);
@@ -580,6 +598,7 @@ function setBackground() {
 
 export async function main() {
     common.initInteractionListeners();
+    setStyles();
     contentEl = document.querySelector('#content');
     metaEl = document.querySelector('#meta');
     containerEl = document.querySelector('#container');
@@ -591,13 +610,8 @@ export async function main() {
         setMaxPositions();
         render();
     });
-    common.settingsStore.addEventListener('changed', ev => {
-        const changed = ev.data.changed;
-        if (changed.has('/imperialUnits')) {
-            L.setImperial(imperial = changed.get('/imperialUnits'));
-        }
-       
-        setBackground();
+    common.settingsStore.addEventListener('set', ev => {
+        setStyles();
         render();
     });
     const gcs = await common.rpc.getGameConnectionStatus();
