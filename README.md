@@ -1,6 +1,8 @@
 A MOD collection for Sauce for Zwift™
 ===========
 
+<img src="assets/images/dosenhuhn_s4z_logo.png"/>
+
 You need to place this Sauce for Zwift "Mod" into this directory ~/Documents/SauceMods/dosenhuhn_s4z_mods
 
 
