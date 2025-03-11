@@ -90,18 +90,22 @@
             </label>            
             <hr class="solid">            
         <div class="title">Update teams wbal/cp from ZR.app</div>
+        <label title="ZwiftRacing API Key">
+            <key>ZwiftRacing API:</key>
+            <input type="string" id="zrAPI" value=""/>
+        </label>
         <label title="The team number from zwiftracing or ZP">
             <key>Team Number:</key>
             <input type="number" id="teamNumber" value=""/>
             <div class="std button" title="Refresh" data-action="fetch-tzr"><ms>search</ms></div>
         </label>
-        <hr class="solid">
+        <!-- <hr class="solid">
         <div class="title">Update event participants wbal/cp</div>            
         <label title="The event number from zwiftracing or ZP">
             <key>Event Number:</key>
             <input type="number" id="eventNumber" value=""/>
             <div class="std button" title="Refresh" data-action="fetch-ezr"><ms>search</ms></div>
-        </label>
+        </label> -->
         <hr class="solid">
         <div class="title">Or update wbal and cp from json file</div>          
         <label title="JSON file with capacity data">

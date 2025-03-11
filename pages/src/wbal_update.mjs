@@ -5,6 +5,7 @@ console.log(page);
 var queue =[];
 var teamid = "";
 var icuapi = "";
+var zrapi = "";
 var icuid = "";
 var zwiftid = "";
 var type = "";
@@ -15,12 +16,16 @@ teamid = common.settingsStore.get('wbal_team_id') || '';
 icuapi = common.settingsStore.get('wbal_icu_api') || '';
 icuid = common.settingsStore.get('wbal_icu_id') || '';
 zwiftid = common.settingsStore.get('wbal_icu_zwiftid') || '';
+zrapi = common.settingsStore.get('wbal_zrapi') || '';
+
 
 
 document.getElementById("teamNumber").value =  teamid;   
 document.getElementById("intervalsAPI").value =  icuapi; 
 document.getElementById("intervalsID").value =  icuid; 
 document.getElementById("zwiftID").value =  zwiftid; 
+document.getElementById("zrAPI").value =  zrapi; 
+
 
 async function myFunction() {
     await doWbalCPUpdate();
@@ -89,10 +94,13 @@ async function doFetchTeamData(team){
     document.getElementById("event_or_team").textContent = "Team:";
     document.getElementById("update_btn").style = "visibility:hidden";
 //    let url = `https://www.zwiftracing.app/api/riders?club=${team}&page=0&pageSize=1000`;
-    let url = `https://www.dosenhuhn.de/get_team_v2.php?club=${team}`;
+    let url = `https://zwift-ranking.herokuapp.com/public/clubs/${team}`;
     document.getElementById("demo").innerHTML = "Fetching data from zwiftracing...";
     let tname = "";
-    let myjson = await fetch(url).then(response=>response.json());
+    let myjson = await fetch(url, {
+        headers: {
+            "Authorization": `${zrapi}`,
+        }}).then(response=>response.json());
     // console.log(JSON.stringify(myjson));
     // eslint-disable-next-line no-prototype-builtins
     if (myjson.hasOwnProperty("name")){ 
@@ -107,6 +115,7 @@ async function doFetchTeamData(team){
         document.getElementById("fetch_descr").textContent = tname;
         generateTable(iqueue);
         teamid = team; 
+        common.settingsStore.set('wbal_zrapi',zrapi);
     }
     else {
         console.log("Kein Team");
@@ -143,7 +152,12 @@ async function doFetchEventData(event){
     //url = `https://dosenhuhn.de/get_event_v2.php?event=${event}`;
     url = `https://dosenhuhn.de/get_event.php?event=${event}`;
     document.getElementById("demo").innerHTML = "Fetching data from zwiftracing...";
-    let myjson = await fetch(url).then(response=>response.json());
+    let myjson = await fetch(url, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${zrapi}`,
+            "Content-Type": "application/json"
+        }}).then(response=>response.json());
     // console.log(JSON.stringify(myjson));
     // eslint-disable-next-line no-prototype-builtins
     if (!myjson.hasOwnProperty('message')){ 
@@ -237,6 +251,7 @@ export async function doWbalCPUpdate(){
         {
             // store team id
             //console.log('wbal_tupdate ',teamid);
+            common.settingsStore.set('wbal_zrapi',zrapi);
             common.settingsStore.set('wbal_team_id',teamid);
         } 
 
@@ -254,9 +269,11 @@ export async function main() {
         if (btn.dataset.action === 'update') {
             await myFunction();
         } else if (btn.dataset.action ==='fetch-tzr'){
+            zrapi = document.getElementById("zrAPI").value;
             type = "wbal_tupdate";
             queue = await doFetchTeamData(document.getElementById("teamNumber").value);
         } else if (btn.dataset.action ==='fetch-ezr'){
+            zrapi = document.getElementById("zrAPI").value;
             type = "wbal_eupdate";
             queue = await doFetchEventData(document.getElementById("eventNumber").value);
         }
