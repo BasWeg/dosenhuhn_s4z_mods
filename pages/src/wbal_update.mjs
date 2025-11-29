@@ -94,7 +94,8 @@ async function doFetchTeamData(team){
     document.getElementById("event_or_team").textContent = "Team:";
     document.getElementById("update_btn").style = "visibility:hidden";
 //    let url = `https://www.zwiftracing.app/api/riders?club=${team}&page=0&pageSize=1000`;
-    let url = `https://zwift-ranking.herokuapp.com/public/clubs/${team}`;
+    //let url = `https://zwift-ranking.herokuapp.com/public/clubs/${team}`;
+    let url = `https://api.zwiftracing.app/api/public/clubs/${team}`;
     document.getElementById("demo").innerHTML = "Fetching data from zwiftracing...";
     let tname = "";
     let myjson = await fetch(url, {

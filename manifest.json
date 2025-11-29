@@ -4,7 +4,7 @@
     "description": "A MOD collection for S4Z",
     "author": "Bastian Wegener",
     "website_url": "https://github.com/BasWeg/dosenhuhn_s4z_mods",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "web_root": "pages",
     "id": "dosenhuhn_s4z_mods",
     "windows": [
@@ -13,7 +13,6 @@
         "id": "dosenhuhn-wbal-update",
         "name": "DH MOD - wPrime and cp update",
         "description": "Update wPrime/cp data from intervals.icu, ZR.app or json",
-        "always_visible": true,
         "overlay": true,
         "frame": false,
         "default_bounds": {
@@ -28,7 +27,6 @@
         "id": "dosenhuhn-groups",
         "name": "DH MOD - groups",
         "description": "change of group window to show (watching) team-badges",
-        "always_visible": true,
         "overlay": true,
         "frame": false,
         "default_bounds": {
@@ -43,7 +41,6 @@
         "id": "dosenhuhn-nearby",
         "name": "DH MOD - nearby",
         "description": "change of nearby window to show (watching) teams",
-        "always_visible": true,
         "overlay": true,
         "frame": false,
         "default_bounds": {
@@ -58,7 +55,6 @@
         "id": "dosenhuhn-zam",
         "name": "DH MOD - zam",
         "description": "zwift activity like",
-        "always_visible": true,
         "overlay": true,
         "frame": false,
         "default_bounds": {
@@ -73,7 +69,6 @@
         "id": "dosenhuhn-averages",
         "name": "DH MOD - averages",
         "description": "display averages collectors",
-        "always_visible": true,
         "overlay": true,
         "frame": false,
         "default_bounds": {
@@ -88,7 +83,6 @@
         "id": "dosenhuhn-states",
         "name": "DH MOD - states",
         "description": "display actual states",
-        "always_visible": true,
         "overlay": true,
         "frame": false,
         "default_bounds": {
@@ -103,7 +97,6 @@
         "id": "dosenhuhn-gradient",
         "name": "DH MOD - gradient",
         "description": "display actual gradient",
-        "always_visible": true,
         "overlay": true,
         "frame": false,
         "default_bounds": {
@@ -118,7 +111,6 @@
         "id": "dosenhuhn-powerdist",
         "name": "DH MOD - powerdist",
         "description": "display powerdistribution chart",
-        "always_visible": true,
         "overlay": true,
         "frame": false,
         "default_bounds": {
@@ -133,7 +125,6 @@
         "id": "dosenhuhn-powercolor",
         "name": "DH MOD - powercolor",
         "description": "display color based on power",
-        "always_visible": true,
         "overlay": true,
         "frame": false,
         "default_bounds": {
@@ -148,7 +139,6 @@
         "id": "dosenhuhn-grid",
         "name": "DH MOD - grid",
         "description": "grid view for http access only",
-        "always_visible": true,
         "overlay": true,
         "frame": false,
         "default_bounds": {

@@ -11,8 +11,16 @@ let imperial = common.storage.get('/imperialUnits');
 L.setImperial(imperial);
 const grid_version = 2;
 // let fieldStates;
-
-const manifests = await common.rpc.getWidgetWindowManifests();
+var manifests = []
+try {
+    manifests = await common.rpc.getWebWindowManifests();
+} catch (e) {
+    console.log('Failed to get getWebWindowManifests, is the backend running?', e);
+    // fallback to getWidgetWindowManifests
+    console.log('Falling back to getWidgetWindowManifests');
+    manifests = await common.rpc.getWidgetWindowManifests();
+}
+//const manifests = await common.rpc.getWidgetWindowManifests();
 const descs = Object.fromEntries(manifests.map(x => [x.type, x]));
 let desc = descs['watching'];
 
