@@ -78,6 +78,18 @@ function spdFmt(s) {
     return H.pace(s, {precision: 0, suffix: true, html: true});
 }
 
+function draftFmt(draft) {
+    return H.number(draft, {suffix: '<ms>air</ms>', html: true});
+}
+
+function draftwkgFmt(draft, weight) {
+    return weight ? H.number(draftwkg, {precision: 1, suffix: '<ms>air</ms>', html: true}) : draftFmt(draft);
+}
+
+function wbalFmt(wbal) {
+    const mywbalunit = `<ms>${common.fmtBattery(wbal)}</ms>`
+    return H.number(wbal*100, {suffix: mywbalunit, html: true});
+}
 
 function getOrCreatePosition(relPos) {
     if (!positions.has(relPos)) {
@@ -189,9 +201,49 @@ function renderZoomed(groups) {
         `${H.place(Math.abs(position))} ${position > 0 ? 'behind' : 'ahead'}` :
         'Your Group';
     const primaryFmt = {
-        power: ({power}) => pwrFmt(power),
-        wkg: ({power, weight}) => weight ? wkgFmt(power / weight) : pwrFmt(power),
+        power: ({power}) => pwrFmt(power, {suffix: '<ms>bolt</ms>', html: true}),
+        wkg: ({power, weight}) => weight ? wkgFmt(power / weight) : pwrFmt(power, {suffix: '<ms>bolt</ms>', html: true}),
+        draft: ({draft}) => draftFmt(draft),
+        draftwkg: ({draft, weight}) => weight ? draftwkgFmt(draft / weight) : draftFmt(draft),
+        vpower: ({power, draft}) => pwrFmt(power + draft, {suffix: '<ms>power</ms>', html: true}),
+        vwkg: ({power, draft, weight}) => weight ? wkgFmt((power + draft) / weight) : pwrFmt(power + draft, {suffix: '<ms>power</ms>', html: true}),
     }[settings.zoomedPrimaryField || 'power'];
+
+    const primaryFmt2 = {
+        none: () => '',
+        power: ({power}) => pwrFmt(power, {suffix: '<ms>bolt</ms>', html: true}),
+        wkg: ({power, weight}) => weight ? wkgFmt(power / weight) : pwrFmt(power, {suffix: '<ms>bolt</ms>', html: true}),
+        draft: ({draft}) => draftFmt(draft),
+        draftwkg: ({draft, weight}) => weight ? draftwkgFmt(draft / weight) : draftFmt(draft),
+        vpower: ({power, draft}) => pwrFmt(power + draft, {suffix: '<ms>power</ms>', html: true}),
+        vwkg: ({power, draft, weight}) => weight ? wkgFmt((power + draft) / weight) : pwrFmt(power + draft, {suffix: '<ms>power</ms>', html: true}),
+        wbal: ({wbal}) => wbalFmt(wbal),
+         speed: ({speed}) => H.number(speed, {suffix: '<ms>speed</ms>', html: true}),
+        heartrate: ({heartrate}) => H.number(heartrate, {suffix: '<ms>favorite</ms>', html: true}),
+    }[settings.zoomedPrimaryField2|| 'none'];
+
+    const secondaryFmt = {
+        none: () => '',
+        draft: ({draft}) => draftFmt(draft),
+        draftwkg: ({draft, weight}) => weight ? draftwkgFmt(draft / weight) : draftFmt(draft),
+        vpower: ({power, draft}) => pwrFmt(power + draft, {suffix: '<ms>power</ms>', html: true}),
+        vwkg: ({power, draft, weight}) => weight ? wkgFmt((power + draft) / weight) : pwrFmt(power + draft, {suffix: '<ms>power</ms>', html: true}),
+        wbal: ({wbal}) => wbalFmt(wbal),
+        speed: ({speed}) => H.number(speed, {suffix: '<ms>speed</ms>', html: true}),
+        heartrate: ({heartrate}) => H.number(heartrate, {suffix: '<ms>favorite</ms>', html: true}),
+    }[settings.zoomedSecondaryField || 'none'];
+
+    const secondaryFmt2 = {
+        none: () => '',
+        draft: ({draft}) => draftFmt(draft),
+        draftwkg: ({draft, weight}) => weight ? draftwkgFmt(draft / weight) : draftFmt(draft),
+        vpower: ({power, draft}) => pwrFmt(power + draft, {suffix: '<ms>power</ms>', html: true}),
+        vwkg: ({power, draft, weight}) => weight ? wkgFmt((power + draft) / weight) : pwrFmt(power + draft, {suffix: '<ms>power</ms>', html: true}),
+        wbal: ({wbal}) => wbalFmt(wbal),
+        speed: ({speed}) => H.number(speed, {suffix: '<ms>speed</ms>', html: true}),
+        heartrate: ({heartrate}) => H.number(heartrate, {suffix: '<ms>favorite</ms>', html: true}),
+    }[settings.zoomedSecondaryField2 || 'none'];
+
     common.softInnerHTML(metaEl, [
         `${groupLabel}, ${groupSize} ${athletesLabel}`,
         `${primaryFmt(group)}, ${spdFmt(group.speed)}`,
@@ -267,79 +319,111 @@ function renderZoomed(groups) {
         //const athlete_power = athlete.state.power + athlete.state.draft;
         const priLine = primaryFmt({
             power: athlete.state.power,
+            draft: athlete.state.draft,
             weight: athlete.athlete && athlete.athlete.weight
         });
-        const mainField2 = settings.zoomedPrimaryField2 || 'none';
-        let mainValue2 = '';
-        if (mainField2 === 'heartrate') {
-            if (athlete.state.heartrate) {
-                mainValue2 = `| ${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}`;
-            }
-        } else if (mainField2 === 'draft') {
-            if (athlete.state.draft != null) {
-                mainValue2 = `| ${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}`;
-            }
-        } else if (mainField2 === 'speed') {
-            if (athlete.state.speed != null) {
-                mainValue2 = `| ${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}`;
-            }
-        }  else if (mainField2 === 'wbal') {
-            const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
-            const mywbalunit = `<ms>${common.fmtBattery(mywbal)}</ms>`
-            mainValue2 =  `| ${H.number(mywbal*100, {suffix: mywbalunit, html: true})}`;
-        } 
 
-        const rightLines = [`<div class="line">${priLine} ${mainValue2}</div>`];
+        const minorLine = primaryFmt2({
+            power: athlete.state.power,
+            draft: athlete.state.draft,
+            weight: athlete.athlete && athlete.athlete.weight,
+            wbal: athlete.stats.power.wBal / (athlete.athlete ? athlete.athlete.wPrime : 1),
+            speed: athlete.state.speed,
+            heartrate: athlete.state.heartrate,
+        });
+        // const mainField2 = settings.zoomedPrimaryField2 || 'none';
+        // let mainValue2 = '';
+        // if (mainField2 === 'heartrate') {
+        //     if (athlete.state.heartrate) {
+        //         mainValue2 = `| ${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}`;
+        //     }
+        // } else if (mainField2 === 'draft') {
+        //     if (athlete.state.draft != null) {
+        //         mainValue2 = `| ${draftFmt(athlete.state.draft)}`;
+        //     }
+        // } else if (mainField2 === 'draftwkg') {
+        //     if (athlete.state.draft != null) {
+        //         mainValue2 = `| ${draftwkgFmt(athlete.state.draft, athlete.athlete.weight)}`;
+        //     }
+        // } else if (mainField2 === 'speed') {
+        //     if (athlete.state.speed != null) {
+        //         mainValue2 = `| ${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}`;
+        //     }
+        // }  else if (mainField2 === 'wbal') {
+        //     const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
+        //     const mywbalunit = `<ms>${common.fmtBattery(mywbal)}</ms>`
+        //     mainValue2 =  `| ${H.number(mywbal*100, {suffix: mywbalunit, html: true})}`;
+        // } 
+
+        const rightLines = [`<div class="line">${priLine} ${minorLine}</div>`];
 
         const minorField2 = settings.zoomedSecondaryField2 || 'none';
         let minorValue2 = '';
-        if (minorField2 === 'heartrate') {
-            if (athlete.state.heartrate) {
-                minorValue2 = `| ${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}`;
-            }
-        } else if (minorField2 === 'draft') {
-            if (athlete.state.draft != null) {
-                minorValue2 = `| ${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}`;
-            }
-        } else if (minorField2 === 'speed') {
-            if (athlete.state.speed != null) {
-                minorValue2 = `| ${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}`;
-            }
-        } else if (minorField2 === 'power-60s') {
+        if (minorField2 === 'power-60s') {
             const p = athlete.stats.power.smooth[60];
             if (p != null) {
                 minorValue2 = `| ${pwrFmt(p)} ` +
                     `<abbr class="unit">(1m)</abbr>`;
             }
-        } else if (minorField2 === 'wbal' && athlete.athlete) {
-            const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
-            const mywbalunit = `<ms>${common.fmtBattery(mywbal)}</ms>`
-            minorValue2 =  `| ${H.number(mywbal*100, {suffix: mywbalunit, html: true})}`;
+        } else {
+            minorValue2 = secondaryFmt2({
+                power: athlete.state.power,
+                draft: athlete.state.draft,
+                weight: athlete.athlete && athlete.athlete.weight,
+                wbal: athlete.stats.power.wBal / (athlete.athlete ? athlete.athlete.wPrime : 1),
+                speed: athlete.state.speed,
+                heartrate: athlete.state.heartrate,
+            });
         }    
 
         const minorField = settings.zoomedSecondaryField || 'heartrate';
-        if (minorField === 'heartrate') {
-            if (athlete.state.heartrate) {
-                rightLines.push(`<div class="line minor">${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}${minorValue2}</div>`);
-            }
-        } else if (minorField === 'draft') {
-            if (athlete.state.draft != null) {
-                rightLines.push(`<div class="line minor">${H.number(athlete.state.draft, {suffix: '<ms>air</ms>', html: true})}${minorValue2}</div>`);
-            }
-        } else if (minorField === 'speed') {
-            if (athlete.state.speed != null) {
-                rightLines.push(`<div class="line minor">${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}${minorValue2}</div>`);
-            }
-        } else if (minorField === 'power-60s') {
+        let minorValue = '';
+        if (minorField === 'power-60s') {
             const p = athlete.stats.power.smooth[60];
             if (p != null) {
-                rightLines.push(`<div class="line minor">${pwrFmt(p)} ` +
-                    `<abbr class="unit">(1m)</abbr>${minorValue2}</div>`);
+                minorValue = `| ${pwrFmt(p)} ` +
+                    `<abbr class="unit">(1m)</abbr>`;
             }
-        } else if (minorField === 'wbal' && athlete.athlete) {
-            const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
-            rightLines.push(`<div class="line">${H.number(mywbal*100)}${common.fmtBattery(mywbal)}${minorValue2}</div>`);
+        } else {
+            minorValue = secondaryFmt({
+                power: athlete.state.power,
+                draft: athlete.state.draft,
+                weight: athlete.athlete && athlete.athlete.weight,
+                wbal: athlete.stats.power.wBal / (athlete.athlete ? athlete.athlete.wPrime : 1),
+                speed: athlete.state.speed,
+                heartrate: athlete.state.heartrate,
+            });
         }
+        rightLines.push(`<div class="line minor">${minorValue} ${minorValue2}</div>`);
+
+        // if (minorField === 'heartrate') {
+        //     if (athlete.state.heartrate) {
+        //         rightLines.push(`<div class="line minor">${H.number(athlete.state.heartrate, {suffix: '<ms>favorite</ms>', html: true})}${minorValue2}</div>`);
+        //     }
+        // } else if (minorField === 'draft') {
+        //     if (athlete.state.draft != null) {
+        //         rightLines.push(`<div class="line minor">${draftFmt(athlete.state.draft)}${minorValue2}</div>`);
+        //     }
+        // } else if (minorField === 'draftwkg') {
+        //     if (athlete.state.draft != null) {
+        //         rightLines.push(`<div class="line minor">${draftwkgFmt(athlete.state.draft, athlete.athlete.weight)}${minorValue2}</div>`);
+        //     }
+        // } else if (minorField === 'speed') {
+        //     if (athlete.state.speed != null) {
+        //         rightLines.push(`<div class="line minor">${H.number(athlete.state.speed, {suffix: '<ms>speed</ms>', html: true})}${minorValue2}</div>`);
+        //     }
+        // } else if (minorField === 'power-60s') {
+        //     const p = athlete.stats.power.smooth[60];
+        //     if (p != null) {
+        //         rightLines.push(`<div class="line minor">${pwrFmt(p)} ` +
+        //             `<abbr class="unit">(1m)</abbr>${minorValue2}</div>`);
+        //     }
+        // } else if (minorField === 'wbal' && athlete.athlete) {
+        //     const mywbal = (athlete.stats.power.wBal / athlete.athlete.wPrime);// * 100;
+        //     rightLines.push(`<div class="line">${H.number(mywbal*100)}${common.fmtBattery(mywbal)}${minorValue2}</div>`);
+        // }
+
+
         const gap = next ? Math.abs(next.gap - athlete.gap) : 0;
         let gapLine = '';
         if (gap) {
